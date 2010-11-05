@@ -9,42 +9,31 @@ jQuery( document ).ready( function( $ ) {
 		/* Capture href attribute for all links on page.*/
 		var href = $( this ).attr( 'href' );
 		
-		/* See if custom attribute already exists. */
-		var hasAttr = href.indexOf( taxonomyImagesPlugin.attrSlug );
-		
-		/* See if there is a question mark in the url. */
-		var hasQueryString = href.indexOf( '?' );
-		
-		/* Set to true if href contains only the hash character. */
-		var isHash = ( href == '#' ) ? true : false;
-		
 		/* Append attribute to all links that do not already posses it. */
-		if( hasAttr == -1 && !isHash ) {
-			if( hasQueryString == -1 ) {
+		if( -1 == href.indexOf( taxonomyImagesPlugin.attrSlug ) && href != '#' ) {
+			if( -1 == href.indexOf( '?' ) ) {
 				href += '?' + taxonomyImagesPlugin.attr;
+				$( this ).attr( 'href', href );
 			}
 			else {
 				href += '&' + taxonomyImagesPlugin.attr;
 			}
+			$( this ).attr( 'href', href );
 		}
-		
-		/* Replace the href attribute with new value. */
-		$( this ).attr( 'href', href );
 	});
 	$( '.' + taxonomyImagesPlugin.locale ).live( 'click', function () {
-		var data = {
-			'action' : 'taxonomy_images_create_association',
-			'term_id' : taxonomyImagesPlugin.term_id,
-			'wp_nonce' : taxonomyImagesPlugin.nonce_create,
-			'attachment_id' : $( this ).attr( 'rel' )
-			};
 		
 		/* Process $_POST request */
 		$.ajax({
 			url: ajaxurl,
 			type: "POST",
 			dataType: 'json',							
-			data: data,
+			data: {
+				'action' : 'taxonomy_images_create_association',
+				'term_id' : taxonomyImagesPlugin.term_id,
+				'wp_nonce' : taxonomyImagesPlugin.nonce_create,
+				'attachment_id' : $( this ).attr( 'rel' )
+				},
 			cache: false,
 			success: function ( data, textStatus ) {
 				/* Vars */
@@ -53,6 +42,10 @@ jQuery( document ).ready( function( $ ) {
 				
 				/* Refresh the image on the screen below */
 				if( data.attachment_thumb_src != 'false' ) {
+					
+					$( parent.document.getElementById( 'wpwrap' ) ).prepend( data.attachment_thumb_src );
+					
+					
 					$( parent.document.getElementById( taxonomyImagesPlugin.locale + '_' + taxonomyImagesPlugin.term_id ) ).attr( 'src', data.attachment_thumb_src );
 					$( parent.document.getElementById( 'remove-' + taxonomyImagesPlugin.term_id ) ).removeClass( 'hide' );
 				}
