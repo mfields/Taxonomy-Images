@@ -38,8 +38,8 @@ define( 'TAXONOMY_IMAGE_PLUGIN_VERSION', '0.6' );
 define( 'TAXONOMY_IMAGE_PLUGIN_PERMISSION', 'manage_categories' );
 
 $taxonomy_image_plugin_image = array(
-	'name' => 'detail',
-	'size' => array( 30, 30, true )
+	'name' => 'detail123456',														//FIX THIS!!!!!	 
+	'size' => array( 75, 75, true )
 	);
 
 /**
@@ -144,7 +144,7 @@ function taxonomy_image_plugin_get_image( $id ) {
 	 * before deleting it's association with a taxonomy.
 	 */
 	if( is_admin() ) {
-		$associations = get_option( 'taxonomy_image_plugin' );
+		$associations = taxonomy_image_plugin_sanitize_associations( get_option( 'taxonomy_image_plugin' ) );
 		foreach( $associations as $term => $img ) {
 			if( $img === $id ) {
 				unset( $associations[$term] );
@@ -178,10 +178,15 @@ add_filter( 'media_upload_tabs', 'taxonomy_image_plugin_media_upload_remove_url_
  * @param array An array of term_taxonomy_id/attachment_id pairs.
  * @return array
  */
-function taxonomy_image_plugin_sanitize_associations( $setting ) {
+function taxonomy_image_plugin_sanitize_associations( $associations ) {
 	$o = array();
-	foreach( (array) $setting as $key => $value ) {
-		$o[ (int) $key ] = (int) $value;
+	foreach( (array) $associations as $term_taxonomy_id => $image_id ) {
+		$term_taxonomy_id = (int) $term_taxonomy_id;
+		$image_id = (int) $image_id;
+		/* Object IDs cannot be zero. */
+		if( 0 < $term_taxonomy_id && 0 < $image_id ) {
+			$o[ $term_taxonomy_id ] = $image_id;
+		}
 	}
 	return $o;
 }
@@ -208,6 +213,7 @@ function taxonomy_image_plugin_register_setting() {
 	register_setting( 'taxonomy_image_plugin', 'taxonomy_image_plugin', 'taxonomy_image_plugin_sanitize_associations' );
 }
 add_action( 'admin_init', 'taxonomy_image_plugin_register_setting' );
+
 
 function taxonomy_image_plugin_ajax_gateway( $nonce_slug ) {
 	
@@ -292,7 +298,6 @@ function taxonomy_image_plugin_remove_association() {
 add_action( 'wp_ajax_taxonomy_image_plugin_remove_association', 'taxonomy_image_plugin_remove_association' );
 
 
-
 /**
  * Get the term_taxonomy_id of a given term of a specific taxonomy.
  * @param int ...... Term id
@@ -307,6 +312,144 @@ function taxonomy_image_plugin_term_taxonomy_id( $term_id, $taxonomy ) {
 	return 0;
 }
 
+
+/**
+ * Store associations setting in $taxonomy_image_plugin_associations global.
+ *
+ * @uses $wp_taxonomies
+ * @return void
+ */
+function taxonomy_image_plugin_get_associations( $refresh = false ) {
+	static $associations = array();
+	if ( empty( $associations ) || $refresh ) {
+		$associations = get_option( 'taxonomy_image_plugin' );
+	}
+	return taxonomy_image_plugin_sanitize_associations( $associations );
+}
+add_action( 'init', 'taxonomy_image_plugin_get_associations' );
+
+
+/**
+ * Dynamically create hooks for each taxonomy.
+ *
+ * @uses $wp_taxonomies
+ * @return void
+ * @since 0.4.3
+ */
+function taxonomy_image_plugin_add_dynamic_hooks() {
+	global $wp_version;
+	/* 3.0 + Create dynamic hooks. */
+	if( version_compare( $wp_version, '3.0' ) >= 0 ) {
+		global $wp_taxonomies;
+		foreach( $wp_taxonomies as $taxonomy => $taxonomies ) {
+			add_filter( 'manage_' . $taxonomy . '_custom_column',	'taxonomy_image_plugin_taxonomy_rows', 15, 3 );
+			add_filter( 'manage_edit-' . $taxonomy . '_columns',	'taxonomy_image_plugin_taxonomy_columns' );
+			add_action(	$taxonomy . '_edit_form_fields',			'taxonomy_image_plugin_edit_tag_form', 10, 2 );
+		}
+	}
+	/* 2.9 Support - hook into taxonomy terms administration panel. */
+	else if( version_compare( $wp_version, '2.9' ) == 0 ) {
+		add_filter( 'manage_categories_custom_column',	'taxonomy_image_plugin_taxonomy_rows', 15, 3 );
+		add_filter( 'manage_categories_columns',		'taxonomy_image_plugin_taxonomy_columns' );
+		add_filter( 'manage_edit-tags_columns',			'taxonomy_image_plugin_taxonomy_columns' );
+	}
+}
+add_action( 'admin_init', 'taxonomy_image_plugin_add_dynamic_hooks' );
+
+
+/**
+ * Insert a new column on wp-admin/edit-tags.php.
+ *
+ * @uses $wp_taxonomies
+ * @return void
+ * @since 0.4.3
+ */
+function taxonomy_image_plugin_taxonomy_columns( $original_columns ) {
+	$new_columns = $original_columns;
+	array_splice( $new_columns, 1 ); /* isolate the checkbox column */
+	$new_columns['taxonomy_image_plugin'] = __( 'Image', 'taxonomy_image_plugin' ); /* Add custom column */
+	return array_merge( $new_columns, $original_columns );
+}
+
+function taxonomy_image_plugin_taxonomy_rows( $c, $column_name, $term_id ) {
+	if( $column_name === 'taxonomy_image_plugin' ) {
+		global $taxonomy;
+		return $c . taxonomy_image_plugin_control_image( $term_id, $taxonomy );
+	}
+}
+
+
+/**
+
+
+
+
+
+
+
+
+ * Create image control for wp-admin/edit-tag-form.php.
+ * @param stdClass ...... Term object.
+ * @param string ........ Taxonomy slug.
+ * @since 2010-11-08
+ */
+function taxonomy_image_plugin_edit_tag_form( $term, $taxonomy ) {
+	$taxonomy = get_taxonomy( $taxonomy );
+	$name = __( 'term', 'taxonomy_images_plugin' );
+	if( isset( $taxonomy->labels->singular_name ) ) {
+		$name = strtolower( $taxonomy->labels->singular_name );
+	}
+	?>
+	<tr class="form-field hide-if-no-js">
+		<th scope="row" valign="top"><label for="description"><?php _e( 'Image', 'taxonomy_image_plugin' ) ?></label></th>
+		<td>
+			<?php print taxonomy_image_plugin_control_image( $term->term_id, $taxonomy->name ); ?>
+			<div class="clear"></div>
+			<span class="description"><?php printf( __( 'Associate an image from your media library to this %1$s.', 'taxonomy_image_plugin' ), $name ); ?></span>
+		</td>
+	</tr>
+	<?php
+}
+
+function taxonomy_image_plugin_control_image( $term_id, $taxonomy ) {
+	$taxonomy = get_taxonomy( $taxonomy );
+	$name = __( 'term', 'taxonomy_images_plugin' );
+	if( isset( $taxonomy->labels->singular_name ) ) {
+		$name = strtolower( $taxonomy->labels->singular_name );
+	}
+	$term_tax_id = taxonomy_image_plugin_term_taxonomy_id( (int) $term_id, $taxonomy->name );
+	$href_library = admin_url( 'media-upload.php' ) . '?type=image&amp;tab=library&amp;' . TAXONOMY_IMAGE_PLUGIN_SLUG . '=' . $term_tax_id. '&amp;post_id=0&amp;TB_iframe=true';
+	$href_upload = admin_url( 'media-upload.php' ) . '?type=image&amp;tab=type&amp;' . TAXONOMY_IMAGE_PLUGIN_SLUG . '=' . $term_tax_id. '&amp;post_id=0&amp;TB_iframe=true';;
+	$id = 'taxonomy_image_plugin' . '_' . $term_tax_id;
+	$class = array(
+		'image' => 'thickbox taxonomy-image-thumbnail',
+		'upload' => 'upload control thickbox',
+		'remove' => 'remove control hide',
+		);
+	$img = TAXONOMY_IMAGE_PLUGIN_URL . 'default-image.png';
+	$associations = taxonomy_image_plugin_get_associations();
+	if ( isset( $associations[ $term_tax_id ] ) ) {
+		$attachment_id = (int) $associations[ $term_tax_id ];
+		$img = taxonomy_image_plugin_get_image( $attachment_id );
+		$class['remove'] = str_replace( ' hide', '', $class['remove'] );
+	}
+	$text = array(
+		esc_attr__( 'Please enable javascript to activate the taxonomy images plugin.', 'taxonomy_image_plugin' ),
+		esc_attr__( 'Upload.', 'taxonomy_image_plugin' ),
+		sprintf( esc_attr__( 'Upload a new image for this %s.', 'taxonomy_image_plugin' ), $name ),
+		esc_attr__( 'Media Library.', 'taxonomy_image_plugin' ),
+		sprintf( esc_attr__( 'Change the image for this %s.', 'taxonomy_image_plugin' ), $name ),
+		esc_attr__( 'Delete', 'taxonomy_image_plugin' ),
+		sprintf( esc_attr__( 'Remove image from this %s.', 'taxonomy_image_plugin' ), $name ),
+		);
+	return <<<EOF
+<div id="taxonomy-image-control-{$term_tax_id}" class="taxonomy-image-control hide-if-no-js">
+	<a class="{$class['image']}" href="{$href_library}" title="{$text[4]}"><img id="{$id}" src="{$img}" alt="" /></a>
+	<a class="{$class['upload']}" href="{$href_upload}" title="{$text[2]}">{$text[1]}</a>
+	<a class="{$class['remove']}" href="#" id="remove-{$term_tax_id}" rel="{$term_tax_id}" title="{$text[6]}">{$text[5]}</a>
+</div>
+EOF;
+}
 ####################################################################
 #	CLASS STARTS HERE
 ####################################################################
@@ -318,6 +461,7 @@ if( !class_exists( 'taxonomy_images_plugin' ) ) {
 	* @copyright Copyright (c) 2009, Michael Fields.
 	* @license http://opensource.org/licenses/gpl-2.0.php GNU Public License v2
 	* @package Plugins
+	* @todo completely remove this!!!
 	* @filesource
 	*/
 	class taxonomy_images_plugin {
@@ -325,7 +469,7 @@ if( !class_exists( 'taxonomy_images_plugin' ) ) {
 		public $locale = 'taxonomy_image_plugin';
 		public function __construct() {
 			/* Set Properties */
-			$this->settings = get_option( 'taxonomy_image_plugin' );
+			$this->settings = taxonomy_image_plugin_sanitize_associations( get_option( 'taxonomy_image_plugin' ) );
 
 			/* Plugin Activation Hooks */
 			register_activation_hook( __FILE__, array( &$this, 'activate' ) );
@@ -336,14 +480,6 @@ if( !class_exists( 'taxonomy_images_plugin' ) ) {
 			/* Category Admin Hooks. */
 			add_action( 'admin_print_scripts-categories.php', array( &$this, 'scripts' ) );
 			add_action( 'admin_print_styles-categories.php', array( &$this, 'styles' ) );
-
-			/* 3.0 and beyond. Dynamically create hooks. */
-			add_action( 'admin_init', array( &$this, 'admin_init' ) );
-
-			/* 2.9 Support - hook into taxonomy terms administration panel. */
-			add_filter( 'manage_categories_custom_column', array( &$this, 'category_rows' ), 15, 3 );
-			add_filter( 'manage_categories_columns', array( &$this, 'category_columns' ) );
-			add_filter( 'manage_edit-tags_columns', array( &$this, 'category_columns' ) );
 
 			/* Styles and Scripts */
 			add_action( 'admin_print_scripts-edit-tags.php', array( &$this, 'edit_tags_js' ) );
@@ -382,19 +518,7 @@ if( !class_exists( 'taxonomy_images_plugin' ) ) {
 			wp_enqueue_style( 'taxonomy-images-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'admin.css', array(), TAXONOMY_IMAGE_PLUGIN_VERSION, 'screen' );
 		}
 
-		/**
-		 * Dynamically create hooks for the columns and rows of edit-tags.php
-		 * @since 0.4.3
-		 * @uses $wp_taxonomies
-		 * @return void
-		 */
-		public function admin_init() {
-			global $wp_taxonomies;
-			foreach( $wp_taxonomies as $taxonomy => $taxonomies ) {
-				add_filter( 'manage_' . $taxonomy . '_custom_column', array( &$this, 'category_rows' ), 10, 3 );
-				add_filter( 'manage_edit-' . $taxonomy . '_columns', array( &$this, 'category_columns' ), 10, 3 );
-			}
-		}
+		
 		public function list_term_images_shortcode( $atts = array() ) {
 			$o = '';
 			$defaults = array(
@@ -439,55 +563,7 @@ if( !class_exists( 'taxonomy_images_plugin' ) ) {
 			}
 			return $o;
 		}
-		public function category_rows( $c, $column_name, $term_id ) {
-			global $taxonomy;
-			if( $column_name === 'custom' ) {
-				global $taxonomy_image_plugin_taxonomy;
-				$name = __( 'taxonomy', 'taxonomy_images_plugin' );
-				if( isset( $taxonomy_image_plugin_taxonomy->labels->singular_name ) ) {
-					$name = strtolower( $taxonomy_image_plugin_taxonomy->labels->singular_name );
-				}
-				$term_tax_id = taxonomy_image_plugin_term_taxonomy_id( (int) $term_id, $taxonomy );
-				$href_library = admin_url( 'media-upload.php' ) . '?type=image&amp;tab=library&amp;' . TAXONOMY_IMAGE_PLUGIN_SLUG . '=' . $term_tax_id. '&amp;post_id=0&amp;TB_iframe=true';
-				$href_upload = admin_url( 'media-upload.php' ) . '?type=image&amp;tab=type&amp;' . TAXONOMY_IMAGE_PLUGIN_SLUG . '=' . $term_tax_id. '&amp;post_id=0&amp;TB_iframe=true';;
-				$id = 'taxonomy_image_plugin' . '_' . $term_tax_id;
-				$attachment_id = ( isset( $this->settings[ $term_tax_id ] ) ) ? (int) $this->settings[ $term_tax_id ] : false;
-				$img = ( $attachment_id ) ? $this->get_thumb( $attachment_id ) : TAXONOMY_IMAGE_PLUGIN_URL . 'default-image.png';
-				$text = array(
-					esc_attr__( 'Please enable javascript to activate the taxonomy images plugin.', 'taxonomy_image_plugin' ),
-					esc_attr__( 'Upload.', 'taxonomy_image_plugin' ),
-					sprintf( esc_attr__( 'Upload a new image for this %s.', 'taxonomy_image_plugin' ), $name ),
-					esc_attr__( 'Media Library.', 'taxonomy_image_plugin' ),
-					sprintf( esc_attr__( 'Change the image for this %s.', 'taxonomy_image_plugin' ), $name ),
-					esc_attr__( 'Delete', 'taxonomy_image_plugin' ),
-					sprintf( esc_attr__( 'Remove image from this %s.', 'taxonomy_image_plugin' ), $name ),
-					);
-				$class = array(
-					'remove' => '',
-					);
-				if( !$attachment_id ) {
-					$class['remove'] = ' hide';
-				}
-				$img_src = TAXONOMY_IMAGE_PLUGIN_URL . 'no-javascript.png';
-				return <<<EOF
-{$c}
-<img class="hide-if-js" src="{$img_src}" alt="{$text[0]}" />
-<div id="taxonomy-image-control-{$term_tax_id}" class="taxonomy-image-control hide-if-no-js">
-	<a class="thickbox taxonomy-image-thumbnail" onclick="return false;" href="{$href_library}" title="{$text[4]}"><img id="{$id}" src="{$img}" alt="" /></a>
-	<a class="upload control thickbox" onclick="return false;" href="{$href_upload}" title="{$text[2]}">{$text[1]}</a>
-	<span id="remove-{$term_tax_id}" rel="{$term_tax_id}" class="delete control{$class['remove']}" title="{$text[6]}">{$text[5]}</span>
-</div>
-EOF;
-			}
-		}
-		public function category_columns( $original_columns ) {
-			global $taxonomy, $taxonomy_image_plugin_taxonomy;
-			$taxonomy_image_plugin_taxonomy = get_taxonomy( $taxonomy );
-			$new_columns = $original_columns;
-			array_splice( $new_columns, 1 ); /* isolate the checkbox column */
-			$new_columns['custom'] = __( 'Image', 'taxonomy_image_plugin' ); /* Add custom column */
-			return array_merge( $new_columns, $original_columns ); 
-		}
+		
 		/*
 		 * USED ONLY IN CUSTOM_ACTION.
 		 */
@@ -524,6 +600,6 @@ EOF;
 		public function get_thumb( $id ) { // Left for backward compatibility with version < 0.6
 			return taxonomy_image_plugin_get_image( $id );
 		}
-			}
+	}
 	$taxonomy_images_plugin = new taxonomy_images_plugin();
 }
