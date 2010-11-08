@@ -38,7 +38,7 @@ define( 'TAXONOMY_IMAGE_PLUGIN_VERSION', '0.6' );
 define( 'TAXONOMY_IMAGE_PLUGIN_PERMISSION', 'manage_categories' );
 
 $taxonomy_image_plugin_image = array(
-	'name' => 'detailwq',
+	'name' => 'detail',
 	'size' => array( 30, 30, true )
 	);
 
