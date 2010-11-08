@@ -5,20 +5,13 @@ jQuery( document ).ready( function( $ ) {
 	 * one.
 	 */
 	$.each( $( 'a' ), function ( order, img ) {
-		
-		/* Capture href attribute for all links on page.*/
 		var href = $( this ).attr( 'href' );
-		
-		/* Append attribute to all links that do not already posses it. */
-		if( -1 == href.indexOf( taxonomyImagesPlugin.attrSlug ) && href != '#' ) {
-			if( -1 == href.indexOf( '?' ) ) {
-				href += '?' + taxonomyImagesPlugin.attr;
-				$( this ).attr( 'href', href );
+		if( -1 === href.indexOf( taxonomyImagesPlugin.attr_slug ) && href !== '#' ) {
+			var append = '&' + taxonomyImagesPlugin.attr;
+			if( -1 === href.indexOf( '?' ) ) {
+				append = '?' + taxonomyImagesPlugin.attr;
 			}
-			else {
-				href += '&' + taxonomyImagesPlugin.attr;
-			}
-			$( this ).attr( 'href', href );
+			$( this ).attr( 'href', href + append );
 		}
 	});
 
@@ -30,7 +23,7 @@ jQuery( document ).ready( function( $ ) {
 			data: {
 				'action' : 'taxonomy_images_create_association',
 				'term_id' : taxonomyImagesPlugin.term_id,
-				'wp_nonce' : taxonomyImagesPlugin.nonce_create,
+				'wp_nonce' : taxonomyImagesPlugin.nonce,
 				'attachment_id' : $( this ).attr( 'rel' )
 				},
 			cache: false,
@@ -38,7 +31,6 @@ jQuery( document ).ready( function( $ ) {
 				data = eval( data );
 				if( data.attachment_thumb_src != 'false' ) {
 					/* Refresh the image on the screen below */
-					$( parent.document.getElementById( 'wpwrap' ) ).prepend( data.attachment_thumb_src );
 					$( parent.document.getElementById( taxonomyImagesPlugin.locale + '_' + taxonomyImagesPlugin.term_id ) ).attr( 'src', data.attachment_thumb_src );
 					$( parent.document.getElementById( 'remove-' + taxonomyImagesPlugin.term_id ) ).removeClass( 'hide' );
 				}

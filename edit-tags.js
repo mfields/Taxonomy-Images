@@ -17,7 +17,6 @@ jQuery( document ).ready( function( $ ) {
 			function() { $( this ).css( 'background-position', '-30px 0' ); }
 			)
 		.click( function () {
-			var remove = $( this );
 			$.ajax({
 				url: ajaxurl,
 				type: "POST",
@@ -29,8 +28,8 @@ jQuery( document ).ready( function( $ ) {
 					},
 				cache: false,
 				success: function ( data, textStatus ) {
-					$( remove ).addClass( 'hide' );
-					$( remove ).parent().find( 'img' ).attr( 'src', taxonomyImagesPlugin.img_src );
+					$( this ).addClass( 'hide' );
+					$( this ).parent().find( 'img' ).attr( 'src', taxonomyImagesPlugin.img_src );
 				}
 			});
 		} );
