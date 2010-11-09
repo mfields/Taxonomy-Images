@@ -7,10 +7,6 @@ jQuery( document ).ready( function( $ ) {
 		function() { $( this ).css( 'background-position', '-15px 0' ); },
 		function() { $( this ).css( 'background-position', '0 0' ); }
 		);
-	$( '.taxonomy-image-control .library' ).hover(
-		function() { $( this ).css( 'background-position', '-75px 0' ); },
-		function() { $( this ).css( 'background-position', '-60px 0' ); }
-		);
 	$( '.taxonomy-image-control .remove' )
 		.hover(
 			function() { $( this ).css( 'background-position', '-45px 0' ); },

@@ -30,7 +30,7 @@ define( 'TAXONOMY_IMAGE_PLUGIN_VERSION', '0.6' );
 define( 'TAXONOMY_IMAGE_PLUGIN_PERMISSION', 'manage_categories' );
 
 $taxonomy_image_plugin_image = array(
-	'name' => 'detail123456',														// DEBUG --- FIX THIS!!!!!	 
+	'name' => 'detail',
 	'size' => array( 75, 75, true )
 	);
 
@@ -137,8 +137,11 @@ function taxonomy_image_plugin_get_image( $id ) {
 	}
 
 	/*
-	 * No images can be found. This is most likely caused by a user deleting an attachment
-	 * before deleting it's association with a taxonomy.
+	 * No image can be found.
+	 * This is most likely caused by a user deleting an attachment before deleting it's association with a taxonomy.
+	 * If we are in the administration panels:
+	 * - Delete the association.
+	 * - Return uri to default.png.
 	 */
 	if( is_admin() ) {
 		$associations = taxonomy_image_plugin_sanitize_associations( get_option( 'taxonomy_image_plugin' ) );
@@ -148,10 +151,14 @@ function taxonomy_image_plugin_get_image( $id ) {
 			}
 		}
 		update_option( 'taxonomy_image_plugin', $associations );
+		return TAXONOMY_IMAGE_PLUGIN_URL . 'default.png';
 	}
 
-	/* This function has been called in a theme template and no image can be found. */
-	return '';
+	/*
+	 * No image can be found.
+	 * Return path to blank-image.png.
+	 */
+	return TAXONOMY_IMAGE_PLUGIN_URL . 'blank.png';
 }
 
 
@@ -455,7 +462,7 @@ function taxonomy_image_plugin_control_image( $term_id, $taxonomy ) {
 		'upload' => 'upload control thickbox',
 		'remove' => 'remove control hide',
 		);
-	$img = TAXONOMY_IMAGE_PLUGIN_URL . 'default-image.png';
+	$img = TAXONOMY_IMAGE_PLUGIN_URL . 'default.png';
 	$associations = taxonomy_image_plugin_get_associations();
 	if ( isset( $associations[ $term_tax_id ] ) ) {
 		$attachment_id = (int) $associations[ $term_tax_id ];
@@ -502,7 +509,7 @@ function taxonomy_image_plugin_edit_tags_js() {
 	wp_enqueue_script( 'taxonomy-image-plugin-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'edit-tags.js', array( 'jquery' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
 	wp_localize_script( 'taxonomy-image-plugin-edit-tags', 'taxonomyImagesPlugin', array (
 		'nonce' => wp_create_nonce( 'taxonomy-image-plugin-remove-association' ),
-		'img_src' => TAXONOMY_IMAGE_PLUGIN_URL . 'default-image.png'
+		'img_src' => TAXONOMY_IMAGE_PLUGIN_URL . 'default.png'
 		) );
 }
 add_action( 'admin_print_scripts-edit-tags.php', 'taxonomy_image_plugin_edit_tags_js' );
