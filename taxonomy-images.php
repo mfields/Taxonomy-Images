@@ -434,6 +434,38 @@ function taxonomy_image_plugin_control_image( $term_id, $taxonomy ) {
 </div>
 EOF;
 }
+
+
+add_action( 'admin_print_scripts-media-upload-popup', 'taxonomy_image_plugin_media_upload_popup_js', 2000 );
+add_action( 'admin_print_scripts-edit-tags.php', 'taxonomy_image_plugin_edit_tags_js' );
+add_action( 'admin_print_styles-edit-tags.php', 'taxonomy_image_plugin_edit_tags_css' );
+
+function taxonomy_image_plugin_media_upload_popup_js() {
+	if( isset( $_GET[ TAXONOMY_IMAGE_PLUGIN_SLUG ] ) ) {
+		wp_enqueue_script( 'taxonomy-images-media-upload-popup', TAXONOMY_IMAGE_PLUGIN_URL . 'media-upload-popup.js', array( 'jquery' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
+		$term_id = (int) $_GET[ TAXONOMY_IMAGE_PLUGIN_SLUG ];
+		wp_localize_script( 'taxonomy-images-media-upload-popup', 'taxonomyImagesPlugin', array (
+			'attr' => TAXONOMY_IMAGE_PLUGIN_SLUG . '=' . $term_id, // RED FLAG!!!!!!!!!!!!
+			'nonce' => wp_create_nonce( 'taxonomy-image-plugin-create-association' ),
+			'locale' => 'taxonomy_image_plugin',
+			'attr_slug' => TAXONOMY_IMAGE_PLUGIN_SLUG,
+			'term_taxonomy_id' => $term_id
+			) );
+	}
+}
+function taxonomy_image_plugin_edit_tags_js() {
+	wp_enqueue_script( 'thickbox' );
+	wp_enqueue_script( 'taxonomy-image-plugin-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'edit-tags.js', array( 'jquery' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
+	wp_localize_script( 'taxonomy-image-plugin-edit-tags', 'taxonomyImagesPlugin', array (
+		'nonce' => wp_create_nonce( 'taxonomy-image-plugin-remove-association' ),
+		'img_src' => TAXONOMY_IMAGE_PLUGIN_URL . 'default-image.png'
+		) );
+}
+function taxonomy_image_plugin_edit_tags_css() {
+	wp_enqueue_style( 'thickbox' );
+	wp_enqueue_style( 'taxonomy-image-plugin-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'admin.css', array(), TAXONOMY_IMAGE_PLUGIN_VERSION, 'screen' );
+}
+
 ####################################################################
 #	CLASS STARTS HERE
 ####################################################################
@@ -458,48 +490,12 @@ if( !class_exists( 'taxonomy_images_plugin' ) ) {
 			/* Plugin Activation Hooks */
 			register_activation_hook( __FILE__, array( &$this, 'activate' ) );
 
-			/* Media Upload Thickbox Hooks. */
-			add_action( 'admin_print_scripts-media-upload-popup', array( &$this, 'media_upload_popup_js' ), 2000 );
-
-			/* Category Admin Hooks. */
-			add_action( 'admin_print_scripts-categories.php', array( &$this, 'scripts' ) );
-			add_action( 'admin_print_styles-categories.php', array( &$this, 'styles' ) );
-
-			/* Styles and Scripts */
-			add_action( 'admin_print_scripts-edit-tags.php', array( &$this, 'edit_tags_js' ) );
-			add_action( 'admin_print_styles-edit-tags.php', array( &$this, 'edit_tags_css' ) );
-
 			/* Custom Actions for front-end. */
 			add_action( 'taxonomy_image_plugin_print_image_html', array( &$this, 'print_image_html' ), 1, 3 );
 			add_shortcode( 'taxonomy_image_plugin', array( &$this, 'list_term_images_shortcode' ) );
 		}
 		public function activate() {
 			add_option( 'taxonomy_image_plugin', array() );
-		}
-		public function media_upload_popup_js() {
-			if( isset( $_GET[ TAXONOMY_IMAGE_PLUGIN_SLUG ] ) ) {
-				wp_enqueue_script( 'taxonomy-images-media-upload-popup', TAXONOMY_IMAGE_PLUGIN_URL . 'media-upload-popup.js', array( 'jquery' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
-				$term_id = (int) $_GET[ TAXONOMY_IMAGE_PLUGIN_SLUG ];
-				wp_localize_script( 'taxonomy-images-media-upload-popup', 'taxonomyImagesPlugin', array (
-					'attr' => TAXONOMY_IMAGE_PLUGIN_SLUG . '=' . $term_id, // RED FLAG!!!!!!!!!!!!
-					'nonce' => wp_create_nonce( 'taxonomy-image-plugin-create-association' ),
-					'locale' => 'taxonomy_image_plugin',
-					'attr_slug' => TAXONOMY_IMAGE_PLUGIN_SLUG,
-					'term_taxonomy_id' => $term_id
-					) );
-			}
-		}
-		public function edit_tags_js() {
-			wp_enqueue_script( 'thickbox' );
-			wp_enqueue_script( 'taxonomy-images-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'edit-tags.js', array( 'jquery' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
-			wp_localize_script( 'taxonomy-images-edit-tags', 'taxonomyImagesPlugin', array (
-				'nonce' => wp_create_nonce( 'taxonomy-image-plugin-remove-association' ),
-				'img_src' => TAXONOMY_IMAGE_PLUGIN_URL . 'default-image.png'
-				) );
-		}
-		public function edit_tags_css() {
-			wp_enqueue_style( 'thickbox' );
-			wp_enqueue_style( 'taxonomy-images-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'admin.css', array(), TAXONOMY_IMAGE_PLUGIN_VERSION, 'screen' );
 		}
 
 		
