@@ -76,13 +76,13 @@ add_filter( 'attachment_fields_to_edit', 'taxonomy_image_plugin_add_image_to_tax
 
 
 /**
- * Return an raw url to a custom image size.
+ * Return a raw uri to a custom image size.
  *
  * If size doesn't exist, attempt to create a resized version.
  * The output of this function should be escaped before printing to the browser.
  *
  * @param int The database id of an image attachment.
- * @return string detail size image on success, emtpy string on failure.
+ * @return string detail size image uri on success, emtpy string on failure.
  *
  * @global $taxonomy_image_plugin_image.
  * @access private.
