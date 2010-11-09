@@ -24,14 +24,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-/* 2.9 Branch support */
-if( !function_exists( 'taxonomy_exists' ) ) {
-	function taxonomy_exists( $taxonomy ) {
-		global $wp_taxonomies;
-		return isset( $wp_taxonomies[$taxonomy] );
-	}
-}
-
 define( 'TAXONOMY_IMAGE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'TAXONOMY_IMAGE_PLUGIN_SLUG', 'taxonomy_images_plugin' );
 define( 'TAXONOMY_IMAGE_PLUGIN_VERSION', '0.6' );
@@ -337,21 +329,11 @@ add_action( 'init', 'taxonomy_image_plugin_get_associations' );
  * @since 0.4.3
  */
 function taxonomy_image_plugin_add_dynamic_hooks() {
-	global $wp_version;
-	/* 3.0 + Create dynamic hooks. */
-	if( version_compare( $wp_version, '3.0' ) >= 0 ) {
-		global $wp_taxonomies;
-		foreach( $wp_taxonomies as $taxonomy => $taxonomies ) {
-			add_filter( 'manage_' . $taxonomy . '_custom_column',	'taxonomy_image_plugin_taxonomy_rows', 15, 3 );
-			add_filter( 'manage_edit-' . $taxonomy . '_columns',	'taxonomy_image_plugin_taxonomy_columns' );
-			add_action(	$taxonomy . '_edit_form_fields',			'taxonomy_image_plugin_edit_tag_form', 10, 2 );
-		}
-	}
-	/* 2.9 Support - hook into taxonomy terms administration panel. */
-	else if( version_compare( $wp_version, '2.9' ) == 0 ) {
-		add_filter( 'manage_categories_custom_column',	'taxonomy_image_plugin_taxonomy_rows', 15, 3 );
-		add_filter( 'manage_categories_columns',		'taxonomy_image_plugin_taxonomy_columns' );
-		add_filter( 'manage_edit-tags_columns',			'taxonomy_image_plugin_taxonomy_columns' );
+	global $wp_taxonomies;
+	foreach( $wp_taxonomies as $taxonomy => $taxonomies ) {
+		add_filter( 'manage_' . $taxonomy . '_custom_column',	'taxonomy_image_plugin_taxonomy_rows', 15, 3 );
+		add_filter( 'manage_edit-' . $taxonomy . '_columns',	'taxonomy_image_plugin_taxonomy_columns' );
+		add_action(	$taxonomy . '_edit_form_fields',			'taxonomy_image_plugin_edit_tag_form', 10, 2 );
 	}
 }
 add_action( 'admin_init', 'taxonomy_image_plugin_add_dynamic_hooks' );
@@ -371,23 +353,25 @@ function taxonomy_image_plugin_taxonomy_columns( $original_columns ) {
 	return array_merge( $new_columns, $original_columns );
 }
 
-function taxonomy_image_plugin_taxonomy_rows( $c, $column_name, $term_id ) {
-	if( $column_name === 'taxonomy_image_plugin' ) {
+
+/**
+ * Create image control for each term row of wp-admin/edit-tags.php.
+ * @param string ......... Row.
+ * @param string ......... Name of the current column.
+ * @param int ............ Term ID.
+ * @return string
+ * @since 2010-11-08
+ */
+function taxonomy_image_plugin_taxonomy_rows( $row, $column_name, $term_id ) {
+	if ( 'taxonomy_image_plugin' === $column_name ) {
 		global $taxonomy;
-		return $c . taxonomy_image_plugin_control_image( $term_id, $taxonomy );
+		return $row . taxonomy_image_plugin_control_image( $term_id, $taxonomy );
 	}
+	return $row;
 }
 
 
 /**
-
-
-
-
-
-
-
-
  * Create image control for wp-admin/edit-tag-form.php.
  * @param stdClass ...... Term object.
  * @param string ........ Taxonomy slug.
