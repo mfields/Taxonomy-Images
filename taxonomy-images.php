@@ -552,7 +552,7 @@ add_action( 'admin_print_styles-edit-tags.php', 'taxonomy_image_plugin_edit_tags
  * @return    void
  * @access    private
  */
-function activate() {
+function taxonomy_image_plugin_activate() {
 	$associations = get_option( 'taxonomy_image_plugin' );
 	if ( false === $associations ) {
 		add_option( 'taxonomy_image_plugin', array() );
