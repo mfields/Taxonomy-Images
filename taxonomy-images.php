@@ -37,10 +37,11 @@ $taxonomy_image_plugin_image = array(
 /**
  * Register custom image size with WordPress.
  *
- * @global $taxonomy_image_plugin_image.
+ * @return    void
  *
- * @access private
- * @since 2010-10-28
+ * @global    array     $taxonomy_image_plugin_image.
+ * @access    private
+ * @since     2010-10-28
  */
 function taxonomy_image_plugin_get_image_add_image_size() {
 	global $taxonomy_image_plugin_image;
@@ -57,8 +58,12 @@ add_action( 'init', 'taxonomy_image_plugin_get_image_add_image_size' );
 /**
  * Create a button in the modal media window to associate the current image to the term.
  *
- * @access private
- * @since 2010-10-28
+ * @param     array     Multidimensional array representing the images form.
+ * @param     stdClass  WordPress post object.
+ * @return    array     The image's form array with added button if modal window was accessed by this script.
+ *
+ * @access    private
+ * @since     2010-10-28
  */
 function taxonomy_image_plugin_add_image_to_taxonomy_button( $fields, $post ) {
 	if(
@@ -81,12 +86,12 @@ add_filter( 'attachment_fields_to_edit', 'taxonomy_image_plugin_add_image_to_tax
  * If size doesn't exist, attempt to create a resized version.
  * The output of this function should be escaped before printing to the browser.
  *
- * @param int The database id of an image attachment.
- * @return string detail size image uri on success, emtpy string on failure.
+ * @param     int       The database id of an image attachment.
+ * @return    string    URI of custom image on success; emtpy string otherwise.
  *
- * @global $taxonomy_image_plugin_image.
- * @access private.
- * @since 2010-10-28
+ * @global    array     $taxonomy_image_plugin_image.
+ * @access    private.
+ * @since     2010-10-28
  */
 function taxonomy_image_plugin_get_image( $id ) {
 	global $taxonomy_image_plugin_image;
@@ -168,10 +173,10 @@ function taxonomy_image_plugin_get_image( $id ) {
  * This plugin only supports associating images from the media library.
  * Leaving this tab will only confuse users.
  *
- * @param array An associative array representing the navigation in the modal media box.
- * @return array
+ * @param     array     An associative array representing the navigation in the modal media box.
+ * @return    array     Altered navigation list if modal media box is accessed via this script.
  *
- * @access private
+ * @access    private
  */
 function taxonomy_image_plugin_media_upload_remove_url_tab( $tabs ) {
 	if( isset( $_GET[TAXONOMY_IMAGE_PLUGIN_SLUG] ) ) {
@@ -183,12 +188,13 @@ add_filter( 'media_upload_tabs', 'taxonomy_image_plugin_media_upload_remove_url_
 
 
 /*
- * Ensures that all key/value pairs are integers.
+ * Ensures that all key/value pairs are positive integers.
+ * This filter will discard all zero and negative values.
  *
- * @param array An array of term_taxonomy_id/attachment_id pairs.
- * @return array
+ * @param     array     An array of term_taxonomy_id/attachment_id pairs.
+ * @return    array     Sanitized version of parameter.
  *
- * @access public
+ * @access    public
  */
 function taxonomy_image_plugin_sanitize_associations( $associations ) {
 	$o = array();
@@ -208,14 +214,10 @@ function taxonomy_image_plugin_sanitize_associations( $associations ) {
  * JSON Respose.
  * Terminate script execution.
  *
- * @param array Associative array of values to be encoded in JSON.
- * Note: An entry with a key of status should be always be passed with a value of 'good' or 'bad'.
- * - Keys ........ datatype.
- * - Values ...... Values.
- * 
- * @return void
+ * @param     array     Associative array of values to be encoded in JSON.
+ * @return    void
  *
- * @access private
+ * @access    private
  */
 function taxonomy_image_plugin_json_response( $response ) {
 	header( 'Content-type: application/jsonrequest' );
@@ -226,9 +228,10 @@ function taxonomy_image_plugin_json_response( $response ) {
 
 /**
  * Register settings with WordPress.
- * @return void
  *
- * @access private
+ * @return    void
+ *
+ * @access    private
  */
 function taxonomy_image_plugin_register_setting() {
 	register_setting( 'taxonomy_image_plugin', 'taxonomy_image_plugin', 'taxonomy_image_plugin_sanitize_associations' );
@@ -279,9 +282,9 @@ function taxonomy_image_plugin_ajax_gateway( $nonce_slug ) {
  *
  * Callback for the wp_ajax_{$_GET['action']} hook.
  *
- * @return void
+ * @return    void
  *
- * @access private
+ * @access    private
  */
 function taxonomy_image_plugin_create_association() {
 	$term_taxonomy_id = taxonomy_image_plugin_ajax_gateway( 'taxonomy-image-plugin-create-association' );
@@ -311,9 +314,9 @@ add_action( 'wp_ajax_taxonomy_image_create_association', 'taxonomy_image_plugin_
  *
  * Callback for the wp_ajax_{$_GET['action']} hook.
  *
- * @return void
+ * @return    void
  *
- * @access private
+ * @access    private
  */
 function taxonomy_image_plugin_remove_association() {
 	$term_taxonomy_id = taxonomy_image_plugin_ajax_gateway( 'taxonomy-image-plugin-remove-association' );
@@ -330,9 +333,9 @@ add_action( 'wp_ajax_taxonomy_image_plugin_remove_association', 'taxonomy_image_
 /**
  * Get the term_taxonomy_id of a given term of a specific taxonomy.
  *
- * @param int ...... Term id
- * @param string ... Taxonomy slug
- * @return int term_taxonomy id on success; zero otherwise.
+ * @param     int       Term id
+ * @param     string    Taxonomy slug
+ * @return    int       term_taxonomy id on success; zero otherwise.
  *
  * @access public
  */
@@ -346,11 +349,13 @@ function taxonomy_image_plugin_term_taxonomy_id( $term_id, $taxonomy ) {
 
 
 /**
- * Store associations setting in $taxonomy_image_plugin_associations global.
+ * Get a list of user-defined associations.
+ * Associations are stored in the WordPress options table.
  *
- * @return void
+ * @param     bool      Should WordPress query the database for the results
+ * @return    array     List of associations. Key => taxonomy_term_id; Value => image_id
  *
- * @access private
+ * @access    private
  */
 function taxonomy_image_plugin_get_associations( $refresh = false ) {
 	static $associations = array();
@@ -365,10 +370,10 @@ add_action( 'init', 'taxonomy_image_plugin_get_associations' );
 /**
  * Dynamically create hooks for each taxonomy.
  *
- * @return void
+ * @return    void
  *
- * @access private
- * @since 0.4.3
+ * @access    private
+ * @since     0.4.3
  */
 function taxonomy_image_plugin_add_dynamic_hooks() {
 	global $wp_taxonomies;
@@ -384,11 +389,11 @@ add_action( 'admin_init', 'taxonomy_image_plugin_add_dynamic_hooks' );
 /**
  * Insert a new column on wp-admin/edit-tags.php.
  *
- * @param array A list of columns.
- * @return void
+ * @param     array     A list of columns.
+ * @return    array     List of columns with "Images" inserted after the checkbox.
  *
- * @access private
- * @since 0.4.3
+ * @access    private
+ * @since     0.4.3
  */
 function taxonomy_image_plugin_taxonomy_columns( $original_columns ) {
 	$new_columns = $original_columns;
@@ -401,10 +406,10 @@ function taxonomy_image_plugin_taxonomy_columns( $original_columns ) {
 /**
  * Create image control for each term row of wp-admin/edit-tags.php.
  *
- * @param string ......... Row.
- * @param string ......... Name of the current column.
- * @param int ............ Term ID.
- * @return string
+ * @param     string    Row.
+ * @param     string    Name of the current column.
+ * @param     int       Term ID.
+ * @return    string    @see taxonomy_image_plugin_control_image()
  *
  * @access private
  * @since 2010-11-08
@@ -421,12 +426,12 @@ function taxonomy_image_plugin_taxonomy_rows( $row, $column_name, $term_id ) {
 /**
  * Create image control for wp-admin/edit-tag-form.php.
  *
- * @param stdClass ...... Term object.
- * @param string ........ Taxonomy slug.
- * @return void
+ * @param     stdClass  Term object.
+ * @param     string    Taxonomy slug.
+ * @return    void
  *
- * @access private
- * @since 2010-11-08
+ * @access    private
+ * @since     2010-11-08
  */
 function taxonomy_image_plugin_edit_tag_form( $term, $taxonomy ) {
 	$taxonomy = get_taxonomy( $taxonomy );
@@ -488,6 +493,13 @@ EOF;
 }
 
 
+/**
+ * Custom javascript for modal media box.
+ * These scripts should only be included where a box has been opened via this script.
+ *
+ * @return    void
+ * @access    private
+ */
 function taxonomy_image_plugin_media_upload_popup_js() {
 	if( isset( $_GET[ TAXONOMY_IMAGE_PLUGIN_SLUG ] ) ) {
 		wp_enqueue_script( 'taxonomy-images-media-upload-popup', TAXONOMY_IMAGE_PLUGIN_URL . 'media-upload-popup.js', array( 'jquery' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
@@ -504,6 +516,12 @@ function taxonomy_image_plugin_media_upload_popup_js() {
 add_action( 'admin_print_scripts-media-upload-popup', 'taxonomy_image_plugin_media_upload_popup_js', 2000 );
 
 
+/**
+ * Custom javascript for wp-admin/edit-tags.php.
+ *
+ * @return    void
+ * @access    private
+ */
 function taxonomy_image_plugin_edit_tags_js() {
 	wp_enqueue_script( 'thickbox' );
 	wp_enqueue_script( 'taxonomy-image-plugin-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'edit-tags.js', array( 'jquery' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
@@ -515,6 +533,12 @@ function taxonomy_image_plugin_edit_tags_js() {
 add_action( 'admin_print_scripts-edit-tags.php', 'taxonomy_image_plugin_edit_tags_js' );
 
 
+/**
+ * Custom styles for wp-admin/edit-tags.php
+ *
+ * @return    void
+ * @access    private
+ */
 function taxonomy_image_plugin_edit_tags_css() {
 	wp_enqueue_style( 'thickbox' );
 	wp_enqueue_style( 'taxonomy-image-plugin-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'admin.css', array(), TAXONOMY_IMAGE_PLUGIN_VERSION, 'screen' );
@@ -524,10 +548,15 @@ add_action( 'admin_print_styles-edit-tags.php', 'taxonomy_image_plugin_edit_tags
 
 /**
  * Create associations setting in the options table on plugin activation.
- * @access private
+ *
+ * @return    void
+ * @access    private
  */
 function activate() {
-	add_option( 'taxonomy_image_plugin', array() );
+	$associations = get_option( 'taxonomy_image_plugin' );
+	if ( false === $associations ) {
+		add_option( 'taxonomy_image_plugin', array() );
+	}
 }
 register_activation_hook( __FILE__, 'taxonomy_image_plugin_activate' );
 
