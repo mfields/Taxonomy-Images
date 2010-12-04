@@ -562,12 +562,78 @@ register_activation_hook( __FILE__, 'taxonomy_image_plugin_activate' );
 
 
 /**
- * Shortcode.
+ * Shortcode wrapper for taxonomy_images_plugin_image_list();
+ *
+ * @return    string
+ * @access    private
+ */
+function taxonomy_images_plugin_shortcode_image_list( $atts = array() ) {
+	global $taxonomy_image_plugin_image;
+	$o = '';
+	$defaults = array(
+		'taxonomy' => 'category',
+		'size'     => $taxonomy_image_plugin_image['name']
+		);
+	extract( shortcode_atts( $defaults, $atts ) );
+	return taxonomy_images_plugin_image_list( $taxonomy, $size );
+}
+add_shortcode( 'taxonomy_image_list', 'taxonomy_images_plugin_shortcode_image_list' );
+
+
+/**
+ * Generate a list of all terms of a given taxonomy + their associated images.
+ *
+ * @return    string
+ * @access    public
+ */
+function taxonomy_images_plugin_image_list( $taxonomy = 'category', $image_size = '' ) {
+	$o = '';
+
+	/* No taxonomy defined return an html comment. */
+	if ( ! taxonomy_exists( $taxonomy ) ) {
+		$tax = strip_tags( trim( $taxonomy ) );
+		return '<!-- taxonomy_image_plugin error: "' . $taxonomy . '" does not exist on your WordPRess installation. -->';
+	}
+
+	/* Get all image/term associations. */
+	$associations = taxonomy_image_plugin_get_associations();
+
+	/* Get all terms in the given taxonomy. */
+	$terms = get_terms( $taxonomy );
+
+	/* Loop over terms. */
+	if ( ! is_wp_error( $terms ) ) {
+		foreach( (array) $terms as $term ) {
+			
+			/* Minor extensions to the term object. */
+			$term->img = '';
+			$term->url = get_term_link( $term, $term->taxonomy );
+			
+			/* Get the image for the associated. */
+			if ( array_key_exists( $term->term_taxonomy_id, $associations ) ) {
+				$term->img = wp_get_attachment_image( $associations[$term->term_taxonomy_id], $image_size, false );
+			}
+			
+			/* Only need to display terms that have associated images. */
+			if ( ! empty( $term->img ) ) {
+				$o.= '<li><a title="' . esc_attr( $term->name . ' (' . $term->count . ')' ) . '" href="' . esc_url( $term->url ) . '">' . $term->img . '</a></li>' . "\n";
+			}
+		}
+		if ( ! empty( $o ) ) {
+			$o = '<ul class="taxonomy-image-plugin-list">' . "\n" . $o . '</ul>' . "\n";
+		}
+	}
+	return $o;
+}
+
+
+/**
+ * Deprecated Shortcode.
  *
  * @return    void
  * @access    private
  */
-function taxonomy_images_plugin_shortcode( $atts = array() ) {
+function taxonomy_images_plugin_shortcode_deprecated( $atts = array() ) { // DEPRECATED
 	$o = '';
 	$defaults = array(
 		'taxonomy' => 'category',
@@ -614,7 +680,7 @@ function taxonomy_images_plugin_shortcode( $atts = array() ) {
 	}
 	return $o;
 }
-add_shortcode( 'taxonomy_image_plugin', 'taxonomy_images_plugin_shortcode' );
+add_shortcode( 'taxonomy_image_plugin', 'taxonomy_images_plugin_shortcode_deprecated' );
 
 
 ####################################################################
