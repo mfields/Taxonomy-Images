@@ -564,7 +564,7 @@ register_activation_hook( __FILE__, 'taxonomy_image_plugin_activate' );
 /**
  * Shortcode wrapper for taxonomy_images_plugin_image_list();
  *
- * @return    string
+ * @return    string    see taxonomy_images_plugin_image_list()
  * @access    private
  */
 function taxonomy_images_plugin_shortcode_image_list( $atts = array() ) {
@@ -572,10 +572,11 @@ function taxonomy_images_plugin_shortcode_image_list( $atts = array() ) {
 	$o = '';
 	$defaults = array(
 		'taxonomy' => 'category',
+		'context'  => 'global',
 		'size'     => $taxonomy_image_plugin_image['name']
 		);
 	extract( shortcode_atts( $defaults, $atts ) );
-	return taxonomy_images_plugin_image_list( $taxonomy, $size );
+	return taxonomy_images_plugin_image_list( $taxonomy, $context, $size );
 }
 add_shortcode( 'taxonomy_image_list', 'taxonomy_images_plugin_shortcode_image_list' );
 
@@ -583,12 +584,22 @@ add_shortcode( 'taxonomy_image_list', 'taxonomy_images_plugin_shortcode_image_li
 /**
  * Generate a list of all terms of a given taxonomy + their associated images.
  *
- * @return    string
+ * Only include terms whose count > 0 and have an associated image.
+ *
+ * @param     string    Taxonomy slug.
+ * @param     string    Context can be either 'global' or 'post'.
+ *                      'global' - get_terms() returns all taxonomy terms.
+ *                      'post'   - get_the_terms() returns all terms associated with the global post object.
+ * @param     string    Image size. Can be any value registered with WordPress. Defaults to 'thumbnail'.
+ * @return    string    Unordered list.
+ *
  * @access    public
+ * @since     2010-12-04
  */
-function taxonomy_images_plugin_image_list( $taxonomy = 'category', $image_size = '' ) {
+function taxonomy_images_plugin_image_list( $taxonomy = 'category', $context = 'global', $image_size = 'thumbnail' ) {
 	$o = '';
-
+	$terms = array();
+	
 	/* No taxonomy defined return an html comment. */
 	if ( ! taxonomy_exists( $taxonomy ) ) {
 		$tax = strip_tags( trim( $taxonomy ) );
@@ -599,7 +610,12 @@ function taxonomy_images_plugin_image_list( $taxonomy = 'category', $image_size 
 	$associations = taxonomy_image_plugin_get_associations();
 
 	/* Get all terms in the given taxonomy. */
-	$terms = get_terms( $taxonomy );
+	if ( 'global' === $context ) {
+		$terms = get_terms( $taxonomy );
+	}
+	else if ( 'post' === $context ) {
+		$terms = get_the_terms( 0, $taxonomy );
+	}
 
 	/* Loop over terms. */
 	if ( ! is_wp_error( $terms ) ) {
@@ -618,6 +634,7 @@ function taxonomy_images_plugin_image_list( $taxonomy = 'category', $image_size 
 			if ( ! empty( $term->img ) ) {
 				$o.= '<li><a title="' . esc_attr( $term->name . ' (' . $term->count . ')' ) . '" href="' . esc_url( $term->url ) . '">' . $term->img . '</a></li>' . "\n";
 			}
+			
 		}
 		if ( ! empty( $o ) ) {
 			$o = '<ul class="taxonomy-image-plugin-list">' . "\n" . $o . '</ul>' . "\n";
