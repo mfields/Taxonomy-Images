@@ -389,6 +389,8 @@ add_action( 'admin_init', 'taxonomy_image_plugin_add_dynamic_hooks' );
 /**
  * Insert a new column on wp-admin/edit-tags.php.
  *
+ * @see taxonomy_image_plugin_add_dynamic_hooks()
+ *
  * @param     array     A list of columns.
  * @return    array     List of columns with "Images" inserted after the checkbox.
  *
@@ -405,6 +407,8 @@ function taxonomy_image_plugin_taxonomy_columns( $original_columns ) {
 
 /**
  * Create image control for each term row of wp-admin/edit-tags.php.
+ *
+ * @see taxonomy_image_plugin_add_dynamic_hooks()
  *
  * @param     string    Row.
  * @param     string    Name of the current column.
@@ -673,7 +677,6 @@ function taxonomy_images_plugin_image_list( $taxonomy = 'category', $context = '
 		return $o;
 	}
 }
-
 add_action( 'taxonomy_images_plugin_image_list', 'taxonomy_images_plugin_image_list', 10, 4 );
 
 
@@ -733,52 +736,48 @@ function taxonomy_images_plugin_shortcode_deprecated( $atts = array() ) { // DEP
 add_shortcode( 'taxonomy_image_plugin', 'taxonomy_images_plugin_shortcode_deprecated' );
 
 
-####################################################################
-#	CLASS STARTS HERE
-####################################################################
-
-if ( !class_exists( 'taxonomy_images_plugin' ) ) {
-	class taxonomy_images_plugin {
-		public $settings = array();
-		public function __construct() {
-			/* Set Properties */
-			$this->settings = taxonomy_image_plugin_sanitize_associations( get_option( 'taxonomy_image_plugin' ) );
-			/* Custom Actions for front-end. */
-			add_action( 'taxonomy_image_plugin_print_image_html', array( &$this, 'print_image_html' ), 1, 3 );
-		}
-		/*
-		 * USED ONLY IN CUSTOM_ACTION.
-		 */
-		public function print_image_html( $size = 'medium', $term_tax_id = false, $title = true, $align = 'none' ) {
-			print $this->get_image_html( $size, $term_tax_id, $title, $align );
-		}
-		/*
-		 * USED ONLY IN THE SHORTCODE + print wrapper function.
-		 * @uses $wp_query
-		 */
-		public function get_image_html( $size = 'medium', $term_tax_id = false, $title = true, $align = 'none' ) { // Left for backward compatibility with version < 0.6
-			$o = '';
-			if ( !$term_tax_id ) {
-				global $wp_query;
-				$mfields_queried_object = $wp_query->get_queried_object();
-				$term_tax_id = $mfields_queried_object->term_taxonomy_id;
-			}
-
-			$term_tax_id = (int) $term_tax_id;
-
-			if ( isset( $this->settings[ $term_tax_id ] ) ) {
-				$attachment_id = (int) $this->settings[ $term_tax_id ];
-				$alt           = get_post_meta( $attachment_id, '_wp_attachment_image_alt', true );
-				$attachment    = get_post( $attachment_id ); /* Just in case an attachment was deleted, but there is still a record for it in this plugins settings. */
-				if( $attachment !== NULL ) {
-					$o = get_image_tag( $attachment_id, $alt, '', $align, $size );
-				}
-			}
-			return $o;
-		}
-		public function get_thumb( $id ) { // KEEP
-			return taxonomy_image_plugin_get_image_src( $id );
-		}
+/**
+ * This class has been left for backward compatibility with versions
+ * of this plugin 0.5 and under. Please do not use any methods or
+ * properties directly in your theme.
+ *
+ * @access     private        This class is deprecated. Do not use!!!
+ */
+class taxonomy_images_plugin {
+	public $settings = array();
+	public function __construct() {
+		$this->settings = taxonomy_image_plugin_get_associations();
+		add_action( 'taxonomy_image_plugin_print_image_html', array( &$this, 'print_image_html' ), 1, 3 );
 	}
-	$taxonomy_images_plugin = new taxonomy_images_plugin();
+	public function get_thumb( $id ) {
+		return taxonomy_image_plugin_get_image_src( $id );
+	}
+	public function print_image_html( $size = 'medium', $term_tax_id = false, $title = true, $align = 'none' ) {
+		print $this->get_image_html( $size, $term_tax_id, $title, $align );
+	}
+	public function get_image_html( $size = 'medium', $term_tax_id = false, $title = true, $align = 'none' ) {
+		$o = '';
+		if ( false === $term_tax_id ) {
+			global $wp_query;
+			$obj = $wp_query->get_queried_object();
+			if ( isset( $obj->term_taxonomy_id ) ) {
+				$term_tax_id = $obj->term_taxonomy_id;
+			}
+			else {
+				return false;
+			}
+		}
+		$term_tax_id = (int) $term_tax_id;
+		if ( isset( $this->settings[ $term_tax_id ] ) ) {
+			$attachment_id = (int) $this->settings[ $term_tax_id ];
+			$alt           = get_post_meta( $attachment_id, '_wp_attachment_image_alt', true );
+			$attachment    = get_post( $attachment_id );
+			/* Just in case an attachment was deleted, but there is still a record for it in this plugins settings. */
+			if ( $attachment !== NULL ) {
+				$o = get_image_tag( $attachment_id, $alt, '', $align, $size );
+			}
+		}
+		return $o;
+	}
 }
+$taxonomy_images_plugin = new taxonomy_images_plugin();
