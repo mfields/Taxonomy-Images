@@ -568,6 +568,8 @@ register_activation_hook( __FILE__, 'taxonomy_image_plugin_activate' );
  * taxonomy   string    The taxonomy to query for.
  * context    string    Can be either 'global' or 'post'. See taxonomy_images_plugin_image_list() for full description.
  * size       string    The name of an image size registered for your installation. Defaults to 'thumbnail'.
+ * include    string    A comma or space-delimited string of term ids to include.
+ * exclude    string    A comma or space-delimited string of term ids to exclude. If 'include' is non-empty, 'exclude' is ignored.
  *
  * @return    string    see taxonomy_images_plugin_image_list()
  * @access    private
@@ -578,10 +580,14 @@ function taxonomy_images_plugin_shortcode_image_list( $atts = array() ) {
 	$defaults = array(
 		'taxonomy' => 'category',
 		'context'  => 'global',
-		'size'     => $taxonomy_image_plugin_image['name']
+		'size'     => $taxonomy_image_plugin_image['name'],
+		'include'  => null,
+		'exclude'  => null
 		);
-	extract( shortcode_atts( $defaults, $atts ) );
-	return taxonomy_images_plugin_image_list( $taxonomy, $context, $size );
+	$atts = shortcode_atts( $defaults, $atts );
+	$args = array_slice( $atts, -2, 2 );	
+	extract( $atts );
+	return taxonomy_images_plugin_image_list( $taxonomy, $context, $size, $args );
 }
 add_shortcode( 'taxonomy_image_list', 'taxonomy_images_plugin_shortcode_image_list' );
 
