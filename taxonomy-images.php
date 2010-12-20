@@ -564,6 +564,11 @@ register_activation_hook( __FILE__, 'taxonomy_image_plugin_activate' );
 /**
  * Shortcode wrapper for taxonomy_images_plugin_image_list();
  *
+ * @param     array     These can be defined in the shortcode as attributes.
+ * taxonomy   string    The taxonomy to query for.
+ * context    string    Can be either 'global' or 'post'. See taxonomy_images_plugin_image_list() for full description.
+ * size       string    The name of an image size registered for your installation. Defaults to 'thumbnail'.
+ *
  * @return    string    see taxonomy_images_plugin_image_list()
  * @access    private
  */
