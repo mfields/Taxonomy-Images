@@ -591,12 +591,13 @@ add_shortcode( 'taxonomy_image_list', 'taxonomy_images_plugin_shortcode_image_li
  *                      'global' - get_terms() returns all taxonomy terms.
  *                      'post'   - get_the_terms() returns all terms associated with the global post object.
  * @param     string    Image size. Can be any value registered with WordPress. Defaults to 'thumbnail'.
+ * @param     array     Arguments to pass as the second parameter of get_terms().
  * @return    string    Unordered list.
  *
  * @access    public
  * @since     2010-12-04
  */
-function taxonomy_images_plugin_image_list( $taxonomy = 'category', $context = 'global', $image_size = 'thumbnail' ) {
+function taxonomy_images_plugin_image_list( $taxonomy = 'category', $context = 'global', $image_size = 'thumbnail', $args = array() ) {
 	$o = '';
 	$terms = array();
 	
@@ -611,7 +612,7 @@ function taxonomy_images_plugin_image_list( $taxonomy = 'category', $context = '
 
 	/* Get all terms in the given taxonomy. */
 	if ( 'global' === $context ) {
-		$terms = get_terms( $taxonomy );
+		$terms = get_terms( $taxonomy, $args );
 	}
 	else if ( 'post' === $context ) {
 		$terms = get_the_terms( 0, $taxonomy );
