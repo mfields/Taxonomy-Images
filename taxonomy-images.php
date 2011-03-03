@@ -500,8 +500,8 @@ EOF;
  * @access    private
  */
 function taxonomy_image_plugin_media_upload_popup_js() {
+	wp_enqueue_script( 'taxonomy-images-media-upload-popup', TAXONOMY_IMAGE_PLUGIN_URL . 'media-upload-popup.js', array( 'jquery' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
 	if ( isset( $_GET[ TAXONOMY_IMAGE_PLUGIN_SLUG ] ) ) {
-		wp_enqueue_script( 'taxonomy-images-media-upload-popup', TAXONOMY_IMAGE_PLUGIN_URL . 'media-upload-popup.js', array( 'jquery' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
 		$term_id = (int) $_GET[ TAXONOMY_IMAGE_PLUGIN_SLUG ];
 		wp_localize_script( 'taxonomy-images-media-upload-popup', 'taxonomyImagesPlugin', array (
 			'attr' => TAXONOMY_IMAGE_PLUGIN_SLUG . '=' . $term_id, // RED FLAG!!!!!!!!!!!!
@@ -553,7 +553,6 @@ function taxonomy_image_plugin_media_upload_css() {
 	wp_enqueue_style( 'taxonomy-image-plugin-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'admin.css', array(), TAXONOMY_IMAGE_PLUGIN_VERSION, 'screen' );
 }
 add_action( 'admin_print_styles-media-upload-popup', 'taxonomy_image_plugin_media_upload_css' );
-
 
 
 /**

@@ -1,4 +1,13 @@
 jQuery( document ).ready( function( $ ) {
+
+	/* Return early if upload modal was NOT opened from edit-tags.php. */
+	if ( 'undefined' == typeof taxonomyImagesPlugin ) {
+		return;
+	}
+
+	/* Only show button when media upload modal is opened from edit-tags.php. */
+	$( '.taxonomy-image-button' ).show();
+
 	/*
 	 * Loop over all anchors in the media upload iframe and add
 	 * a query var for those links that do not already possess
