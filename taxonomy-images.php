@@ -66,15 +66,7 @@ add_action( 'init', 'taxonomy_image_plugin_add_image_size' );
  * @since     2010-10-28
  */
 function taxonomy_image_plugin_add_image_to_taxonomy_button( $fields, $post ) {
-	if (
-		/* Newly uploaded image. */
-		( isset( $_POST['fetch'] ) && 1 == $_POST['fetch'] ) ||
-
-		/* Image from the Media Library tab. */
-		( isset( $_GET[ TAXONOMY_IMAGE_PLUGIN_SLUG ] ) )
-	) {
-		$fields['image-size']['extra_rows']['taxonomy-image-plugin-button']['html'] = '<a rel="' . (int) $post->ID . '" class="button-primary taxonomy_image_plugin" href="#" onclick="return false;">' . __( 'Add Thumbnail to Taxonomy', 'taxonomy_image_plugin' ) . '</a>';
-	}
+	$fields['image-size']['extra_rows']['taxonomy-image-plugin-button']['html'] = '<a rel="' . (int) $post->ID . '" class="button-primary taxonomy_image_plugin" href="#" onclick="return false;">' . __( 'Add Thumbnail to Taxonomy', 'taxonomy_image_plugin' ) . '</a>';
 	return $fields;
 }
 add_filter( 'attachment_fields_to_edit', 'taxonomy_image_plugin_add_image_to_taxonomy_button', 20, 2 );
