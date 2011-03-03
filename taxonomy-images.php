@@ -1,12 +1,12 @@
 <?php
 /*
-Plugin Name: Taxonomy Images
-Plugin URI: http://wordpress.mfields.org/plugins/taxonomy-images/
-Description: The Taxonomy Images plugin enables you to associate images from your Media Library to categories, tags and taxonomies.
-Version: 0.6 - ALPHA
-Author: Michael Fields
-Author URI: http://wordpress.mfields.org/
-License: GPLv2
+Plugin Name:          Taxonomy Images
+Plugin URI:           http://wordpress.mfields.org/plugins/taxonomy-images/
+Description:          The Taxonomy Images plugin enables you to associate images from your Media Library to categories, tags and taxonomies.
+Version:              0.6 - ALPHA
+Author:               Michael Fields
+Author URI:           http://wordpress.mfields.org/
+License:              GPLv2
 
 Copyright 2010  Michael Fields  michael@mfields.org
 
