@@ -68,7 +68,9 @@ add_action( 'init', 'taxonomy_image_plugin_add_image_size' );
  */
 function taxonomy_image_plugin_add_image_to_taxonomy_button( $fields, $post ) {
 	if ( isset( $fields['image-size'] ) && isset( $post->ID ) ) {
-		$fields['image-size']['extra_rows']['taxonomy-image-plugin-button']['html'] = '<a rel="' . esc_attr( $post->ID ) . '" class="button-primary taxonomy-image-button" href="#" onclick="return false;">' . esc_html__( 'Add Thumbnail to Taxonomy', 'taxonomy_image_plugin' ) . '</a>';
+		$image_id = (int) $post->ID;
+		$nonce = wp_create_nonce( 'taxonomy-image-plugin-create-association' );
+		$fields['image-size']['extra_rows']['taxonomy-image-plugin-button']['html'] = '<span class="button taxonomy-image-button" onclick="TaxonomyImagesCreateAssociation( ' . $image_id . ', \'' . $nonce . '\' );">' . esc_html__( 'Add Thumbnail to Taxonomy', 'taxonomy_image_plugin' ) . '</span>';
 	}
 	return $fields;
 }
@@ -267,7 +269,15 @@ function taxonomy_image_plugin_ajax_gateway( $nonce_slug ) {
 			'why' => __( 'term_taxonomy_id not sent.', 'taxonomy_image_plugin' ),
 		) );
 	}
-	
+
+	/* Check value of $_POST['term_id'] */
+	if ( empty( $_POST['term_taxonomy_id'] ) ) {
+		taxonomy_image_plugin_json_response( array(
+			'status' => 'bad',
+			'why' => __( 'term_taxonomy_id is empty.', 'taxonomy_image_plugin' ),
+		) );
+	}
+
 	return (int) $_POST['term_taxonomy_id'];
 }
 
@@ -483,6 +493,8 @@ function taxonomy_image_plugin_control_image( $term_id, $taxonomy ) {
 		sprintf( esc_attr__( 'Remove image from this %s.', 'taxonomy_image_plugin' ), $name ),
 		);
 	return <<<EOF
+
+
 <div id="taxonomy-image-control-{$term_tax_id}" class="taxonomy-image-control hide-if-no-js">
 	<a class="{$class['image']}" href="{$href_library}" title="{$text[4]}"><img id="{$id}" src="{$img}" alt="" /></a>
 	<a class="{$class['upload']}" href="{$href_upload}" title="{$text[2]}">{$text[1]}</a>
@@ -501,19 +513,15 @@ EOF;
  */
 function taxonomy_image_plugin_media_upload_popup_js() {
 	wp_enqueue_script( 'taxonomy-images-media-upload-popup', TAXONOMY_IMAGE_PLUGIN_URL . 'media-upload-popup.js', array( 'jquery' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
-	$term_id = 0;
+	$vars = array(
+		'term_taxonomy_id' => 0
+		);
 	if ( isset( $_GET[ TAXONOMY_IMAGE_PLUGIN_SLUG ] ) ) {
-		$term_id = (int) $_GET[ TAXONOMY_IMAGE_PLUGIN_SLUG ];
+		$vars['term_taxonomy_id'] = absint( $_GET[ TAXONOMY_IMAGE_PLUGIN_SLUG ] );
 	}
-	wp_localize_script( 'taxonomy-images-media-upload-popup', 'taxonomyImagesPlugin', array (
-		'attr' => TAXONOMY_IMAGE_PLUGIN_SLUG . '=' . $term_id, // RED FLAG!!!!!!!!!!!!
-		'nonce' => wp_create_nonce( 'taxonomy-image-plugin-create-association' ),
-		'locale' => 'taxonomy_image_plugin',
-		'attr_slug' => TAXONOMY_IMAGE_PLUGIN_SLUG,
-		'term_taxonomy_id' => $term_id
-		) );
+	wp_localize_script( 'taxonomy-images-media-upload-popup', 'taxonomyImagesPlugin', $vars );
 }
-add_action( 'admin_print_scripts-media-upload-popup', 'taxonomy_image_plugin_media_upload_popup_js', 2000 );
+add_action( 'admin_print_scripts-media-upload-popup', 'taxonomy_image_plugin_media_upload_popup_js' );
 
 
 /**
