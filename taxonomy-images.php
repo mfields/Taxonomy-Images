@@ -68,7 +68,7 @@ add_action( 'init', 'taxonomy_image_plugin_add_image_size' );
  */
 function taxonomy_image_plugin_add_image_to_taxonomy_button( $fields, $post ) {
 	if ( isset( $fields['image-size'] ) && isset( $post->ID ) ) {
-		$fields['image-size']['extra_rows']['taxonomy-image-plugin-button']['html'] = '<a rel="' . esc_attr( $post->ID ) '" class="button-primary taxonomy_image_plugin" href="#" onclick="return false;">' . esc_html__( 'Add Thumbnail to Taxonomy', 'taxonomy_image_plugin' ) . '</a>';
+		$fields['image-size']['extra_rows']['taxonomy-image-plugin-button']['html'] = '<a rel="' . esc_attr( $post->ID ) . '" class="button-primary taxonomy-image-button" href="#" onclick="return false;">' . esc_html__( 'Add Thumbnail to Taxonomy', 'taxonomy_image_plugin' ) . '</a>';
 	}
 	return $fields;
 }
@@ -543,6 +543,19 @@ function taxonomy_image_plugin_edit_tags_css() {
 	wp_enqueue_style( 'taxonomy-image-plugin-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'admin.css', array(), TAXONOMY_IMAGE_PLUGIN_VERSION, 'screen' );
 }
 add_action( 'admin_print_styles-edit-tags.php', 'taxonomy_image_plugin_edit_tags_css' );
+
+
+/**
+ * Custom styles for the media upload modal.
+ *
+ * @return    void
+ * @access    private
+ */
+function taxonomy_image_plugin_media_upload_css() {
+	wp_enqueue_style( 'taxonomy-image-plugin-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'admin.css', array(), TAXONOMY_IMAGE_PLUGIN_VERSION, 'screen' );
+}
+add_action( 'admin_print_styles-media-upload-popup', 'taxonomy_image_plugin_media_upload_css' );
+
 
 
 /**
