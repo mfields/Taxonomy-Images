@@ -1,10 +1,15 @@
 jQuery( document ).ready( function( $ ) {
 
 	/* Return early if upload modal was NOT opened from edit-tags.php. */
-	if ( 'undefined' == typeof taxonomyImagesPlugin ) {
+	var win = window.dialogArguments || opener || parent || top;
+	if ( 'undefined' == typeof win.taxonomyImagesPluginEditTags ) {
 		return;
 	}
 
+	
+	console.log( win );
+	console.log( win.taxonomyImagesPluginEditTags );
+	
 	/* Only show button when media upload modal is opened from edit-tags.php. */
 	$( '.taxonomy-image-button' ).show();
 

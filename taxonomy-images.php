@@ -501,16 +501,17 @@ EOF;
  */
 function taxonomy_image_plugin_media_upload_popup_js() {
 	wp_enqueue_script( 'taxonomy-images-media-upload-popup', TAXONOMY_IMAGE_PLUGIN_URL . 'media-upload-popup.js', array( 'jquery' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
+	$term_id = 0;
 	if ( isset( $_GET[ TAXONOMY_IMAGE_PLUGIN_SLUG ] ) ) {
 		$term_id = (int) $_GET[ TAXONOMY_IMAGE_PLUGIN_SLUG ];
-		wp_localize_script( 'taxonomy-images-media-upload-popup', 'taxonomyImagesPlugin', array (
-			'attr' => TAXONOMY_IMAGE_PLUGIN_SLUG . '=' . $term_id, // RED FLAG!!!!!!!!!!!!
-			'nonce' => wp_create_nonce( 'taxonomy-image-plugin-create-association' ),
-			'locale' => 'taxonomy_image_plugin',
-			'attr_slug' => TAXONOMY_IMAGE_PLUGIN_SLUG,
-			'term_taxonomy_id' => $term_id
-			) );
 	}
+	wp_localize_script( 'taxonomy-images-media-upload-popup', 'taxonomyImagesPlugin', array (
+		'attr' => TAXONOMY_IMAGE_PLUGIN_SLUG . '=' . $term_id, // RED FLAG!!!!!!!!!!!!
+		'nonce' => wp_create_nonce( 'taxonomy-image-plugin-create-association' ),
+		'locale' => 'taxonomy_image_plugin',
+		'attr_slug' => TAXONOMY_IMAGE_PLUGIN_SLUG,
+		'term_taxonomy_id' => $term_id
+		) );
 }
 add_action( 'admin_print_scripts-media-upload-popup', 'taxonomy_image_plugin_media_upload_popup_js', 2000 );
 
@@ -523,7 +524,7 @@ add_action( 'admin_print_scripts-media-upload-popup', 'taxonomy_image_plugin_med
  */
 function taxonomy_image_plugin_edit_tags_js() {
 	wp_enqueue_script( 'taxonomy-image-plugin-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'edit-tags.js', array( 'jquery', 'thickbox' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
-	wp_localize_script( 'taxonomy-image-plugin-edit-tags', 'taxonomyImagesPlugin', array (
+	wp_localize_script( 'taxonomy-image-plugin-edit-tags', 'taxonomyImagesPluginEditTags', array (
 		'nonce' => wp_create_nonce( 'taxonomy-image-plugin-remove-association' ),
 		'img_src' => TAXONOMY_IMAGE_PLUGIN_URL . 'default.png'
 		) );
