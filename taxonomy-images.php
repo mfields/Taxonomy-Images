@@ -67,9 +67,9 @@ add_action( 'init', 'taxonomy_image_plugin_add_image_size' );
  * @alter     2011-03-03
  */
 function taxonomy_image_plugin_add_image_to_taxonomy_button( $fields, $post ) {
-	if ( isset( $fields['image-size'] ) ) {
+	if ( isset( $fields['image-size'] ) && isset( $post->ID ) ) {
 		$fields['image-size']['label'] = '';
-		$fields['image-size']['extra_rows']['taxonomy-image-plugin-button']['html'] = '<a rel="' . (int) $post->ID . '" class="button-primary taxonomy_image_plugin" href="#" onclick="return false;">' . esc_html__( 'Add Thumbnail to Taxonomy', 'taxonomy_image_plugin' ) . '</a>';
+		$fields['image-size']['extra_rows']['taxonomy-image-plugin-button']['html'] = '<a rel="' . esc_attr( $post->ID ) '" class="button-primary taxonomy_image_plugin" href="#" onclick="return false;">' . esc_html__( 'Add Thumbnail to Taxonomy', 'taxonomy_image_plugin' ) . '</a>';
 	}
 	return $fields;
 }
