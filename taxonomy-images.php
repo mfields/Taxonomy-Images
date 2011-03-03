@@ -522,8 +522,7 @@ add_action( 'admin_print_scripts-media-upload-popup', 'taxonomy_image_plugin_med
  * @access    private
  */
 function taxonomy_image_plugin_edit_tags_js() {
-	wp_enqueue_script( 'thickbox' );
-	wp_enqueue_script( 'taxonomy-image-plugin-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'edit-tags.js', array( 'jquery' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
+	wp_enqueue_script( 'taxonomy-image-plugin-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'edit-tags.js', array( 'jquery', 'thickbox' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
 	wp_localize_script( 'taxonomy-image-plugin-edit-tags', 'taxonomyImagesPlugin', array (
 		'nonce' => wp_create_nonce( 'taxonomy-image-plugin-remove-association' ),
 		'img_src' => TAXONOMY_IMAGE_PLUGIN_URL . 'default.png'
