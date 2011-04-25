@@ -1,1 +1,19 @@
-.taxonomy-image-button { display:none; }.taxonomy-image-thumbnail { display:block; height:77px; width:77px; overflow:hidden;text-align:center; margin-bottom:3px; }.taxonomy-image-control .control { display:block; float:left; text-indent:-9999em; width:15px; height:15px; background-image: url( controls.png ); background-repeat:no-repeat;}.taxonomy-image-control .upload { background-position: 0 0; }.taxonomy-image-control .remove { background-position: -30px 0; }.taxonomy-image-control .library { background-position: -60px 0; }.taxonomy-image-control .hide { visibility:hidden; }.taxonomy-image-control .show { visibility:visible; }
+.taxonomy-image-button { display:none; }
+.taxonomy-image-thumbnail { display:block; height:77px; width:77px; overflow:hidden;text-align:center; margin-bottom:3px; }
+.taxonomy-image-control .control {
+	display:block;
+	float:left;
+	text-indent:-9999em;
+	width:15px;
+	height:15px;
+	background:url( controls.png );
+	background-repeat:no-repeat;
+}
+.taxonomy-image-control .control:hover { cursor:pointer; }
+.taxonomy-image-control .upload { background-position: 0 0; }
+.taxonomy-image-control .upload:hover { background-position: -15px 0 }
+.taxonomy-image-control .remove { background-position:-30px 0; }
+.taxonomy-image-control .remove:hover { background-position:-45px 0; }
+.taxonomy-image-control .library { background-position: -60px 0; }
+.taxonomy-image-control .hide { visibility:hidden; }
+.taxonomy-image-control .show { visibility:visible; }
