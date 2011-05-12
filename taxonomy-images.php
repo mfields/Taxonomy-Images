@@ -535,27 +535,16 @@ add_action( 'admin_print_scripts-edit-tags.php', 'taxonomy_image_plugin_edit_tag
 
 
 /**
- * Custom styles for wp-admin/edit-tags.php
+ * Custom styles.
  *
- * @return    void
+ * @since     2011-05-12
  * @access    private
  */
-function taxonomy_image_plugin_edit_tags_css() {
-	wp_enqueue_style( 'taxonomy-image-plugin-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'admin.css', array( 'thickbox' ), TAXONOMY_IMAGE_PLUGIN_VERSION, 'screen' );
-}
-add_action( 'admin_print_styles-edit-tags.php', 'taxonomy_image_plugin_edit_tags_css' );
-
-
-/**
- * Custom styles for the media upload modal.
- *
- * @return    void
- * @access    private
- */
-function taxonomy_image_plugin_media_upload_css() {
+function taxonomy_image_plugin_admin_css() {
 	wp_enqueue_style( 'taxonomy-image-plugin-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'admin.css', array(), TAXONOMY_IMAGE_PLUGIN_VERSION, 'screen' );
 }
-add_action( 'admin_print_styles-media-upload-popup', 'taxonomy_image_plugin_media_upload_css' );
+add_action( 'admin_print_styles-edit-tags.php', 'taxonomy_image_plugin_admin_css' );
+add_action( 'admin_print_styles-media-upload-popup', 'taxonomy_image_plugin_admin_css' );
 
 
 /**
