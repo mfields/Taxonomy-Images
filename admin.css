@@ -1,4 +1,10 @@
-.taxonomy-image-button { display:none; }
+.taxonomy-images-modal .taxonomy-image-button {
+	display:inline !important;
+}
+.taxonomy-images-modal .savesend input {
+	display:none !important;
+}
+
 .taxonomy-image-thumbnail { display:block; height:77px; width:77px; overflow:hidden;text-align:center; margin-bottom:3px; }
 .taxonomy-image-control .control {
 	display:block;

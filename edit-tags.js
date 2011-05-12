@@ -15,7 +15,7 @@ jQuery( document ).ready( function( $ ) {
 
 	$( '.taxonomy-image-control .remove' ).click( function () {
 		var term_taxonomy_id = parseInt( $( this ).attr( 'rel' ) );
-		$.ajax({
+		$.ajax( {
 			url: ajaxurl,
 			type: "POST",
 			dataType: 'json',
@@ -35,7 +35,7 @@ jQuery( document ).ready( function( $ ) {
 					alert( data.why );
 				}
 			}
-		});
+		} );
 		return false;
 	} );
 } );

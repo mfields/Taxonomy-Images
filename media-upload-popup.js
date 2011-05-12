@@ -1,45 +1,42 @@
+var TaxonomyImagesCreateAssociation;
+
 jQuery( document ).ready( function( $ ) {
+	var ID = 0, below;
 
-	var tt_id = TaxonomyImagesGetTT_ID();
+	/* Get window that opened the thickbox. */
+	below = window.dialogArguments || opener || parent || top;
 
-	if ( isNaN( tt_id ) || 0 == tt_id ) {
-		return;
-	}
-
-	/* Add hidden input to search form. */
-	if ( tt_id > 0 ) {
-		$( '#filter' ).prepend( '<input type="hidden" name="taxonomy_images_plugin" value="' + tt_id + '" />' );
-	}
-
-	/* Show taxonomy button. */
-	$( '.taxonomy-image-button' ).css( 'display', 'inline' );
-
-	/* Hide "Insert into Post" button */
-	$( '.savesend input' ).hide();
-
-} );
-
-var TaxonomyImagesGetTT_ID, TaxonomyImagesCreateAssociation;
-
-( function( $ ) {
-	TaxonomyImagesGetTT_ID = function() {
-		var Taxonomy_Images_Window = window.dialogArguments || opener || parent || top;
-		if ( 'undefined' == typeof Taxonomy_Images_Window.taxonomyImagesPlugin ) {
-			return 0;
+	/* Set the value of ID. */
+	if ( null !== below && 'taxonomyImagesPlugin' in below && 'tt_id' in below.taxonomyImagesPlugin ) {
+		ID = parseInt( below.taxonomyImagesPlugin.tt_id );
+		if ( isNaN( ID ) ) {
+			ID = 0;
 		}
-		if ( 'undefined' == typeof Taxonomy_Images_Window.taxonomyImagesPlugin.tt_id ) {
-			return 0;
-		}
-		return parseInt( Taxonomy_Images_Window.taxonomyImagesPlugin.tt_id );
 	}
-} )( jQuery );
 
-( function( $ ) {
-	TaxonomyImagesCreateAssociation = function( image_id, nonce ) {
-		var tt_id = TaxonomyImagesGetTT_ID();
-		if ( isNaN( tt_id ) || 0 == tt_id ) {
+	if ( 0 < ID ) {
+		var buttons = $( '.taxonomy-image-button' );
+		$( 'body' ).addClass( 'taxonomy-images-modal' );
+
+		/* Add hidden input to search form. */
+		$( '#filter' ).prepend( '<input type="hidden" name="taxonomy_images_plugin" value="' + ID + '" />' );
+	}
+
+
+	TaxonomyImagesCreateAssociation = function( el, image_id, nonce ) {
+		var button, text, selector;
+		if ( 0 == ID ) {
 			return;
 		}
+
+		button = $( el );
+		button.text( 'Adding ...' );
+
+		/* Show all other buttons. */
+		buttons.each( function( i, e ) {
+			$( e ).show();
+		} );
+
 		$.ajax( {
 			url      : ajaxurl,
 			type     : "POST",
@@ -48,11 +45,11 @@ var TaxonomyImagesGetTT_ID, TaxonomyImagesCreateAssociation;
 				'action'           : 'taxonomy_image_create_association',
 				'wp_nonce'         : nonce,
 				'attachment_id'    : parseInt( image_id ),
-				'term_taxonomy_id' : parseInt( tt_id ),
+				'term_taxonomy_id' : parseInt( ID ),
 				},
 			success: function ( response ) {
 				if ( 'good' === response.status ) {
-					var selector = parent.document.getElementById( 'taxonomy-image-control-' + tt_id );
+					var selector = parent.document.getElementById( 'taxonomy-image-control-' + ID );
 
 					/* Update the image on the screen below */
 					$( selector ).find( '.taxonomy-image-thumbnail img' ).each( function ( i, e ) {
@@ -64,15 +61,18 @@ var TaxonomyImagesGetTT_ID, TaxonomyImagesCreateAssociation;
 						$( e ).removeClass( 'hide' );
 					} );
 
+					button.fadeOut( 200, function() {
+						$( this ).show().text( 'Successfully added!' );
+					} );
+
 					/* Close Thickbox */
-					self.parent.tb_remove();
+				//	self.parent.tb_remove();
 				}
 				else if ( 'bad' === response.status ) {
 					alert( response.why );
 				}
 			}
-		});
+		} );
 		return false;
 	}
-} )( jQuery );
-
+} );

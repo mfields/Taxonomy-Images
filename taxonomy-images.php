@@ -3,7 +3,7 @@
 Plugin Name:          Taxonomy Images
 Plugin URI:           http://wordpress.mfields.org/plugins/taxonomy-images/
 Description:          The Taxonomy Images plugin enables you to associate images from your Media Library to categories, tags and taxonomies.
-Version:              0.6 - ALPHA
+Version:              0.7 - ALPHA
 Author:               Michael Fields
 Author URI:           http://wordpress.mfields.org/
 License:              GPLv2
@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 define( 'TAXONOMY_IMAGE_PLUGIN_URL',        plugin_dir_url( __FILE__ ) );
 define( 'TAXONOMY_IMAGE_PLUGIN_SLUG',       'taxonomy_images_plugin' );
-define( 'TAXONOMY_IMAGE_PLUGIN_VERSION',    '0.6' );
+define( 'TAXONOMY_IMAGE_PLUGIN_VERSION',    '0.7' );
 define( 'TAXONOMY_IMAGE_PLUGIN_PERMISSION', 'manage_categories' );
 
 $taxonomy_image_plugin_image = array(
@@ -70,9 +70,9 @@ function taxonomy_image_plugin_add_image_to_taxonomy_button( $fields, $post ) {
 	if ( isset( $fields['image-size'] ) && isset( $post->ID ) ) {
 		$image_id = (int) $post->ID;
 		$nonce = wp_create_nonce( 'taxonomy-image-plugin-create-association' );
-		$fields['image-size']['extra_rows']['taxonomy-image-plugin-button']['html'] = '<span type="submit"  class="button taxonomy-image-button" onclick="TaxonomyImagesCreateAssociation( ' . $image_id . ', \'' . $nonce . '\' );">' . esc_html__( 'Add Thumbnail to Taxonomy', 'taxonomy_image_plugin' ) . '</span>';
+		$fields['image-size']['extra_rows']['taxonomy-image-plugin-button']['html'] = '<span type="submit" class="button taxonomy-image-button" style="display:none;" onclick="TaxonomyImagesCreateAssociation( this, ' . $image_id . ', \'' . $nonce . '\' );">' . esc_html__( 'Add Thumbnail to Taxonomy', 'taxonomy_image_plugin' ) . '</span>';
 	}
-	return $fields; #name="' . esc_attr( 'send[' . $image_id . ']' ) . '"
+	return $fields;
 }
 add_filter( 'attachment_fields_to_edit', 'taxonomy_image_plugin_add_image_to_taxonomy_button', 20, 2 );
 
@@ -514,13 +514,6 @@ EOF;
  */
 function taxonomy_image_plugin_media_upload_popup_js() {
 	wp_enqueue_script( 'taxonomy-images-media-upload-popup', TAXONOMY_IMAGE_PLUGIN_URL . 'media-upload-popup.js', array( 'jquery' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
-	/*
-	$vars = array( 'term_taxonomy_id' => 0 );
-	if ( isset( $_GET[ TAXONOMY_IMAGE_PLUGIN_SLUG ] ) ) {
-		$vars['term_taxonomy_id'] = absint( $_GET[ TAXONOMY_IMAGE_PLUGIN_SLUG ] );
-	}
-	wp_localize_script( 'taxonomy-images-media-upload-popup', 'taxonomyImagesPlugin', $vars );
-	*/
 }
 add_action( 'admin_print_scripts-media-upload-popup', 'taxonomy_image_plugin_media_upload_popup_js' );
 
