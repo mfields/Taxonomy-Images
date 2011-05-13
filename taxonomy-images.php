@@ -526,6 +526,12 @@ add_action( 'admin_print_styles-edit-tags.php', 'taxonomy_image_plugin_css_admin
 add_action( 'admin_print_styles-media-upload-popup', 'taxonomy_image_plugin_css_admin' );
 
 
+/**
+ * Thickbox styles.
+ *
+ * @since     2011-05-12
+ * @access    private
+ */
 function taxonomy_image_plugin_css_thickbox() {
 	wp_enqueue_style( 'thickbox' );
 }
