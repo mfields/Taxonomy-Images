@@ -1,6 +1,7 @@
 .taxonomy-images-modal .taxonomy-image-button {
 	display:inline !important;
 }
+.taxonomy-images-modal #tab-type_url,
 .taxonomy-images-modal .savesend input {
 	display:none !important;
 }

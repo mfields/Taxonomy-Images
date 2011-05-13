@@ -165,26 +165,6 @@ function taxonomy_image_plugin_get_image_src( $id ) {
 
 
 /*
- * Remove the uri tab from the media upload box.
- *
- * This plugin only supports associating images from the media library.
- * Leaving this tab will only confuse users.
- *
- * @param     array     An associative array representing the navigation in the modal media box.
- * @return    array     Altered navigation list if modal media box is accessed via this script.
- *
- * @access    private
- */
-function taxonomy_image_plugin_media_upload_remove_url_tab( $tabs ) {
-	if ( isset( $_GET[TAXONOMY_IMAGE_PLUGIN_SLUG] ) ) {
-		unset( $tabs['type_url'] );
-	}
-	return $tabs;
-}
-add_filter( 'media_upload_tabs', 'taxonomy_image_plugin_media_upload_remove_url_tab' );
-
-
-/*
  * Ensures that all key/value pairs are positive integers.
  * This filter will discard all zero and negative values.
  *
