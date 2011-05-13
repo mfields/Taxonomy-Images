@@ -175,12 +175,11 @@ function taxonomy_image_plugin_get_image_src( $id ) {
  */
 function taxonomy_image_plugin_sanitize_associations( $associations ) {
 	$o = array();
-	foreach ( (array) $associations as $term_taxonomy_id => $image_id ) {
-		$term_taxonomy_id = (int) $term_taxonomy_id;
-		$image_id = (int) $image_id;
-		/* Object IDs cannot be zero. */
-		if ( 0 < $term_taxonomy_id && 0 < $image_id ) {
-			$o[ $term_taxonomy_id ] = $image_id;
+	foreach ( (array) $associations as $tt_id => $im_id ) {
+		$tt_id = absint( $tt_id );
+		$im_id = absint( $im_id );
+		if ( 0 < $tt_id && 0 < $im_id ) {
+			$o[$tt_id] = $im_id;
 		}
 	}
 	return $o;
