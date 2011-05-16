@@ -29,10 +29,12 @@ define( 'TAXONOMY_IMAGE_PLUGIN_SLUG',       'taxonomy_images_plugin' );
 define( 'TAXONOMY_IMAGE_PLUGIN_VERSION',    '0.7' );
 define( 'TAXONOMY_IMAGE_PLUGIN_PERMISSION', 'manage_categories' );
 
+
 $taxonomy_image_plugin_image = array(
 	'name' => 'detail',
 	'size' => array( 75, 75, true )
 	);
+
 
 /**
  * Register custom image size with WordPress.
@@ -187,6 +189,46 @@ function taxonomy_image_plugin_sanitize_associations( $associations ) {
 
 
 /**
+ * Get settings.
+ *
+ * @return    array     User defined settings.
+ *
+ * @access    public
+ * @since     2011-05-15
+ */
+function taxonomy_images_get_settings() {
+	$defaults = array( 'taxonomies' => array() );
+	$settings = (array) get_option( 'taxonomy_images' );
+	$settings = array_merge( $defaults, $settings );
+	return _taxonomy_images_clean_settings( $settings );
+}
+
+
+/**
+ * Sanitize Settings.
+ *
+ * @param     array     Use supplied settings.
+ * @return    array     Clean settings.
+ *
+ * @access    private
+ * @since     2011-05-15
+ */
+function taxonomy_image_plugin_sanitize_settings( $dirty ) {
+	$clean = array();
+	foreach ( (array) $dirty as $key => $setting ) {
+		if ( 'taxonomies' == $key ) {
+			foreach ( (array) $dirty as $taxonomy ) {
+				if ( taxonomy_exists( $taxonomy ) ) {
+					$clean['taxonomies'][] = $taxonomy;
+				}
+			}
+		}
+	}
+	return $clean;
+}
+
+
+/**
  * JSON Respose.
  * Terminate script execution.
  *
@@ -205,14 +247,106 @@ function taxonomy_image_plugin_json_response( $response ) {
 /**
  * Register settings with WordPress.
  *
- * @return    void
+ * This plugin will store to sets of settings in the
+ * options table. The first is named 'taxonomy_image_plugin'
+ * and stores the associations between terms and images. The
+ * keys in this array represent the term_taxonomy_id of the
+ * term while the value represents the ID of the image
+ * attachment.
+ *
+ * The second setting is used to store everything else. As of
+ * version 0.7 it has one key named 'taxonomies' which is a
+ * whitelist of taxonomy names that support the image UI.
  *
  * @access    private
  */
-function taxonomy_image_plugin_register_setting() {
-	register_setting( 'taxonomy_image_plugin', 'taxonomy_image_plugin', 'taxonomy_image_plugin_sanitize_associations' );
+function taxonomy_image_plugin_register_settings() {
+	register_setting(
+		'taxonomy_image_plugin',
+		'taxonomy_image_plugin',
+		'taxonomy_image_plugin_sanitize_associations'
+		);
+	register_setting(
+		'taxonomy_image_plugin_settings',
+		'taxonomy_image_plugin_settings',
+		'taxonomy_image_plugin_sanitize_settings'
+		);
+	add_settings_section(
+		'taxonomy_image_plugin_taxonomies',
+		__( 'Supported Taxonomies', 'taxonomy_images' ),
+		'__return_false',
+		'taxonomy_image_plugin'
+		);
+	add_settings_field(
+		'taxonomy-images',
+		__( 'Taxonomies', 'taxonomy_images' ),
+		'taxonomy_images_control_taxonomies',
+		'taxonomy_image_plugin',
+		'taxonomy_image_plugin_taxonomies'
+		);
 }
-add_action( 'admin_init', 'taxonomy_image_plugin_register_setting' );
+add_action( 'admin_init', 'taxonomy_image_plugin_register_settings' );
+
+
+/**
+ * Create the admin menu link.
+ *
+ * @return    void
+ *
+ * @access    private
+ * @since     2011-05-15
+ */
+function taxonomy_images_settings_menu() {
+	add_options_page(
+		__( 'Taxonomy Images', 'taxonomy-images' ),
+		__( 'Taxonomy Images', 'taxonomy-images' ),
+		'manage_options',
+		'taxonomy_image_plugin',
+		'taxonomy_images_settings_page'
+		);
+}
+add_action( 'admin_menu', 'taxonomy_images_settings_menu' );
+
+
+/**
+ * Display the admin settings page.
+ *
+ * @return    void
+ *
+ * @access    private
+ * @since     2011-05-15
+ */
+function taxonomy_images_settings_page() {
+	print "\n" . '<div>';
+	print "\n" . '<h2>' . __( 'Taxonomy Images Plugin Settings', 'taxonomy_images' ) . '</h2>';
+	print "\n" . '<form action="options.php" method="post">';
+
+	settings_fields( 'taxonomy_image_plugin' );
+	do_settings_sections( 'taxonomy_image_plugin' );
+
+	print "\n" . '<input name="Submit" type="submit" value="' . esc_attr__( 'Save Changes', 'taxonomy_images' ) . '" />';
+	print "\n" . '</form></div>';
+}
+
+
+function taxonomy_images_control_taxonomies() {
+	$taxonomies = get_taxonomies( array(), 'objects' );
+	foreach( (array) $taxonomies as $taxonomy ) {
+		if ( ! isset( $taxonomy->name ) ) {
+			continue;
+		}
+		if ( ! isset( $taxonomy->label ) ) {
+			continue;
+		}
+		if ( ! isset( $taxonomy->show_ui ) || empty( $taxonomy->show_ui ) ) {
+			continue;
+		}
+		$id = 'taxonomy-images-' . $taxonomy->name;
+		print "\n" . '<p><label for="' . esc_attr( $id ) . '">';
+		print '<input id="' . esc_attr( $id ) . '" type="checkbox" name="taxonomy-images-settings[taxonomies][]" value="' . esc_attr( $taxonomy->name ) . '">';
+		print ' ' . esc_html( $taxonomy->label ) . '</label></p>';
+	}
+}
 
 
 function taxonomy_image_plugin_ajax_gateway( $nonce_slug ) {
