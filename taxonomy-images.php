@@ -25,9 +25,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 define( 'TAXONOMY_IMAGE_PLUGIN_URL',        plugin_dir_url( __FILE__ ) );
+define( 'ARTPRESS_DIR',                     trailingslashit( dirname( __FILE__ ) ) );
 define( 'TAXONOMY_IMAGE_PLUGIN_VERSION',    '0.7' );
 define( 'TAXONOMY_IMAGE_PLUGIN_PERMISSION', 'manage_categories' );
 
+require_once( ARTPRESS_DIR . 'deprecated.php' );
 
 $taxonomy_image_plugin_image = array(
 	'name' => 'detail',
@@ -79,6 +81,8 @@ add_filter( 'attachment_fields_to_edit', 'taxonomy_image_plugin_add_image_to_tax
 
 
 /**
+ * Get Image Source
+ *
  * Return a raw uri to a custom image size.
  *
  * If size doesn't exist, attempt to create a resized version.
@@ -165,7 +169,9 @@ function taxonomy_image_plugin_get_image_src( $id ) {
 }
 
 
-/*
+/**
+ * Sanitize Associations
+ *
  * Ensures that all key/value pairs are positive integers.
  * This filter will discard all zero and negative values.
  *
@@ -188,58 +194,38 @@ function taxonomy_image_plugin_sanitize_associations( $associations ) {
 
 
 /**
- * Get settings.
- *
- * @return    array     User defined settings.
- *
- * @access    public
- * @since     2011-05-15
- */
-function taxonomy_images_get_settings() {
-	$defaults = array( 'taxonomies' => array() );
-	$settings = (array) get_option( 'taxonomy_images' );
-	$settings = array_merge( $defaults, $settings );
-	return _taxonomy_images_clean_settings( $settings );
-}
-
-
-/**
  * Sanitize Settings.
  *
- * @param     array     Use supplied settings.
- * @return    array     Clean settings.
+ * A callback for the WordPress Settings API.
+ * This function is responsible for ensuring that
+ * all values within the 'taxonomy_image_plugin_settings'
+ * options are of the appropriate type.
+ *
+ * @param     array     Unknown.
+ * @return    array     Multi-dimensional array of sanitized settings.
  *
  * @access    private
  * @since     2011-05-15
  */
-function taxonomy_image_plugin_sanitize_settings( $dirty ) {
+function taxonomy_image_plugin_settings_sanitize( $dirty ) {
 	$clean = array();
-	foreach ( (array) $dirty as $key => $setting ) {
-		if ( 'taxonomies' == $key ) {
-			foreach ( (array) $dirty as $taxonomy ) {
-				if ( taxonomy_exists( $taxonomy ) ) {
-					$clean['taxonomies'][] = $taxonomy;
-				}
+	if ( isset( $dirty['taxonomies'] ) ) {
+		$taxonomies = get_taxonomies();
+		foreach ( (array) $dirty['taxonomies'] as $taxonomy ) {
+			if ( in_array( $taxonomy, $taxonomies ) ) {
+				$clean['taxonomies'][] = $taxonomy;
 			}
 		}
 	}
+
+	$message = __( 'Taxonomies have been updated', 'taxonomy-images' );
+	if ( empty( $clean ) ) {
+		$message = __( 'All taxonomies have been removed', 'taxonomy-images' );
+	}
+
+	add_settings_error( 'taxonomy_image_plugin_settings', 'taxonomies_updated', $message, 'updated' );
+
 	return $clean;
-}
-
-
-/**
- * JSON Respose.
- * Terminate script execution.
- *
- * @param     array     Associative array of values to be encoded in JSON.
- * @return    void
- *
- * @access    private
- */
-function taxonomy_image_plugin_json_response( $response ) {
-	header( 'Content-type: application/jsonrequest' );
-	print json_encode( $response );
-	exit;
 }
 
 
@@ -254,8 +240,10 @@ function taxonomy_image_plugin_json_response( $response ) {
  * attachment.
  *
  * The second setting is used to store everything else. As of
- * version 0.7 it has one key named 'taxonomies' which is a
- * whitelist of taxonomy names that support the image UI.
+ * version 0.7 it has one key named 'taxonomies' whichi is a
+ * flat array consisting of taxonomy names representing a
+ * black-list of registered taxonomies. These taxonomies will
+ * NOT be given an image UI.
  *
  * @access    private
  */
@@ -268,20 +256,20 @@ function taxonomy_image_plugin_register_settings() {
 	register_setting(
 		'taxonomy_image_plugin_settings',
 		'taxonomy_image_plugin_settings',
-		'taxonomy_image_plugin_sanitize_settings'
+		'taxonomy_image_plugin_settings_sanitize'
 		);
 	add_settings_section(
-		'taxonomy_image_plugin_taxonomies',
-		__( 'Supported Taxonomies', 'taxonomy_images' ),
+		'taxonomy_image_plugin_settings',
+		__( 'Settings', 'taxonomy_images' ),
 		'__return_false',
-		'taxonomy_image_plugin'
+		'taxonomy_image_plugin_settings'
 		);
 	add_settings_field(
 		'taxonomy-images',
-		__( 'Taxonomies', 'taxonomy_images' ),
-		'taxonomy_images_control_taxonomies',
-		'taxonomy_image_plugin',
-		'taxonomy_image_plugin_taxonomies'
+		__( 'Exclude Taxonomies', 'taxonomy_images' ),
+		'taxonomy_image_plugin_control_taxonomies',
+		'taxonomy_image_plugin_settings',
+		'taxonomy_image_plugin_settings'
 		);
 }
 add_action( 'admin_init', 'taxonomy_image_plugin_register_settings' );
@@ -300,8 +288,8 @@ function taxonomy_images_settings_menu() {
 		__( 'Taxonomy Images', 'taxonomy-images' ),
 		__( 'Taxonomy Images', 'taxonomy-images' ),
 		'manage_options',
-		'taxonomy_image_plugin',
-		'taxonomy_images_settings_page'
+		'taxonomy_image_plugin_settings',
+		'taxonomy_image_plugin_settings_page'
 		);
 }
 add_action( 'admin_menu', 'taxonomy_images_settings_menu' );
@@ -315,20 +303,23 @@ add_action( 'admin_menu', 'taxonomy_images_settings_menu' );
  * @access    private
  * @since     2011-05-15
  */
-function taxonomy_images_settings_page() {
-	print "\n" . '<div>';
+function taxonomy_image_plugin_settings_page() {
+	print "\n" . '<div class="wrap">';
+	print "\n" . '<div id="icon-options-general" class="icon32"><br /></div>';
 	print "\n" . '<h2>' . __( 'Taxonomy Images Plugin Settings', 'taxonomy_images' ) . '</h2>';
+	print "\n" . '<div id="taxonomy-images">';
 	print "\n" . '<form action="options.php" method="post">';
 
-	settings_fields( 'taxonomy_image_plugin' );
-	do_settings_sections( 'taxonomy_image_plugin' );
+	settings_fields( 'taxonomy_image_plugin_settings' );
+	do_settings_sections( 'taxonomy_image_plugin_settings' );
 
-	print "\n" . '<input name="Submit" type="submit" value="' . esc_attr__( 'Save Changes', 'taxonomy_images' ) . '" />';
-	print "\n" . '</form></div>';
+	print "\n" . '<div class="button-holder"><input name="Submit" type="submit" value="' . esc_attr__( 'Save Changes', 'taxonomy_images' ) . '" /></div>';
+	print "\n" . '</div></form></div>';
 }
 
 
-function taxonomy_images_control_taxonomies() {
+function taxonomy_image_plugin_control_taxonomies() {
+	$settings = get_option( 'taxonomy_image_plugin_settings' );
 	$taxonomies = get_taxonomies( array(), 'objects' );
 	foreach( (array) $taxonomies as $taxonomy ) {
 		if ( ! isset( $taxonomy->name ) ) {
@@ -341,10 +332,29 @@ function taxonomy_images_control_taxonomies() {
 			continue;
 		}
 		$id = 'taxonomy-images-' . $taxonomy->name;
+		$checked = '';
+		if ( isset( $settings['taxonomies'] ) && in_array( $taxonomy->name, (array) $settings['taxonomies'] ) ) {
+			$checked = ' checked="checked"';
+		}
 		print "\n" . '<p><label for="' . esc_attr( $id ) . '">';
-		print '<input id="' . esc_attr( $id ) . '" type="checkbox" name="taxonomy-images-settings[taxonomies][]" value="' . esc_attr( $taxonomy->name ) . '">';
+		print '<input' . $checked . ' id="' . esc_attr( $id ) . '" type="checkbox" name="taxonomy_image_plugin_settings[taxonomies][]" value="' . esc_attr( $taxonomy->name ) . '">';
 		print ' ' . esc_html( $taxonomy->label ) . '</label></p>';
 	}
+}
+
+
+/**
+ * JSON Respose.
+ * Terminates script execution.
+ *
+ * @param     array     Associative array of values to be encoded in JSON.
+ *
+ * @access    private
+ */
+function taxonomy_image_plugin_json_response( $response ) {
+	header( 'Content-type: application/jsonrequest' );
+	print json_encode( $response );
+	exit;
 }
 
 
@@ -657,6 +667,7 @@ function taxonomy_image_plugin_css_admin() {
 }
 add_action( 'admin_print_styles-edit-tags.php', 'taxonomy_image_plugin_css_admin' );
 add_action( 'admin_print_styles-media-upload-popup', 'taxonomy_image_plugin_css_admin' );
+add_action( 'admin_print_styles-settings_page_taxonomy_image_plugin_settings', 'taxonomy_image_plugin_css_admin' );
 
 
 /**
@@ -799,106 +810,3 @@ function taxonomy_images_plugin_image_list( $taxonomy = 'category', $context = '
 	}
 }
 add_action( 'taxonomy_images_plugin_image_list', 'taxonomy_images_plugin_image_list', 10, 4 );
-
-
-/**
- * Deprecated Shortcode.
- *
- * @return    void
- * @access    private
- */
-function taxonomy_images_plugin_shortcode_deprecated( $atts = array() ) { // DEPRECATED
-	$o = '';
-	$defaults = array(
-		'taxonomy' => 'category',
-		'size'     => 'detail',
-		'template' => 'list'
-		);
-
-	extract( shortcode_atts( $defaults, $atts ) );
-
-	/* No taxonomy defined return an html comment. */
-	if ( ! taxonomy_exists( $taxonomy ) ) {
-		$tax = strip_tags( trim( $taxonomy ) );
-		return '<!-- taxonomy_image_plugin error: Taxonomy "' . $taxonomy . '" is not defined.-->';
-	}
-
-	$terms = get_terms( $taxonomy );
-	$associations = taxonomy_image_plugin_get_associations( $refresh = false );
-	
-	if ( ! is_wp_error( $terms ) ) {
-		foreach( (array) $terms as $term ) {
-			$url         = get_term_link( $term, $term->taxonomy );
-			$title       = apply_filters( 'the_title', $term->name );
-			$title_attr  = esc_attr( $term->name . ' (' . $term->count . ')' );
-			$description = apply_filters( 'the_content', $term->description );
-			
-			$img = '';
-			if ( array_key_exists( $term->term_taxonomy_id, $associations ) ) {
-				$img = wp_get_attachment_image( $associations[$term->term_taxonomy_id], 'detail', false );
-			}
-			
-			if( $template === 'grid' ) {
-				$o.= "\n\t" . '<div class="taxonomy_image_plugin-' . $template . '">';
-				$o.= "\n\t\t" . '<a style="float:left;" title="' . $title_attr . '" href="' . $url . '">' . $img . '</a>';
-				$o.= "\n\t" . '</div>';
-			}
-			else {
-				$o.= "\n\t\t" . '<a title="' . $title_attr . '" href="' . $url . '">' . $img . '</a>';;
-				$o.= "\n\t\t" . '<h2 style="clear:none;margin-top:0;padding-top:0;line-height:1em;"><a href="' . $url . '">' . $title . '</a></h2>';
-				$o.= $description;
-				$o.= "\n\t" . '<div style="clear:both;height:1.5em"></div>';
-				$o.= "\n";
-			}
-		}
-	}
-	return $o;
-}
-add_shortcode( 'taxonomy_image_plugin', 'taxonomy_images_plugin_shortcode_deprecated' );
-
-
-/**
- * This class has been left for backward compatibility with versions
- * of this plugin 0.5 and under. Please do not use any methods or
- * properties directly in your theme.
- *
- * @access     private        This class is deprecated. Do not use!!!
- */
-class taxonomy_images_plugin {
-	public $settings = array();
-	public function __construct() {
-		$this->settings = taxonomy_image_plugin_get_associations();
-		add_action( 'taxonomy_image_plugin_print_image_html', array( &$this, 'print_image_html' ), 1, 3 );
-	}
-	public function get_thumb( $id ) {
-		return taxonomy_image_plugin_get_image_src( $id );
-	}
-	public function print_image_html( $size = 'medium', $term_tax_id = false, $title = true, $align = 'none' ) {
-		print $this->get_image_html( $size, $term_tax_id, $title, $align );
-	}
-	public function get_image_html( $size = 'medium', $term_tax_id = false, $title = true, $align = 'none' ) {
-		$o = '';
-		if ( false === $term_tax_id ) {
-			global $wp_query;
-			$obj = $wp_query->get_queried_object();
-			if ( isset( $obj->term_taxonomy_id ) ) {
-				$term_tax_id = $obj->term_taxonomy_id;
-			}
-			else {
-				return false;
-			}
-		}
-		$term_tax_id = (int) $term_tax_id;
-		if ( isset( $this->settings[ $term_tax_id ] ) ) {
-			$attachment_id = (int) $this->settings[ $term_tax_id ];
-			$alt           = get_post_meta( $attachment_id, '_wp_attachment_image_alt', true );
-			$attachment    = get_post( $attachment_id );
-			/* Just in case an attachment was deleted, but there is still a record for it in this plugins settings. */
-			if ( $attachment !== NULL ) {
-				$o = get_image_tag( $attachment_id, $alt, '', $align, $size );
-			}
-		}
-		return $o;
-	}
-}
-$taxonomy_images_plugin = new taxonomy_images_plugin();
