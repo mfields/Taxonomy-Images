@@ -24,3 +24,47 @@
 .taxonomy-image-control .library { background-position: -60px 0; }
 .taxonomy-image-control .hide { visibility:hidden; }
 .taxonomy-image-control .show { visibility:visible; }
+
+/*
+ * Settings page styles.
+ * Tip of the hat to the theme check plugin!!!
+ */
+#taxonomy-images {
+	margin:20px auto;
+	border:1px solid #ccc;
+	-moz-border-radius:5px;
+	-khtml-border-radius:5px;
+	-webkit-border-radius:5px;
+	border-radius:5px;
+}
+#taxonomy-images h3 {
+	margin:0;
+	padding:10px 20px;
+	background:#dfdfdf;
+	font-size:20px;
+	border-bottom:1px solid #ccc;
+}
+#taxonomy-images form {
+	margin:0;
+	padding:0;
+}
+#taxonomy-images p.section-description {
+	margin:0;
+	padding:15px;
+	background:#fff;
+	border-bottom:1px solid #ccc;
+}
+#taxonomy-images th,
+#taxonomy-images td {
+	background:#fff;
+	margin:0;
+}
+#taxonomy-images table {
+	margin:0;
+}
+#taxonomy-images .button-holder {
+	margin:0;
+	padding:10px 20px;
+	background:#dfdfdf;
+	border-top:1px solid #ccc;
+}
