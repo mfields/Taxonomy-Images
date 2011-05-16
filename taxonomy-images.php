@@ -641,6 +641,9 @@ EOF;
  * @access    private
  */
 function taxonomy_image_plugin_media_upload_popup_js() {
+	if ( false == taxonomy_image_plugin_is_screen_active() ) {
+		return;
+	}
 	wp_enqueue_script( 'taxonomy-images-media-upload-popup', TAXONOMY_IMAGE_PLUGIN_URL . 'media-upload-popup.js', array( 'jquery' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
 }
 add_action( 'admin_print_scripts-media-upload-popup', 'taxonomy_image_plugin_media_upload_popup_js' );
@@ -653,6 +656,9 @@ add_action( 'admin_print_scripts-media-upload-popup', 'taxonomy_image_plugin_med
  * @access    private
  */
 function taxonomy_image_plugin_edit_tags_js() {
+	if ( false == taxonomy_image_plugin_is_screen_active() ) {
+		return;
+	}
 	wp_enqueue_script( 'taxonomy-image-plugin-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'edit-tags.js', array( 'jquery', 'thickbox' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
 	wp_localize_script( 'taxonomy-image-plugin-edit-tags', 'taxonomyImagesPlugin', array (
 		'nonce'   => wp_create_nonce( 'taxonomy-image-plugin-remove-association' ),
@@ -669,6 +675,9 @@ add_action( 'admin_print_scripts-edit-tags.php', 'taxonomy_image_plugin_edit_tag
  * @access    private
  */
 function taxonomy_image_plugin_css_admin() {
+	if ( false == taxonomy_image_plugin_is_screen_active() ) {
+		return;
+	}
 	wp_enqueue_style( 'taxonomy-image-plugin-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'admin.css', array(), TAXONOMY_IMAGE_PLUGIN_VERSION, 'screen' );
 }
 add_action( 'admin_print_styles-edit-tags.php', 'taxonomy_image_plugin_css_admin' );
@@ -683,6 +692,9 @@ add_action( 'admin_print_styles-settings_page_taxonomy_image_plugin_settings', '
  * @access    private
  */
 function taxonomy_image_plugin_css_thickbox() {
+	if ( false == taxonomy_image_plugin_is_screen_active() ) {
+		return;
+	}
 	wp_enqueue_style( 'thickbox' );
 }
 add_action( 'admin_print_styles-edit-tags.php', 'taxonomy_image_plugin_css_thickbox' );
@@ -803,3 +815,31 @@ function taxonomy_images_plugin_image_list( $args ) {
 }
 add_filter( 'taxonomy-images-list', 'taxonomy_images_plugin_image_list' );
 add_shortcode( 'taxonomy-image-list', 'taxonomy_images_plugin_image_list' );
+
+
+/**
+ * Is Screen Active?
+ *
+ * @return    bool
+ *
+ * @access    private
+ * @since     2011-05-16
+ */
+function taxonomy_image_plugin_is_screen_active() {\
+	$screen = get_current_screen();
+	if ( ! isset( $screen->taxonomy ) ) {
+		return false;
+	}
+
+	$settings = get_option( 'taxonomy_image_plugin_settings' );
+
+	$taxonomies = array();
+	if ( isset( $settings['taxonomies'] ) ) {
+		$taxonomies = (array) $settings['taxonomies'];
+	}
+
+	if ( ! in_array( $screen->taxonomy, $taxonomies ) ) {
+		return true;
+	}
+	return false;
+}
