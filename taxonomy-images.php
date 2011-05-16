@@ -177,7 +177,7 @@ function taxonomy_image_plugin_get_image_src( $id ) {
  * @param     array     An array of term_taxonomy_id/attachment_id pairs.
  * @return    array     Sanitized version of parameter.
  *
- * @access    public
+ * @access    private
  */
 function taxonomy_image_plugin_sanitize_associations( $associations ) {
 	$o = array();
@@ -455,7 +455,7 @@ add_action( 'wp_ajax_taxonomy_image_plugin_remove_association', 'taxonomy_image_
  * @param     string    Taxonomy slug
  * @return    int       term_taxonomy id on success; zero otherwise.
  *
- * @access    public
+ * @access    private
  */
 function taxonomy_image_plugin_term_taxonomy_id( $term_id, $taxonomy ) {
 	$data = get_term( $term_id, $taxonomy );
@@ -507,6 +507,8 @@ add_action( 'admin_init', 'taxonomy_image_plugin_add_dynamic_hooks' );
 
 
 /**
+ * Edit Term Columns.
+ *
  * Insert a new column on wp-admin/edit-tags.php.
  *
  * @see taxonomy_image_plugin_add_dynamic_hooks()
@@ -519,13 +521,15 @@ add_action( 'admin_init', 'taxonomy_image_plugin_add_dynamic_hooks' );
  */
 function taxonomy_image_plugin_taxonomy_columns( $original_columns ) {
 	$new_columns = $original_columns;
-	array_splice( $new_columns, 1 ); /* isolate the checkbox column */
+	array_splice( $new_columns, 1 );
 	$new_columns['taxonomy_image_plugin'] = __( 'Image', 'taxonomy_image_plugin' ); /* Add custom column */
 	return array_merge( $new_columns, $original_columns );
 }
 
 
 /**
+ * Edit Term Rows.
+ *
  * Create image control for each term row of wp-admin/edit-tags.php.
  *
  * @see taxonomy_image_plugin_add_dynamic_hooks()
@@ -548,7 +552,10 @@ function taxonomy_image_plugin_taxonomy_rows( $row, $column_name, $term_id ) {
 
 
 /**
+ * Edit Term Control.
+ *
  * Create image control for wp-admin/edit-tag-form.php.
+ * Hooked into the '{$taxonomy}_edit_form_fields' action.
  *
  * @param     stdClass  Term object.
  * @param     string    Taxonomy slug.
