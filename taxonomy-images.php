@@ -40,9 +40,6 @@ $taxonomy_image_plugin_image = array(
 /**
  * Register custom image size with WordPress.
  *
- * @return    void
- *
- * @global    array     $taxonomy_image_plugin_image.
  * @access    private
  * @since     2010-10-28
  */
@@ -280,8 +277,6 @@ add_action( 'admin_init', 'taxonomy_image_plugin_register_settings' );
 /**
  * Create the admin menu link.
  *
- * @return    void
- *
  * @access    private
  * @since     2011-05-15
  */
@@ -299,8 +294,6 @@ add_action( 'admin_menu', 'taxonomy_images_settings_menu' );
 
 /**
  * Display the admin settings page.
- *
- * @return    void
  *
  * @access    private
  * @since     2011-05-15
@@ -411,8 +404,6 @@ function taxonomy_image_plugin_ajax_gateway( $nonce_slug ) {
  *
  * Callback for the wp_ajax_{$_GET['action']} hook.
  *
- * @return    void
- *
  * @access    private
  */
 function taxonomy_image_plugin_create_association() {
@@ -443,8 +434,6 @@ add_action( 'wp_ajax_taxonomy_image_create_association', 'taxonomy_image_plugin_
  *
  * Callback for the wp_ajax_{$_GET['action']} hook.
  *
- * @return    void
- *
  * @access    private
  */
 function taxonomy_image_plugin_remove_association() {
@@ -466,7 +455,7 @@ add_action( 'wp_ajax_taxonomy_image_plugin_remove_association', 'taxonomy_image_
  * @param     string    Taxonomy slug
  * @return    int       term_taxonomy id on success; zero otherwise.
  *
- * @access public
+ * @access    public
  */
 function taxonomy_image_plugin_term_taxonomy_id( $term_id, $taxonomy ) {
 	$data = get_term( $term_id, $taxonomy );
@@ -498,8 +487,6 @@ add_action( 'init', 'taxonomy_image_plugin_get_associations' );
 
 /**
  * Dynamically create hooks for each taxonomy.
- *
- * @return    void
  *
  * @access    private
  * @since     0.4.3
@@ -565,7 +552,6 @@ function taxonomy_image_plugin_taxonomy_rows( $row, $column_name, $term_id ) {
  *
  * @param     stdClass  Term object.
  * @param     string    Taxonomy slug.
- * @return    void
  *
  * @access    private
  * @since     2010-11-08
@@ -637,7 +623,6 @@ EOF;
  * Custom javascript for modal media box.
  * These scripts should only be included where a box has been opened via this script.
  *
- * @return    void
  * @access    private
  */
 function taxonomy_image_plugin_media_upload_popup_js() {
@@ -652,7 +637,6 @@ add_action( 'admin_print_scripts-media-upload-popup', 'taxonomy_image_plugin_med
 /**
  * Custom javascript for wp-admin/edit-tags.php.
  *
- * @return    void
  * @access    private
  */
 function taxonomy_image_plugin_edit_tags_js() {
@@ -703,7 +687,6 @@ add_action( 'admin_print_styles-edit-tags.php', 'taxonomy_image_plugin_css_thick
 /**
  * Create associations setting in the options table on plugin activation.
  *
- * @return    void
  * @access    private
  */
 function taxonomy_image_plugin_activate() {
@@ -825,7 +808,7 @@ add_shortcode( 'taxonomy-image-list', 'taxonomy_images_plugin_image_list' );
  * @access    private
  * @since     2011-05-16
  */
-function taxonomy_image_plugin_is_screen_active() {\
+function taxonomy_image_plugin_is_screen_active() {
 	$screen = get_current_screen();
 	if ( ! isset( $screen->taxonomy ) ) {
 		return false;
