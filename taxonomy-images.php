@@ -505,11 +505,15 @@ add_action( 'init', 'taxonomy_image_plugin_get_associations' );
  * @since     0.4.3
  */
 function taxonomy_image_plugin_add_dynamic_hooks() {
-	global $wp_taxonomies;
-	foreach ( $wp_taxonomies as $taxonomy => $taxonomies ) {
+	$settings = get_option( 'taxonomy_image_plugin_settings' );
+	$taxonomies = get_taxonomies();
+	foreach ( $taxonomies as $taxonomy ) {
+		if ( isset( $settings['taxonomies'] ) && in_array( $taxonomy, $settings['taxonomies'] ) ) {
+			continue;
+		}
 		add_filter( 'manage_' . $taxonomy . '_custom_column', 'taxonomy_image_plugin_taxonomy_rows', 15, 3 );
 		add_filter( 'manage_edit-' . $taxonomy . '_columns',  'taxonomy_image_plugin_taxonomy_columns' );
-		add_action(	$taxonomy . '_edit_form_fields',          'taxonomy_image_plugin_edit_tag_form', 10, 2 );
+		add_action( $taxonomy . '_edit_form_fields',          'taxonomy_image_plugin_edit_tag_form', 10, 2 );
 	}
 }
 add_action( 'admin_init', 'taxonomy_image_plugin_add_dynamic_hooks' );
