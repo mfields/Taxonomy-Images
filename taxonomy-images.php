@@ -99,7 +99,7 @@ function taxonomy_image_plugin_get_image_src( $id ) {
 
 	/* Return url to custom intermediate size if it exists. */
 	$img = image_get_intermediate_size( $id, $taxonomy_image_plugin_image['name'] );
-	if( isset( $img['url'] ) ) {
+	if ( isset( $img['url'] ) ) {
 		return $img['url'];
 	}
 
@@ -316,7 +316,7 @@ function taxonomy_image_plugin_settings_page() {
 function taxonomy_image_plugin_control_taxonomies() {
 	$settings = get_option( 'taxonomy_image_plugin_settings' );
 	$taxonomies = get_taxonomies( array(), 'objects' );
-	foreach( (array) $taxonomies as $taxonomy ) {
+	foreach ( (array) $taxonomies as $taxonomy ) {
 		if ( ! isset( $taxonomy->name ) ) {
 			continue;
 		}
@@ -566,7 +566,7 @@ function taxonomy_image_plugin_taxonomy_rows( $row, $column_name, $term_id ) {
 function taxonomy_image_plugin_edit_tag_form( $term, $taxonomy ) {
 	$taxonomy = get_taxonomy( $taxonomy );
 	$name = __( 'term', 'taxonomy_images_plugin' );
-	if( isset( $taxonomy->labels->singular_name ) ) {
+	if ( isset( $taxonomy->labels->singular_name ) ) {
 		$name = strtolower( $taxonomy->labels->singular_name );
 	}
 	?>
@@ -585,7 +585,7 @@ function taxonomy_image_plugin_edit_tag_form( $term, $taxonomy ) {
 function taxonomy_image_plugin_control_image( $term_id, $taxonomy ) {
 	$taxonomy = get_taxonomy( $taxonomy );
 	$name = __( 'term', 'taxonomy_images_plugin' );
-	if( isset( $taxonomy->labels->singular_name ) ) {
+	if ( isset( $taxonomy->labels->singular_name ) ) {
 		$name = strtolower( $taxonomy->labels->singular_name );
 	}
 	$term_tax_id = taxonomy_image_plugin_term_taxonomy_id( (int) $term_id, $taxonomy->name );
