@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 define( 'TAXONOMY_IMAGE_PLUGIN_URL',        plugin_dir_url( __FILE__ ) );
-define( 'TAXONOMY_IMAGE_PLUGIN_SLUG',       'taxonomy_images_plugin' );
 define( 'TAXONOMY_IMAGE_PLUGIN_VERSION',    '0.7' );
 define( 'TAXONOMY_IMAGE_PLUGIN_PERMISSION', 'manage_categories' );
 
@@ -581,11 +580,11 @@ function taxonomy_image_plugin_control_image( $term_id, $taxonomy ) {
 		$name = strtolower( $taxonomy->labels->singular_name );
 	}
 	$term_tax_id = taxonomy_image_plugin_term_taxonomy_id( (int) $term_id, $taxonomy->name );
-	$href_library = admin_url( 'media-upload.php' ) . '?type=image&amp;tab=library&amp;' . TAXONOMY_IMAGE_PLUGIN_SLUG . '=' . $term_tax_id. '&amp;post_id=0&amp;TB_iframe=true';
-	$href_upload = admin_url( 'media-upload.php' ) . '?type=image&amp;tab=type&amp;' . TAXONOMY_IMAGE_PLUGIN_SLUG . '=' . $term_tax_id. '&amp;post_id=0&amp;TB_iframe=true';;
+	$href_library = admin_url( 'media-upload.php' ) . '?type=image&amp;tab=library&amp;post_id=0&amp;TB_iframe=true';
+	$href_upload = admin_url( 'media-upload.php' ) . '?type=image&amp;tab=type&amp;post_id=0&amp;TB_iframe=true';
 	$id = 'taxonomy_image_plugin' . '_' . $term_tax_id;
 	$class = array(
-		'image' => 'thickbox taxonomy-image-thumbnail',
+		'image'  => 'thickbox taxonomy-image-thumbnail',
 		'upload' => 'upload control thickbox',
 		'remove' => 'remove control hide',
 		);
