@@ -25,11 +25,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 define( 'TAXONOMY_IMAGE_PLUGIN_URL',        plugin_dir_url( __FILE__ ) );
-define( 'ARTPRESS_DIR',                     trailingslashit( dirname( __FILE__ ) ) );
+define( 'TAXONOMY_IMAGE_PLUGIN_DIR',        trailingslashit( dirname( __FILE__ ) ) );
 define( 'TAXONOMY_IMAGE_PLUGIN_VERSION',    '0.7' );
 define( 'TAXONOMY_IMAGE_PLUGIN_PERMISSION', 'manage_categories' );
 
-require_once( ARTPRESS_DIR . 'deprecated.php' );
+require_once( TAXONOMY_IMAGE_PLUGIN_DIR . 'deprecated.php' );
 
 $taxonomy_image_plugin_image = array(
 	'name' => 'detail',
