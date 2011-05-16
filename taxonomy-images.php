@@ -59,6 +59,8 @@ add_action( 'init', 'taxonomy_image_plugin_add_image_size' );
 
 
 /**
+ * Modal Button
+ *
  * Create a button in the modal media window to associate the current image to the term.
  *
  * @param     array     Multidimensional array representing the images form.
@@ -69,7 +71,7 @@ add_action( 'init', 'taxonomy_image_plugin_add_image_size' );
  * @since     2010-10-28
  * @alter     2011-03-03
  */
-function taxonomy_image_plugin_add_image_to_taxonomy_button( $fields, $post ) {
+function taxonomy_image_plugin_modal_button( $fields, $post ) {
 	if ( isset( $fields['image-size'] ) && isset( $post->ID ) ) {
 		$image_id = (int) $post->ID;
 		$nonce = wp_create_nonce( 'taxonomy-image-plugin-create-association' );
@@ -77,7 +79,7 @@ function taxonomy_image_plugin_add_image_to_taxonomy_button( $fields, $post ) {
 	}
 	return $fields;
 }
-add_filter( 'attachment_fields_to_edit', 'taxonomy_image_plugin_add_image_to_taxonomy_button', 20, 2 );
+add_filter( 'attachment_fields_to_edit', 'taxonomy_image_plugin_modal_button', 20, 2 );
 
 
 /**
@@ -698,115 +700,102 @@ register_activation_hook( __FILE__, 'taxonomy_image_plugin_activate' );
 
 
 /**
- * Shortcode wrapper for taxonomy_images_plugin_image_list();
+ * List Taxonomy Images
  *
- * @param     array     These can be defined in the shortcode as attributes.
- * taxonomy   string    The taxonomy to query for.
- * context    string    Can be either 'global' or 'post'. See taxonomy_images_plugin_image_list() for full description.
- * size       string    The name of an image size registered for your installation. Defaults to 'detail'.
- * include    string    A comma or space-delimited string of term ids to include.
- * exclude    string    A comma or space-delimited string of term ids to exclude. If 'include' is non-empty, 'exclude' is ignored.
+ * Generate a list of all terms of a given taxonomy with associated images.
  *
- * @return    string    see taxonomy_images_plugin_image_list()
- * @access    private
- */
-function taxonomy_images_plugin_shortcode_image_list( $atts = array() ) {
-	global $taxonomy_image_plugin_image;
-	$o = '';
-	$defaults = array(
-		'taxonomy' => 'category',
-		'context'  => 'global',
-		'size'     => $taxonomy_image_plugin_image['name'],
-		'include'  => null,
-		'exclude'  => null
-		);
-	$atts = shortcode_atts( $defaults, $atts );
-	$args = array_slice( $atts, -2, 2 );	
-	extract( $atts );
-	return taxonomy_images_plugin_image_list( $taxonomy, $context, $size, false, $args );
-}
-add_shortcode( 'taxonomy_image_list', 'taxonomy_images_plugin_shortcode_image_list' );
-
-
-/**
- * Generate a list of all terms of a given taxonomy + their associated images.
+ * This is basically a wrapper for get_terms() and get_the_terms(). The distiction
+ * can be made by via the 'context' argument. If this argument is not set
+ * (or has an empty value) this function will use get_the_terms(). However,
+ * if the 'context' argument is set to 'all', this function will use get_terms().
  *
- * Only include terms whose post_count > 0 and have an associated image.
- * Although this function's access is private, it may be used in any template
- * file via the 'taxonomy_image_plugin_image_list' action.
+ * When get_the_terms() is triggered, terms of the given taxonomy, associated
+ * with the current global post object will be targeted. In cases where terms
+ * associated with a specific post need to be targeted, users should set the
+ * 'post_id' argument with the ID of the desired post.
  *
- * @param     string    Taxonomy slug.
- * @param     string    Context can be either 'global' or 'post'.
- *                      'global' - get_terms() returns all taxonomy terms.
- *                      'post'   - get_the_terms() returns all terms associated with the global post object.
- * @param     string    Image size. Can be any value registered with WordPress. Defaults to 'detail'.
- * @param     bool      Should the value be printed? true = yes, false = no.
+ * When get_terms() is triggered, all terms of the given taxonomy that have
+ * images will be targeted. Triggering get_terms() will allow this function
+ * to recognize additional arguments which can be used to modify the output.
+ * The follow additional parameters are recognized:
+ *
+ * exclude - A comma- or space-delimited string of term ids to exclude from
+ * the results. This argument will be ignored if 'include' is not empty. An
+ * array may NOT be used as the value.
+ *
+ * include - A comma- or space-delimited string of term ids to include in the
+ * results. An array may NOT be used as the value.
+ *
+ * This function should never be called directly in any file however it may
+ * be access in any template file via the 'taxonomy-images-list' filter.
+ *
  * @param     array     Arguments to pass as the second parameter of get_terms().
- * @return    string    Unordered list. Will return void if print is true.
+ * @return    string    HTML markup displaying taxonomy images. HTML comment upon error.
  *
  * @access    private
  * @since     2010-12-04
  */
-function taxonomy_images_plugin_image_list( $taxonomy = 'category', $context = 'global', $image_size = 'detail', $print = true, $args = array() ) {
+function taxonomy_images_plugin_image_list( $args ) {
+	$args = wp_parse_args( $args, array(
+		'context'   => '',
+		'size'      => 'detail',
+		'taxonomy'  => 'category',
+		'post_id'   => 0,
+		'item'      => '<li><a href="%1$s">%2$s</a></li>',
+		'container' => '<ul>%1$s</ul>',
+
+		'include'  => null,
+		'exclude'  => null,
+
+		) );
+
 	$o = '';
 	$terms = array();
-	
+
 	/* No taxonomy defined return an html comment. */
-	if ( ! taxonomy_exists( $taxonomy ) ) {
-		$tax = strip_tags( trim( $taxonomy ) );
-		return '<!-- taxonomy_image_plugin error: "' . $taxonomy . '" does not exist on your WordPress installation. -->';
+	if ( ! taxonomy_exists( $args['taxonomy'] ) ) {
+		$tax = strip_tags( trim( $args['taxonomy'] ) );
+		return '<!-- taxonomy_image_plugin: ' . sprintf( __( '"%1$s" does not exist on your WordPress installation.', 'taxonomy-images' ), esc_html( $args['taxonomy'] ) ) . ' -->';
 	}
 
 	/* Get all image/term associations. */
 	$associations = taxonomy_image_plugin_get_associations();
 
 	/* Get all terms in the given taxonomy. */
-	if ( 'global' === $context ) {
-		$terms = get_terms( $taxonomy, $args );
-	}
-	else if ( 'post' === $context ) {
-		$terms = get_the_terms( 0, $taxonomy );
-	}
-
-	/* Loop over terms. */
-	if ( ! is_wp_error( $terms ) ) {
-		foreach ( (array) $terms as $term ) {
-			
-			/* Minor extensions to the term object. */
-			$term->img = '';
-			$term->url = get_term_link( $term, $term->taxonomy );
-			
-			/* Get the image for the associated. */
-			if ( array_key_exists( $term->term_taxonomy_id, $associations ) ) {
-				$term->img = wp_get_attachment_image( $associations[$term->term_taxonomy_id], $image_size, false );
-			}
-			
-			/* Only display terms that have associated images. */
-			if ( ! empty( $term->img ) ) {
-				$element = apply_filters( 'taxonomy_images_plugin_list_item_element', 'li', $term );
-				$element = apply_filters( "taxonomy_images_plugin_list_item_element_{$taxonomy}", $element, $term );
-				$atts = array( 'title' => $term->name . ' (' . $term->count . ')', 'href'  => $term->url );
-				$atts = apply_filters( 'taxonomy_images_plugin_list_item_link_atts', $atts, $term );
-				$atts = apply_filters( "taxonomy_images_plugin_list_item_link_atts_{$taxonomy}", $atts, $term );
-				$attributes = '';
-				foreach ( (array) $atts as $name => $value ) {
-					$attributes.= ' ' . $name . '="' . esc_attr( $value ) . '"';
-				}
-				$o.= "<{$element}><a{$attributes}>{$term->img}</a></{$element}>\n";
-			}
-			
+	if ( 'all' === $args['context'] ) {
+		$tax_args = array();
+		if ( isset( $args['exclude'] ) ) {
+			$tax_args['exclude'] = $args['exclude'];
 		}
-		if ( ! empty( $o ) ) {
-			$element = apply_filters( 'taxonomy_images_plugin_list_element', 'ul' );
-			$element = apply_filters( "taxonomy_images_plugin_list_element_{$taxonomy}", $element );
-			$o = "<{$element}>\n{$o}</{$element}>\n";
+		if ( isset( $args['include'] ) ) {
+			$tax_args['include'] = $args['include'];
 		}
-	}
-	if ( $print ) {
-		print $o;
+		$terms = get_terms( $args['taxonomy'], $tax_args );
 	}
 	else {
-		return $o;
+		$terms = get_the_terms( $args['post_id'], $taxonomy );
 	}
+
+	if ( is_wp_error( $terms ) ) {
+		return '<!-- taxonomy_image_plugin: ' . __( 'Error retrieving terms.', 'taxonomy-images' ) . ' -->';
+	}
+
+	foreach ( (array) $terms as $term ) {
+		$image = '';
+		if ( array_key_exists( $term->term_taxonomy_id, $associations ) ) {
+			$image = wp_get_attachment_image( $associations[$term->term_taxonomy_id], $args['size'], false );
+		}
+		if ( empty( $image ) ) {
+			continue;
+		}
+		$o.= sprintf( $args['item'], esc_url( get_term_link( $term, $term->taxonomy ) ), $image );
+	}
+
+	if ( ! empty( $o ) ) {
+		return sprintf( $args['container'], $o );
+	}
+
+	return '<!-- taxonomy_image_plugin: ' . __( 'There are no terms with images.', 'taxonomy-images' ) . ' -->';
 }
-add_action( 'taxonomy_images_plugin_image_list', 'taxonomy_images_plugin_image_list', 10, 4 );
+add_filter( 'taxonomy-images-list', 'taxonomy_images_plugin_image_list' );
+add_shortcode( 'taxonomy-image-list', 'taxonomy_images_plugin_image_list' );
