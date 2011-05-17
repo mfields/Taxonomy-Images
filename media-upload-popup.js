@@ -1,4 +1,10 @@
-var TaxonomyImagesCreateAssociation;
+var TaxonomyImagesCreateAssociation, TaxonomImagesModal;
+
+/* Todo: move to php and localize. */
+TaxonomyImagesModal = {
+	'termBefore' : '&#8220;',
+	'termAfter'  : '&#8221;'
+	};
 
 jQuery( document ).ready( function( $ ) {
 	var ID = 0, below;
@@ -16,7 +22,7 @@ jQuery( document ).ready( function( $ ) {
 		}
 		/* Replace term name. */
 		if ( 'term_name' in below.taxonomyImagesPlugin ) {
-			$( '.taxonomy-image-button .term-name' ).text( below.taxonomyImagesPlugin.term_name );
+			$( '.taxonomy-image-button .term-name' ).html( TaxonomyImagesModal.termBefore + below.taxonomyImagesPlugin.term_name + TaxonomyImagesModal.termAfter );
 		}
 	}
 
