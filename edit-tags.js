@@ -1,12 +1,8 @@
 jQuery( document ).ready( function( $ ) {
 
-	function set_global( obj ) {
-		taxonomyImagesPlugin.tt_id = parseInt( $( obj ).parent().find( 'input.tt_id' ).val() );
-		taxonomyImagesPlugin.term_name = $( obj ).parent().find( 'input.term_name' ).val();
-	}
-
 	$( '.taxonomy-image-control a' ).live( 'click', function () {
-		set_global( $( this ) );
+		taxonomyImagesPlugin.tt_id = parseInt( $( this ).parent().find( 'input.tt_id' ).val() );
+		taxonomyImagesPlugin.term_name = $( this ).parent().find( 'input.term_name' ).val();
 	} );
 
 	$( '.taxonomy-image-control .remove' ).live( 'click', function () {
