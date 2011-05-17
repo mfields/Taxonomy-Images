@@ -11,7 +11,7 @@ jQuery( document ).ready( function( $ ) {
 		set_global( $( this ) );
 	} );
 
-	$( '.taxonomy-image-control .remove' ).click( function () {
+	$( '.taxonomy-image-control .remove' ).live( 'click', function () {
 		var term_taxonomy_id = parseInt( $( this ).attr( 'rel' ) );
 		$.ajax( {
 			url: ajaxurl,
