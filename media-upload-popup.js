@@ -28,7 +28,7 @@ jQuery( document ).ready( function( $ ) {
 		$( '#filter' ).prepend( '<input type="hidden" name="taxonomy_images_plugin" value="' + ID + '" />' );
 	}
 
-	$( '.taxonomy-images-close-modal' ).click( function() {
+	$( '.taxonomy-images-close-modal' ).live( 'click', function() {
 		below.tb_remove();
 	} );
 
