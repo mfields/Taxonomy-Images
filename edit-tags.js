@@ -23,14 +23,13 @@ jQuery( document ).ready( function( $ ) {
 				'term_taxonomy_id' : term_taxonomy_id
 				},
 			cache: false,
-			success: function ( data ) {
-				data = eval( data );
-				if ( 'good' === data.status ) {
+			success: function ( response ) {
+				if ( 'good' === response.status ) {
 					$( '#remove-' + term_taxonomy_id ).addClass( 'hide' );
 					$( '#taxonomy_image_plugin_' + term_taxonomy_id ).attr( 'src', taxonomyImagesPlugin.img_src );
 				}
-				else if ( 'bad' === data.status ) {
-					alert( data.why );
+				else if ( 'bad' === response.status ) {
+					alert( response.why );
 				}
 			}
 		} );
