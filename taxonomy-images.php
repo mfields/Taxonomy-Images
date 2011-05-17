@@ -72,7 +72,7 @@ function taxonomy_image_plugin_modal_button( $fields, $post ) {
 	if ( isset( $fields['image-size'] ) && isset( $post->ID ) ) {
 		$image_id = (int) $post->ID;
 		$nonce = wp_create_nonce( 'taxonomy-image-plugin-create-association' );
-		$fields['image-size']['extra_rows']['taxonomy-image-plugin-button']['html'] = '<span type="submit" class="button taxonomy-image-button" style="display:none;" onclick="TaxonomyImagesCreateAssociation( this, ' . $image_id . ', \'' . $nonce . '\' );">' . esc_html__( 'Add Thumbnail to Taxonomy', 'taxonomy-images' ) . '</span>';
+		$fields['image-size']['extra_rows']['taxonomy-image-plugin-button']['html'] = '<span type="submit" class="button taxonomy-image-button" style="display:none;" onclick="TaxonomyImagesCreateAssociation( this, ' . $image_id . ', \'' . $nonce . '\' );">' . sprintf( __( 'Associate with &#8220;%1$s&#8221;', 'taxonomy-images' ), '<span class="term-name">' . esc_html__( 'This term', 'taxonomy-images' ) . '</span>' ) . '</span>';
 	}
 	return $fields;
 }
@@ -612,12 +612,17 @@ function taxonomy_image_plugin_control_image( $term_id, $taxonomy ) {
 
 	$img = taxonomy_image_plugin_get_image_src( $attachment_id );
 
+	$term = get_term( $term_id, $taxonomy->name );
+
 	$o = "\n" . '<div id="' . esc_attr( 'taxonomy-image-control-' . $tt_id ) . '" class="taxonomy-image-control hide-if-no-js">';
 	$o.= "\n" . '<a class="thickbox taxonomy-image-thumbnail" href="' . esc_url( admin_url( 'media-upload.php' ) . '?type=image&tab=library&post_id=0&TB_iframe=true' ) . '" title="' . sprintf( esc_attr__( 'Change the image for this %s.', 'taxonomy-images' ), $name ) . '"><img id="' . esc_attr( 'taxonomy_image_plugin_' . $tt_id ) . '" src="' . esc_url( $img ) . '" alt="" /></a>';
 	$o.= "\n" . '<a class="control upload thickbox" href="' . esc_url( admin_url( 'media-upload.php' ) . '?type=image&tab=type&post_id=0&TB_iframe=true' ) . '" title="' . sprintf( esc_attr__( 'Upload a new image for this %s.', 'taxonomy-images' ), $name ) . '">' . esc_html__( 'Upload.', 'taxonomy-images' ) . '</a>';
 	$o.= "\n" . '<a class="control remove' . $hide . '" href="#" id="' . esc_attr( 'remove-' . $tt_id ) . '" rel="' . esc_attr( $tt_id ) . '" title="' . sprintf( esc_attr__( 'Remove image from this %s.', 'taxonomy-images' ), $name ) . '">' . esc_html__( 'Delete', 'taxonomy-images' ) . '</a>';
-	$o.= "\n" . '<input type="hidden" name="' . esc_attr( 'taxonomy_image_value_' . $tt_id ) . '" value="' . esc_attr( $tt_id ) . '" />';
-
+	$o.= "\n" . '<input type="hidden" class="tt_id" name="' . esc_attr( 'tt_id-' . $tt_id ) . '" value="' . esc_attr( $tt_id ) . '" />';
+	if ( isset( $term->name ) && isset( $term->slug ) ) {
+		$o.= "\n" . '<input type="hidden" class="term_name" name="' . esc_attr( 'term_name-' . $term->slug ) . '" value="' . esc_attr( $term->name ) . '" />';
+	}
+	$o.= "\n" . '</div>';
 	return $o;
 }
 

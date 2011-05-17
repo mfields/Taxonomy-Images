@@ -1,3 +1,6 @@
+.taxonomy-image-button .term-name {
+	font-style:italic;
+}
 .taxonomy-images-modal .taxonomy-image-button {
 	display:inline !important;
 }

@@ -1,16 +1,14 @@
 jQuery( document ).ready( function( $ ) {
 
-	function set_tt_id( obj ) {
-		var tt_id = $( obj ).parent().find( 'input' ).val();
-		taxonomyImagesPlugin.tt_id = parseInt( tt_id );
+	function set_global( obj ) {
+		taxonomyImagesPlugin.tt_id = parseInt( $( obj ).parent().find( 'input.tt_id' ).val() );
+		taxonomyImagesPlugin.term_name = $( obj ).parent().find( 'input.term_name' ).val();
+		console.log( taxonomyImagesPlugin.tt_id );
+		console.log( taxonomyImagesPlugin.term_name );
 	}
 
-	$( '.taxonomy-image-thumbnail' ).click( function () {
-		set_tt_id( $( this ) );
-	} );
-
-	$( '.taxonomy-image-control .upload' ).click( function () {
-		set_tt_id( $( this ) );
+	$( '.taxonomy-image-control a' ).click( function () {
+		set_global( $( this ) );
 	} );
 
 	$( '.taxonomy-image-control .remove' ).click( function () {

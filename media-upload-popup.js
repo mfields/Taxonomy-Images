@@ -7,10 +7,15 @@ jQuery( document ).ready( function( $ ) {
 	below = window.dialogArguments || opener || parent || top;
 
 	/* Set the value of ID. */
-	if ( null !== below && 'taxonomyImagesPlugin' in below && 'tt_id' in below.taxonomyImagesPlugin ) {
-		ID = parseInt( below.taxonomyImagesPlugin.tt_id );
-		if ( isNaN( ID ) ) {
-			ID = 0;
+	if ( null !== below && 'taxonomyImagesPlugin' in below ) {
+		if ( 'tt_id' in below.taxonomyImagesPlugin ) {
+			ID = parseInt( below.taxonomyImagesPlugin.tt_id );
+			if ( isNaN( ID ) ) {
+				ID = 0;
+			}
+		}
+		if ( 'term_name' in below.taxonomyImagesPlugin ) {
+			$( '.taxonomy-image-button .term-name' ).text( below.taxonomyImagesPlugin.term_name );
 		}
 	}
 
@@ -21,8 +26,6 @@ jQuery( document ).ready( function( $ ) {
 		/* Add hidden input to search form. */
 		$( '#filter' ).prepend( '<input type="hidden" name="taxonomy_images_plugin" value="' + ID + '" />' );
 	}
-
-
 	TaxonomyImagesCreateAssociation = function( el, image_id, nonce ) {
 		var button, text, selector;
 		if ( 0 == ID ) {
@@ -30,7 +33,7 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 		button = $( el );
-		button.text( 'Adding ...' );
+		button.text( 'Associating ...' );
 
 		/* Show all other buttons. */
 		buttons.each( function( i, e ) {
@@ -62,7 +65,7 @@ jQuery( document ).ready( function( $ ) {
 					} );
 
 					button.fadeOut( 200, function() {
-						$( this ).show().text( 'Successfully added!' );
+						$( this ).show().text( 'Successfully Associated!' );
 					} );
 
 					/* Close Thickbox */
