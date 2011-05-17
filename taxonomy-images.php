@@ -636,6 +636,12 @@ function taxonomy_image_plugin_control_image( $term_id, $taxonomy ) {
  */
 function taxonomy_image_plugin_media_upload_popup_js() {
 	wp_enqueue_script( 'taxonomy-images-media-upload-popup', TAXONOMY_IMAGE_PLUGIN_URL . 'media-upload-popup.js', array( 'jquery' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
+	wp_localize_script( 'taxonomy-images-media-upload-popup', 'TaxonomyImagesModal', array (
+		'termBefore'  => __( '&#8220;', 'taxonomy-images' ),
+		'termAfter'   => __( '&#8221;', 'taxonomy-images' ),
+		'associating' => __( 'Associating &#8230;', 'taxonomy-images' ),
+		'success'     => __( 'Successfully Associated!', 'taxonomy-images' ),
+		) );
 }
 add_action( 'admin_print_scripts-media-upload-popup', 'taxonomy_image_plugin_media_upload_popup_js' );
 

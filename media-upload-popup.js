@@ -1,10 +1,4 @@
-var TaxonomyImagesCreateAssociation, TaxonomImagesModal;
-
-/* Todo: move to php and localize. */
-TaxonomyImagesModal = {
-	'termBefore' : '&#8220;',
-	'termAfter'  : '&#8221;'
-	};
+var TaxonomyImagesCreateAssociation;
 
 jQuery( document ).ready( function( $ ) {
 	var ID = 0, below;
@@ -45,7 +39,7 @@ jQuery( document ).ready( function( $ ) {
 		}
 
 		button = $( el );
-		button.text( 'Associating ...' );
+		button.html( TaxonomyImagesModal.associating );
 
 		/* Show all other buttons. */
 		buttons.each( function( i, e ) {
@@ -77,7 +71,7 @@ jQuery( document ).ready( function( $ ) {
 					} );
 
 					button.fadeOut( 200, function() {
-						$( this ).show().text( 'Successfully Associated!' );
+						$( this ).show().html( TaxonomyImagesModal.success );
 						$( '.taxonomy-images-close-modal' ).show();
 					} );
 				}
