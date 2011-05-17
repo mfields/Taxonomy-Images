@@ -6,14 +6,15 @@ jQuery( document ).ready( function( $ ) {
 	/* Get window that opened the thickbox. */
 	below = window.dialogArguments || opener || parent || top;
 
-	/* Set the value of ID. */
 	if ( null !== below && 'taxonomyImagesPlugin' in below ) {
+		/* Set the value of ID. */
 		if ( 'tt_id' in below.taxonomyImagesPlugin ) {
 			ID = parseInt( below.taxonomyImagesPlugin.tt_id );
 			if ( isNaN( ID ) ) {
 				ID = 0;
 			}
 		}
+		/* Replace term name. */
 		if ( 'term_name' in below.taxonomyImagesPlugin ) {
 			$( '.taxonomy-image-button .term-name' ).text( below.taxonomyImagesPlugin.term_name );
 		}
