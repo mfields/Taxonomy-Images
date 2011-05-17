@@ -1,3 +1,9 @@
+.taxonomy-images-close-modal {
+	display:none;
+	font-weight:bold;
+	color:#c00;
+	cursor:pointer;
+}
 .taxonomy-image-button .term-name {
 	font-style:italic;
 }

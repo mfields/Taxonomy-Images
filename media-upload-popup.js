@@ -27,6 +27,11 @@ jQuery( document ).ready( function( $ ) {
 		/* Add hidden input to search form. */
 		$( '#filter' ).prepend( '<input type="hidden" name="taxonomy_images_plugin" value="' + ID + '" />' );
 	}
+
+	$( '.taxonomy-images-close-modal' ).click( function() {
+		below.tb_remove();
+	} );
+
 	TaxonomyImagesCreateAssociation = function( el, image_id, nonce ) {
 		var button, text, selector;
 		if ( 0 == ID ) {
@@ -67,10 +72,8 @@ jQuery( document ).ready( function( $ ) {
 
 					button.fadeOut( 200, function() {
 						$( this ).show().text( 'Successfully Associated!' );
+						$( '.taxonomy-images-close-modal' ).show();
 					} );
-
-					/* Close Thickbox */
-				//	self.parent.tb_remove();
 				}
 				else if ( 'bad' === response.status ) {
 					alert( response.why );

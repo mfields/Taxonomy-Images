@@ -72,7 +72,7 @@ function taxonomy_image_plugin_modal_button( $fields, $post ) {
 	if ( isset( $fields['image-size'] ) && isset( $post->ID ) ) {
 		$image_id = (int) $post->ID;
 		$nonce = wp_create_nonce( 'taxonomy-image-plugin-create-association' );
-		$fields['image-size']['extra_rows']['taxonomy-image-plugin-button']['html'] = '<span type="submit" class="button taxonomy-image-button" style="display:none;" onclick="TaxonomyImagesCreateAssociation( this, ' . $image_id . ', \'' . $nonce . '\' );">' . sprintf( __( 'Associate with &#8220;%1$s&#8221;', 'taxonomy-images' ), '<span class="term-name">' . esc_html__( 'This term', 'taxonomy-images' ) . '</span>' ) . '</span>';
+		$fields['image-size']['extra_rows']['taxonomy-image-plugin-button']['html'] = '<span type="submit" class="button taxonomy-image-button" style="display:none;" onclick="TaxonomyImagesCreateAssociation( this, ' . $image_id . ', \'' . $nonce . '\' );">' . sprintf( __( 'Associate with &#8220;%1$s&#8221;', 'taxonomy-images' ), '<span class="term-name">' . esc_html__( 'This term', 'taxonomy-images' ) . '</span>' ) . '</span> <span class="taxonomy-images-close-modal">' . esc_html__( 'Close window', 'taxonomy-images' ) . '</span>';
 	}
 	return $fields;
 }
