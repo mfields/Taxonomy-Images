@@ -56,7 +56,7 @@ add_action( 'init', 'taxonomy_image_plugin_add_image_size' );
 
 
 /**
- * Modal Button
+ * Modal Button.
  *
  * Create a button in the modal media window to associate the current image to the term.
  *
@@ -80,7 +80,7 @@ add_filter( 'attachment_fields_to_edit', 'taxonomy_image_plugin_modal_button', 2
 
 
 /**
- * Get Image Source
+ * Get Image Source.
  *
  * Return a raw uri to a custom image size.
  *
@@ -169,7 +169,7 @@ function taxonomy_image_plugin_get_image_src( $id ) {
 
 
 /**
- * Sanitize Associations
+ * Sanitize Associations.
  *
  * Ensures that all key/value pairs are positive integers.
  * This filter will discard all zero and negative values.
@@ -713,7 +713,7 @@ register_activation_hook( __FILE__, 'taxonomy_image_plugin_activate' );
 
 
 /**
- * List Taxonomy Images
+ * List Taxonomy Images.
  *
  * Generate a list of all terms of a given taxonomy with associated images.
  *
