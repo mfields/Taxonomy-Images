@@ -581,61 +581,46 @@ function taxonomy_image_plugin_edit_tag_form( $term, $taxonomy ) {
 	<?php
 }
 
-
+/**
+ * @todo      Remove rel tag from link... will need to adjust js to accomodate.
+ */
 function taxonomy_image_plugin_control_image( $term_id, $taxonomy ) {
 	$taxonomy = get_taxonomy( $taxonomy );
+	$tt_id = taxonomy_image_plugin_term_taxonomy_id( (int) $term_id, $taxonomy->name );
+
 	$name = __( 'term', 'taxonomy_images_plugin' );
 	if ( isset( $taxonomy->labels->singular_name ) ) {
 		$name = strtolower( $taxonomy->labels->singular_name );
 	}
-	$term_tax_id = taxonomy_image_plugin_term_taxonomy_id( (int) $term_id, $taxonomy->name );
-	$href_library = admin_url( 'media-upload.php' ) . '?type=image&amp;tab=library&amp;post_id=0&amp;TB_iframe=true';
-	$href_upload = admin_url( 'media-upload.php' ) . '?type=image&amp;tab=type&amp;post_id=0&amp;TB_iframe=true';
-	$id = 'taxonomy_image_plugin' . '_' . $term_tax_id;
-	$class = array(
-		'image'  => 'thickbox taxonomy-image-thumbnail',
-		'upload' => 'upload control thickbox',
-		'remove' => 'remove control hide',
-		);
-	$img = TAXONOMY_IMAGE_PLUGIN_URL . 'default.png';
+
+	$hide = ' hide';
+	$attachment_id = 0;
 	$associations = taxonomy_image_plugin_get_associations();
-	if ( isset( $associations[ $term_tax_id ] ) ) {
-		$attachment_id = (int) $associations[ $term_tax_id ];
-		$img = taxonomy_image_plugin_get_image_src( $attachment_id );
-		$class['remove'] = str_replace( ' hide', '', $class['remove'] );
+	if ( isset( $associations[ $tt_id ] ) ) {
+		$attachment_id = (int) $associations[ $tt_id ];
+		$hide = '';
 	}
-	$text = array(
-		esc_attr__( 'Please enable javascript to activate the taxonomy images plugin.', 'taxonomy_image_plugin' ),
-		esc_attr__( 'Upload.', 'taxonomy_image_plugin' ),
-		sprintf( esc_attr__( 'Upload a new image for this %s.', 'taxonomy_image_plugin' ), $name ),
-		esc_attr__( 'Media Library.', 'taxonomy_image_plugin' ),
-		sprintf( esc_attr__( 'Change the image for this %s.', 'taxonomy_image_plugin' ), $name ),
-		esc_attr__( 'Delete', 'taxonomy_image_plugin' ),
-		sprintf( esc_attr__( 'Remove image from this %s.', 'taxonomy_image_plugin' ), $name ),
-		);
-	return <<<EOF
 
+	$img = taxonomy_image_plugin_get_image_src( $attachment_id );
 
-<div id="taxonomy-image-control-{$term_tax_id}" class="taxonomy-image-control hide-if-no-js">
-	<a class="{$class['image']}" href="{$href_library}" title="{$text[4]}"><img id="{$id}" src="{$img}" alt="" /></a>
-	<a class="{$class['upload']}" href="{$href_upload}" title="{$text[2]}">{$text[1]}</a>
-	<a class="{$class['remove']}" href="#" id="remove-{$term_tax_id}" rel="{$term_tax_id}" title="{$text[6]}">{$text[5]}</a>
-	<input type="hidden" name="taxonomy_image_value_{$term_tax_id}" value="{$term_tax_id}" />
-</div>
-EOF;
+	$o = "\n" . '<div id="' . esc_attr( 'taxonomy-image-control-' . $tt_id ) . '" class="taxonomy-image-control hide-if-no-js">';
+	$o.= "\n" . '<a class="thickbox taxonomy-image-thumbnail" href="' . esc_url( admin_url( 'media-upload.php' ) . '?type=image&tab=library&post_id=0&TB_iframe=true' ) . '" title="' . sprintf( esc_attr__( 'Change the image for this %s.', 'taxonomy-images' ), $name ) . '"><img id="' . esc_attr( 'taxonomy_image_plugin_' . $tt_id ) . '" src="' . esc_url( $img ) . '" alt="" /></a>';
+	$o.= "\n" . '<a class="control upload thickbox" href="' . esc_url( admin_url( 'media-upload.php' ) . '?type=image&tab=type&post_id=0&TB_iframe=true' ) . '" title="' . sprintf( esc_attr__( 'Upload a new image for this %s.', 'taxonomy-images' ), $name ) . '">' . esc_html__( 'Upload.', 'taxonomy-images' ) . '</a>';
+	$o.= "\n" . '<a class="control remove' . $hide . '" href="#" id="' . esc_attr( 'remove-' . $tt_id ) . '" rel="' . esc_attr( $tt_id ) . '" title="' . sprintf( esc_attr__( 'Remove image from this %s.', 'taxonomy-images' ), $name ) . '">' . esc_html__( 'Delete', 'taxonomy-images' ) . '</a>';
+	$o.= "\n" . '<input type="hidden" name="' . esc_attr( 'taxonomy_image_value_' . $tt_id ) . '" value="' . esc_attr( $tt_id ) . '" />';
+
+	return $o;
 }
 
 
 /**
  * Custom javascript for modal media box.
- * These scripts should only be included where a box has been opened via this script.
+ *
+ * This script need to be added to all instance of the media upload box.
  *
  * @access    private
  */
 function taxonomy_image_plugin_media_upload_popup_js() {
-	if ( false == taxonomy_image_plugin_is_screen_active() ) {
-		return;
-	}
 	wp_enqueue_script( 'taxonomy-images-media-upload-popup', TAXONOMY_IMAGE_PLUGIN_URL . 'media-upload-popup.js', array( 'jquery' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
 }
 add_action( 'admin_print_scripts-media-upload-popup', 'taxonomy_image_plugin_media_upload_popup_js' );
@@ -666,7 +651,7 @@ add_action( 'admin_print_scripts-edit-tags.php', 'taxonomy_image_plugin_edit_tag
  * @access    private
  */
 function taxonomy_image_plugin_css_admin() {
-	if ( false == taxonomy_image_plugin_is_screen_active() ) {
+	if ( false == taxonomy_image_plugin_is_screen_active() && 'admin_print_styles-media-upload-popup' != current_filter() ) {
 		return;
 	}
 	wp_enqueue_style( 'taxonomy-image-plugin-edit-tags', TAXONOMY_IMAGE_PLUGIN_URL . 'admin.css', array(), TAXONOMY_IMAGE_PLUGIN_VERSION, 'screen' );
