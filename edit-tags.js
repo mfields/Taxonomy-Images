@@ -7,7 +7,7 @@ jQuery( document ).ready( function( $ ) {
 		console.log( taxonomyImagesPlugin.term_name );
 	}
 
-	$( '.taxonomy-image-control a' ).click( function () {
+	$( '.taxonomy-image-control a' ).live( 'click', function () {
 		set_global( $( this ) );
 	} );
 
