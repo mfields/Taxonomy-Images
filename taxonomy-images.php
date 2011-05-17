@@ -884,6 +884,8 @@ function taxonomy_images_plugin_get_queried_term_image( $args ) {
 	$args = wp_parse_args( $args, array(
 		'return' => 'html',
 		'size'   => 'thumbnail',
+		'before' => '',
+		'after'  => '',
 		) );
 
 	global $wp_query;
@@ -931,7 +933,7 @@ function taxonomy_images_plugin_get_queried_term_image( $args ) {
 		}
 	}
 	else if ( 'html' == $args['return'] ) {
-		return wp_get_attachment_image( $ID, $args['size'] );
+		return $args['before'] . wp_get_attachment_image( $ID, $args['size'] ) . $args['after'];
 	}
 	return false;
 }
