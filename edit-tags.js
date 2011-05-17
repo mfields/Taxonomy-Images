@@ -3,8 +3,6 @@ jQuery( document ).ready( function( $ ) {
 	function set_global( obj ) {
 		taxonomyImagesPlugin.tt_id = parseInt( $( obj ).parent().find( 'input.tt_id' ).val() );
 		taxonomyImagesPlugin.term_name = $( obj ).parent().find( 'input.term_name' ).val();
-		console.log( taxonomyImagesPlugin.tt_id );
-		console.log( taxonomyImagesPlugin.term_name );
 	}
 
 	$( '.taxonomy-image-control a' ).live( 'click', function () {
