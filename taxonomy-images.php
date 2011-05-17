@@ -31,6 +31,23 @@ define( 'TAXONOMY_IMAGE_PLUGIN_PERMISSION', 'manage_categories' );
 
 require_once( TAXONOMY_IMAGE_PLUGIN_DIR . 'deprecated.php' );
 
+
+/*
+ * Interface.
+ *
+ * All functions defined in this plugin should be considered
+ * private meaning that they are not to be used in any other
+ * WordPress extension including plugins and themes. Direct
+ * use of functions defined herein constitutes unsupported use
+ * and is strongly discouraged. Custom filters have been added
+ * which enable extension authors to interact with this plugin
+ * in a responsible manner.
+ */
+add_filter( 'taxonomy-images-list', 'taxonomy_images_plugin_image_list' );
+add_filter( 'taxonomy-images-queried-term-image', 'taxonomy_images_plugin_get_queried_term_image' );
+add_shortcode( 'taxonomy-image-list', 'taxonomy_images_plugin_image_list' );
+
+
 $taxonomy_image_plugin_image = array(
 	'name' => 'detail',
 	'size' => array( 75, 75, true )
@@ -810,8 +827,7 @@ function taxonomy_images_plugin_image_list( $args ) {
 
 	return '<!-- taxonomy_image_plugin: ' . __( 'There are no terms with images.', 'taxonomy-images' ) . ' -->';
 }
-add_filter( 'taxonomy-images-list', 'taxonomy_images_plugin_image_list' );
-add_shortcode( 'taxonomy-image-list', 'taxonomy_images_plugin_image_list' );
+
 
 /**
  * Queried Term Image.
@@ -919,7 +935,6 @@ function taxonomy_images_plugin_get_queried_term_image( $args ) {
 	}
 	return false;
 }
-add_filter( 'taxonomy-images-queried-term-image', 'taxonomy_images_plugin_get_queried_term_image' );
 
 
 /**
