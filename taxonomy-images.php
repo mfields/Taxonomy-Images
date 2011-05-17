@@ -794,7 +794,7 @@ function taxonomy_images_plugin_image_list( $args ) {
 	foreach ( (array) $terms as $term ) {
 		$image = '';
 		if ( array_key_exists( $term->term_taxonomy_id, $associations ) ) {
-			$image = wp_get_attachment_image( $associations[$term->term_taxonomy_id], $args['size'], false );
+			$image = wp_get_attachment_image( $associations[$term->term_taxonomy_id], $args['size'] );
 		}
 		if ( empty( $image ) ) {
 			continue;
