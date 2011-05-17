@@ -72,7 +72,7 @@ function taxonomy_image_plugin_modal_button( $fields, $post ) {
 	if ( isset( $fields['image-size'] ) && isset( $post->ID ) ) {
 		$image_id = (int) $post->ID;
 		$nonce = wp_create_nonce( 'taxonomy-image-plugin-create-association' );
-		$fields['image-size']['extra_rows']['taxonomy-image-plugin-button']['html'] = '<span type="submit" class="button taxonomy-image-button" style="display:none;" onclick="TaxonomyImagesCreateAssociation( this, ' . $image_id . ', \'' . $nonce . '\' );">' . esc_html__( 'Add Thumbnail to Taxonomy', 'taxonomy_image_plugin' ) . '</span>';
+		$fields['image-size']['extra_rows']['taxonomy-image-plugin-button']['html'] = '<span type="submit" class="button taxonomy-image-button" style="display:none;" onclick="TaxonomyImagesCreateAssociation( this, ' . $image_id . ', \'' . $nonce . '\' );">' . esc_html__( 'Add Thumbnail to Taxonomy', 'taxonomy-images' ) . '</span>';
 	}
 	return $fields;
 }
@@ -259,13 +259,13 @@ function taxonomy_image_plugin_register_settings() {
 		);
 	add_settings_section(
 		'taxonomy_image_plugin_settings',
-		__( 'Settings', 'taxonomy_images' ),
+		__( 'Settings', 'taxonomy-images' ),
 		'__return_false',
 		'taxonomy_image_plugin_settings'
 		);
 	add_settings_field(
 		'taxonomy-images',
-		__( 'Exclude Taxonomies', 'taxonomy_images' ),
+		__( 'Exclude Taxonomies', 'taxonomy-images' ),
 		'taxonomy_image_plugin_control_taxonomies',
 		'taxonomy_image_plugin_settings',
 		'taxonomy_image_plugin_settings'
@@ -310,14 +310,14 @@ add_action( 'admin_menu', 'taxonomy_images_settings_menu' );
 function taxonomy_image_plugin_settings_page() {
 	print "\n" . '<div class="wrap">';
 	print "\n" . '<div id="icon-options-general" class="icon32"><br /></div>';
-	print "\n" . '<h2>' . __( 'Taxonomy Images Plugin Settings', 'taxonomy_images' ) . '</h2>';
+	print "\n" . '<h2>' . __( 'Taxonomy Images Plugin Settings', 'taxonomy-images' ) . '</h2>';
 	print "\n" . '<div id="taxonomy-images">';
 	print "\n" . '<form action="options.php" method="post">';
 
 	settings_fields( 'taxonomy_image_plugin_settings' );
 	do_settings_sections( 'taxonomy_image_plugin_settings' );
 
-	print "\n" . '<div class="button-holder"><input name="Submit" type="submit" value="' . esc_attr__( 'Save Changes', 'taxonomy_images' ) . '" /></div>';
+	print "\n" . '<div class="button-holder"><input name="Submit" type="submit" value="' . esc_attr__( 'Save Changes', 'taxonomy-images' ) . '" /></div>';
 	print "\n" . '</div></form></div>';
 }
 
@@ -368,7 +368,7 @@ function taxonomy_image_plugin_ajax_gateway( $nonce_slug ) {
 	if ( ! current_user_can( TAXONOMY_IMAGE_PLUGIN_PERMISSION ) ) {
 		taxonomy_image_plugin_json_response( array(
 			'status' => 'bad',
-			'why'    => __( 'Access Denied: You do not have to appropriate capability for this action.', 'taxonomy_image_plugin' ),
+			'why'    => __( 'Access Denied: You do not have to appropriate capability for this action.', 'taxonomy-images' ),
 		) );
 	}
 
@@ -376,7 +376,7 @@ function taxonomy_image_plugin_ajax_gateway( $nonce_slug ) {
 	if ( ! isset( $_POST['wp_nonce'] ) ) {
 		taxonomy_image_plugin_json_response( array(
 			'status' => 'bad',
-			'why'    => __( 'Access Denied: No nonce passed.', 'taxonomy_image_plugin' ),
+			'why'    => __( 'Access Denied: No nonce passed.', 'taxonomy-images' ),
 		) );
 	}
 
@@ -384,7 +384,7 @@ function taxonomy_image_plugin_ajax_gateway( $nonce_slug ) {
 	if ( ! wp_verify_nonce( $_POST['wp_nonce'], $nonce_slug ) ) {
 		taxonomy_image_plugin_json_response( array(
 			'status' => 'bad',
-			'why'    => __( 'Access Denied: Nonce did not match. ' . $_POST['wp_nonce'] . ' - ' . wp_create_nonce( $nonce_slug ), 'taxonomy_image_plugin' ),
+			'why'    => __( 'Access Denied: Nonce did not match. ' . $_POST['wp_nonce'] . ' - ' . wp_create_nonce( $nonce_slug ), 'taxonomy-images' ),
 		) );
 	}
 
@@ -392,7 +392,7 @@ function taxonomy_image_plugin_ajax_gateway( $nonce_slug ) {
 	if ( ! isset( $_POST['term_taxonomy_id'] ) ) {
 		taxonomy_image_plugin_json_response( array(
 			'status' => 'bad',
-			'why'    => __( 'term_taxonomy_id not sent.', 'taxonomy_image_plugin' ),
+			'why'    => __( 'term_taxonomy_id not sent.', 'taxonomy-images' ),
 		) );
 	}
 
@@ -400,7 +400,7 @@ function taxonomy_image_plugin_ajax_gateway( $nonce_slug ) {
 	if ( empty( $_POST['term_taxonomy_id'] ) ) {
 		taxonomy_image_plugin_json_response( array(
 			'status' => 'bad',
-			'why'    => __( 'term_taxonomy_id is empty.', 'taxonomy_image_plugin' ),
+			'why'    => __( 'term_taxonomy_id is empty.', 'taxonomy-images' ),
 		) );
 	}
 
@@ -531,7 +531,7 @@ add_action( 'admin_init', 'taxonomy_image_plugin_add_dynamic_hooks' );
 function taxonomy_image_plugin_taxonomy_columns( $original_columns ) {
 	$new_columns = $original_columns;
 	array_splice( $new_columns, 1 );
-	$new_columns['taxonomy_image_plugin'] = __( 'Image', 'taxonomy_image_plugin' ); /* Add custom column */
+	$new_columns['taxonomy_image_plugin'] = __( 'Image', 'taxonomy-images' ); /* Add custom column */
 	return array_merge( $new_columns, $original_columns );
 }
 
@@ -574,17 +574,17 @@ function taxonomy_image_plugin_taxonomy_rows( $row, $column_name, $term_id ) {
  */
 function taxonomy_image_plugin_edit_tag_form( $term, $taxonomy ) {
 	$taxonomy = get_taxonomy( $taxonomy );
-	$name = __( 'term', 'taxonomy_images_plugin' );
+	$name = __( 'term', 'taxonomy-images' );
 	if ( isset( $taxonomy->labels->singular_name ) ) {
 		$name = strtolower( $taxonomy->labels->singular_name );
 	}
 	?>
 	<tr class="form-field hide-if-no-js">
-		<th scope="row" valign="top"><label for="description"><?php _e( 'Image', 'taxonomy_image_plugin' ) ?></label></th>
+		<th scope="row" valign="top"><label for="description"><?php _e( 'Image', 'taxonomy-images' ) ?></label></th>
 		<td>
 			<?php print taxonomy_image_plugin_control_image( $term->term_id, $taxonomy->name ); ?>
 			<div class="clear"></div>
-			<span class="description"><?php printf( __( 'Associate an image from your media library to this %1$s.', 'taxonomy_image_plugin' ), $name ); ?></span>
+			<span class="description"><?php printf( __( 'Associate an image from your media library to this %1$s.', 'taxonomy-images' ), $name ); ?></span>
 		</td>
 	</tr>
 	<?php
@@ -597,7 +597,7 @@ function taxonomy_image_plugin_control_image( $term_id, $taxonomy ) {
 	$taxonomy = get_taxonomy( $taxonomy );
 	$tt_id = taxonomy_image_plugin_term_taxonomy_id( (int) $term_id, $taxonomy->name );
 
-	$name = __( 'term', 'taxonomy_images_plugin' );
+	$name = __( 'term', 'taxonomy-images' );
 	if ( isset( $taxonomy->labels->singular_name ) ) {
 		$name = strtolower( $taxonomy->labels->singular_name );
 	}
