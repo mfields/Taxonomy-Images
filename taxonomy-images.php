@@ -341,7 +341,7 @@ add_action( 'admin_menu', 'taxonomy_images_settings_menu' );
  */
 function taxonomy_image_plugin_settings_page() {
 	print "\n" . '<div class="wrap">';
-	print "\n" . '<div id="icon-options-general" class="icon32"><br /></div>';
+	screen_icon();
 	print "\n" . '<h2>' . __( 'Taxonomy Images Plugin Settings', 'taxonomy-images' ) . '</h2>';
 	print "\n" . '<div id="taxonomy-images">';
 	print "\n" . '<form action="options.php" method="post">';
