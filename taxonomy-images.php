@@ -665,13 +665,6 @@ function taxonomy_image_plugin_control_image( $term_id, $taxonomy ) {
 }
 
 
-function taxonomy_image_plugin_remove_association_js() {
-	wp_enqueue_script( 'taxonomy-images-remove-association', TAXONOMY_IMAGE_PLUGIN_URL . 'remove-association.js', array( 'jquery' ), TAXONOMY_IMAGE_PLUGIN_VERSION );
-}
-add_action( 'admin_print_scripts-media-upload-popup', 'taxonomy_image_plugin_remove_association_js' );
-add_action( 'admin_print_scripts-edit-tags.php', 'taxonomy_image_plugin_remove_association_js' );
-
-
 /**
  * Custom javascript for modal media box.
  *
