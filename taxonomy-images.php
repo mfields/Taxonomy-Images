@@ -429,14 +429,15 @@ function taxonomy_image_plugin_ajax_gateway( $nonce_slug ) {
 	}
 
 	/* Check value of $_POST['term_id'] */
-	if ( empty( $_POST['term_taxonomy_id'] ) ) {
+	$tt_id = absint( $_POST['term_taxonomy_id'] );
+	if ( empty( $tt_id ) ) {
 		taxonomy_image_plugin_json_response( array(
 			'status' => 'bad',
 			'why'    => __( 'term_taxonomy_id is empty.', 'taxonomy-images' ),
 		) );
 	}
 
-	return (int) $_POST['term_taxonomy_id'];
+	return (int) $tt_id;
 }
 
 
