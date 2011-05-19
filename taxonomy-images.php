@@ -416,7 +416,7 @@ function taxonomy_image_plugin_ajax_gateway( $nonce_slug ) {
 	if ( ! wp_verify_nonce( $_POST['wp_nonce'], $nonce_slug ) ) {
 		taxonomy_image_plugin_json_response( array(
 			'status' => 'bad',
-			'why'    => __( 'Access Denied: Nonce did not match. ' . $_POST['wp_nonce'] . ' - ' . wp_create_nonce( $nonce_slug ), 'taxonomy-images' ),
+			'why'    => __( 'Access Denied: Nonce did not match.', 'taxonomy-images' ),
 		) );
 	}
 
