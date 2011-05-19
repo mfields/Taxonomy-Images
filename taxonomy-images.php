@@ -472,20 +472,37 @@ add_action( 'wp_ajax_taxonomy_image_create_association', 'taxonomy_image_plugin_
 
 
 /**
- * Remove an association from the 'taxonomy_image_plugin' setting.
+ * Remove an association.
  *
- * Callback for the wp_ajax_{$_GET['action']} hook.
+ * Removes an association from the setting stored in the database.
+ * Print json encoded message and terminates script execution.
+ *
+ * @see taxonomy_image_plugin_ajax_gateway() for security.
  *
  * @access    private
  */
 function taxonomy_image_plugin_remove_association() {
-	$term_taxonomy_id = taxonomy_image_plugin_ajax_gateway( 'taxonomy-image-plugin-remove-association' );
-	$associations = taxonomy_image_plugin_sanitize_associations( get_option( 'taxonomy_image_plugin' ) );
-	if ( isset( $associations[$term_taxonomy_id] ) ) {
-		unset( $associations[$term_taxonomy_id] );
+	$tt_id = taxonomy_image_plugin_ajax_gateway( 'taxonomy-image-plugin-remove-association' );
+	$assoc = taxonomy_image_plugin_get_associations();
+	if ( isset( $assoc[$tt_id] ) ) {
+		unset( $assoc[$tt_id] );
+		if ( update_option( 'taxonomy_image_plugin', $assoc ) ) {
+			taxonomy_image_plugin_json_response( array(
+				'status' => 'good',
+				'why'    => __( 'Association successfully removed', 'taxonomy-images' )
+			) );
+		}
+		else {
+			taxonomy_image_plugin_json_response( array(
+				'status' => 'bad',
+				'why'    => __( 'Association could not be removed', 'taxonomy-images' )
+			) );
+		}
 	}
-	update_option( 'taxonomy_image_plugin', taxonomy_image_plugin_sanitize_associations( $associations ) );
-	taxonomy_image_plugin_json_response( array( 'status' => 'good' ) );
+	taxonomy_image_plugin_json_response( array(
+		'status' => 'good',
+		'why'    => __( 'Nothing to remove', 'taxonomy-images' )
+	) );
 }
 add_action( 'wp_ajax_taxonomy_image_plugin_remove_association', 'taxonomy_image_plugin_remove_association' );
 
