@@ -491,26 +491,6 @@ add_action( 'wp_ajax_taxonomy_image_plugin_remove_association', 'taxonomy_image_
 
 
 /**
- * Get the term_taxonomy_id of a given term of a specific taxonomy.
- *
- * @param     int       Term id
- * @param     string    Taxonomy slug
- * @return    int       term_taxonomy id on success; zero otherwise.
- *
- * @access    private
- *
- * @todo      See if this function is really necessary
- */
-function taxonomy_image_plugin_term_taxonomy_id( $term_id, $taxonomy ) {
-	$data = get_term( $term_id, $taxonomy );
-	if ( isset( $data->term_taxonomy_id ) ) {
-		return (int) $data->term_taxonomy_id;
-	}
-	return 0;
-}
-
-
-/**
  * Get a list of user-defined associations.
  * Associations are stored in the WordPress options table.
  *
@@ -629,8 +609,15 @@ function taxonomy_image_plugin_edit_tag_form( $term, $taxonomy ) {
  * @todo      Remove rel tag from link... will need to adjust js to accomodate.
  */
 function taxonomy_image_plugin_control_image( $term_id, $taxonomy ) {
+
+	$term = get_term( $term_id, $taxonomy );
+
+	$tt_id = 0;
+	if ( isset( $term->term_taxonomy_id ) ) {
+		$tt_id = (int) $term->term_taxonomy_id;
+	}
+
 	$taxonomy = get_taxonomy( $taxonomy );
-	$tt_id = taxonomy_image_plugin_term_taxonomy_id( (int) $term_id, $taxonomy->name );
 
 	$name = __( 'term', 'taxonomy-images' );
 	if ( isset( $taxonomy->labels->singular_name ) ) {
