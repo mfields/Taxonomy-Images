@@ -502,9 +502,9 @@ add_action( 'wp_ajax_taxonomy_image_plugin_remove_association', 'taxonomy_image_
 function taxonomy_image_plugin_get_associations( $refresh = false ) {
 	static $associations = array();
 	if ( empty( $associations ) || $refresh ) {
-		$associations = get_option( 'taxonomy_image_plugin' );
+		$associations = taxonomy_image_plugin_sanitize_associations( get_option( 'taxonomy_image_plugin' ) );
 	}
-	return taxonomy_image_plugin_sanitize_associations( $associations );
+	return $associations;
 }
 add_action( 'init', 'taxonomy_image_plugin_get_associations' );
 
