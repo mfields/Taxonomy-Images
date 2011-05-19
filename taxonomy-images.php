@@ -437,7 +437,7 @@ function taxonomy_image_plugin_ajax_gateway( $nonce_slug ) {
 		) );
 	}
 
-	return (int) $tt_id;
+	return $tt_id;
 }
 
 
