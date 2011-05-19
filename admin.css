@@ -4,11 +4,17 @@
 	color:#c00;
 	cursor:pointer;
 }
-.taxonomy-image-button .term-name {
+.taxonomy-images-modal .create-association .term-name {
 	font-style:italic;
 }
-.taxonomy-images-modal .taxonomy-image-button {
-	display:inline !important;
+.taxonomy-images-modal .create-association {
+	display:inline;
+}
+.taxonomy-images-modal .remove-association {
+	display:none;
+	color:#bc0b0b;
+	text-decoration:underline;
+	cursor:pointer;
 }
 .taxonomy-images-modal #tab-type_url,
 .taxonomy-images-modal .savesend input {

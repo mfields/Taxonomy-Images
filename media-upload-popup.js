@@ -16,35 +16,77 @@ jQuery( document ).ready( function( $ ) {
 		}
 		/* Replace term name. */
 		if ( 'term_name' in below.taxonomyImagesPlugin ) {
-			$( '.taxonomy-image-button .term-name' ).html( TaxonomyImagesModal.termBefore + below.taxonomyImagesPlugin.term_name + TaxonomyImagesModal.termAfter );
+			$( '.create-association .term-name' ).html( TaxonomyImagesModal.termBefore + below.taxonomyImagesPlugin.term_name + TaxonomyImagesModal.termAfter );
 		}
 	}
 
 	if ( 0 < ID ) {
-		var buttons = $( '.taxonomy-image-button' );
 		$( 'body' ).addClass( 'taxonomy-images-modal' );
+
+		var buttons = $( '.taxonomy-images-modal .create-association' );
 
 		/* Add hidden input to search form. */
 		$( '#filter' ).prepend( '<input type="hidden" name="taxonomy_images_plugin" value="' + ID + '" />' );
+
+		if ( 'image_id' in below.taxonomyImagesPlugin ) {
+			buttons.each( function( i, e ) {
+				var image_id = $( e ).parent().find( '.taxonomy-image-button-image-id' ).val();
+				if ( image_id == below.taxonomyImagesPlugin.image_id ) {
+					$( e ).hide();
+					$( e ).parent().find( '.remove-association' ).css( 'display', 'inline' );
+				}
+			} );
+		}
 	}
+
+
+	/**
+	 * Remove Association.
+	 */
+	$( '.taxonomy-images-modal .remove-association' ).live( 'click', function () {
+		var button = $( this );
+		button.html( 'Removing ...' );
+		$.ajax( {
+			url: ajaxurl,
+			type: "POST",
+			dataType: 'json',
+			data: {
+				'action'           : 'taxonomy_image_plugin_remove_association',
+				'wp_nonce'         : $( this ).parent().find( '.taxonomy-image-button-nonce-remove' ).val(),
+				'term_taxonomy_id' : ID
+				},
+			cache: false,
+			success: function ( response ) {
+				if ( 'good' === response.status ) {
+					button.html( 'Removing ...' ).fadeOut( 200, function() {
+						$( this ).hide();
+						var selector = parent.document.getElementById( 'taxonomy_image_plugin_' + ID );
+						$( selector ).attr( 'src', below.taxonomyImagesPlugin.img_src );
+						$( this ).parent().find( '.create-association' ).show();
+					} );
+				}
+				else if ( 'bad' === response.status ) {
+					alert( response.why );
+				}
+			}
+		} );
+		return false;
+	} );
 
 	$( '.taxonomy-images-close-modal' ).live( 'click', function() {
 		below.tb_remove();
 	} );
 
-	TaxonomyImagesCreateAssociation = function( el, image_id, nonce ) {
-		var button, text, selector;
+	$( '.taxonomy-images-modal .create-association' ).live( 'click', function () {
+
+		var button, selector, originalText;
 		if ( 0 == ID ) {
 			return;
 		}
 
-		button = $( el );
+		button = $( this );
+		originalText = button.html();
 		button.html( TaxonomyImagesModal.associating );
-
-		/* Show all other buttons. */
-		buttons.each( function( i, e ) {
-			$( e ).show();
-		} );
 
 		$.ajax( {
 			url      : ajaxurl,
@@ -52,13 +94,13 @@ jQuery( document ).ready( function( $ ) {
 			dataType : 'json',
 			data: {
 				'action'           : 'taxonomy_image_create_association',
-				'wp_nonce'         : nonce,
-				'attachment_id'    : parseInt( image_id ),
-				'term_taxonomy_id' : parseInt( ID ),
+				'wp_nonce'         : $( this ).parent().find( '.taxonomy-image-button-nonce-create' ).val(),
+				'attachment_id'    : $( this ).parent().find( '.taxonomy-image-button-image-id' ).val(),
+				'term_taxonomy_id' : parseInt( ID )
 				},
 			success: function ( response ) {
 				if ( 'good' === response.status ) {
-					var selector = parent.document.getElementById( 'taxonomy-image-control-' + ID );
+					selector = parent.document.getElementById( 'taxonomy-image-control-' + ID );
 
 					/* Update the image on the screen below */
 					$( selector ).find( '.taxonomy-image-thumbnail img' ).each( function ( i, e ) {
@@ -70,9 +112,13 @@ jQuery( document ).ready( function( $ ) {
 						$( e ).removeClass( 'hide' );
 					} );
 
-					button.fadeOut( 200, function() {
-						$( this ).show().html( TaxonomyImagesModal.success );
-						$( '.taxonomy-images-close-modal' ).show();
+					button.show().html( TaxonomyImagesModal.success ).fadeOut( 200, function() {
+						var remove = button.parent().find( '.remove-association' );
+						if ( undefined !== remove[0] ) {
+							$( remove ).css( 'display', 'inline' );
+							button.hide();
+							button.html( originalText );
+						}
 					} );
 				}
 				else if ( 'bad' === response.status ) {
@@ -81,5 +127,5 @@ jQuery( document ).ready( function( $ ) {
 			}
 		} );
 		return false;
-	}
+	} );
 } );

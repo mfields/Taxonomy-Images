@@ -3,9 +3,10 @@ jQuery( document ).ready( function( $ ) {
 	$( '.taxonomy-image-control a' ).live( 'click', function () {
 		taxonomyImagesPlugin.tt_id = parseInt( $( this ).parent().find( 'input.tt_id' ).val() );
 		taxonomyImagesPlugin.term_name = $( this ).parent().find( 'input.term_name' ).val();
+		taxonomyImagesPlugin.image_id = parseInt( $( this ).parent().find( 'input.image_id' ).val() );
 	} );
 
-	$( '.taxonomy-image-control .remove' ).live( 'click', function () {
+	$( '.taxonomy-images-modal .remove' ).live( 'click', function () {
 		var term_taxonomy_id = parseInt( $( this ).attr( 'rel' ) );
 		$.ajax( {
 			url: ajaxurl,
