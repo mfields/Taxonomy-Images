@@ -44,8 +44,11 @@ jQuery( document ).ready( function( $ ) {
 	 * Remove Association.
 	 */
 	$( '.taxonomy-images-modal .remove-association' ).live( 'click', function () {
+
 		var button = $( this );
+		originalText = button.html();
 		button.html( 'Removing ...' );
+
 		$.ajax( {
 			url: ajaxurl,
 			type: "POST",
@@ -58,11 +61,12 @@ jQuery( document ).ready( function( $ ) {
 			cache: false,
 			success: function ( response ) {
 				if ( 'good' === response.status ) {
-					button.html( 'Removing ...' ).fadeOut( 200, function() {
+					button.html( 'Removed' ).fadeOut( 200, function() {
 						$( this ).hide();
 						var selector = parent.document.getElementById( 'taxonomy_image_plugin_' + ID );
 						$( selector ).attr( 'src', below.taxonomyImagesPlugin.img_src );
 						$( this ).parent().find( '.create-association' ).show();
+						$( this ).html( originalText );
 					} );
 				}
 				else if ( 'bad' === response.status ) {
@@ -100,6 +104,17 @@ jQuery( document ).ready( function( $ ) {
 				},
 			success: function ( response ) {
 				if ( 'good' === response.status ) {
+					var parent_id = button.parent().attr( 'id' );
+
+					/* Set state of all other buttons. */
+					$( '.taxonomy-image-modal-control' ).each( function( i, e ) {
+						if ( parent_id == $( e ).attr( 'id' ) ) {
+							return true;
+						}
+						$( e ).find( '.create-association' ).show();
+						$( e ).find( '.remove-association' ).hide();
+					} );
+
 					selector = parent.document.getElementById( 'taxonomy-image-control-' + ID );
 
 					/* Update the image on the screen below */

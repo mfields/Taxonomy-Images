@@ -88,7 +88,7 @@ function taxonomy_image_plugin_modal_button( $fields, $post ) {
 	if ( isset( $fields['image-size'] ) && isset( $post->ID ) ) {
 		$image_id = (int) $post->ID;
 
-		$o = '<div>';
+		$o = '<div class="taxonomy-image-modal-control" id="taxonomy-image-modal-control-' . $image_id . '">';
 
 		$o.= '<span class="button create-association">' . sprintf( __( 'Associate with %1$s', 'taxonomy-images' ), '<span class="term-name">' . esc_html__( 'this term', 'taxonomy-images' ) . '</span>' ) . '</span>';
 
