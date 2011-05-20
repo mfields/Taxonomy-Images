@@ -10,7 +10,11 @@
  * have been added which enable extension authors to interact with
  * this plugin in a responsible manner.
  *
- * @since     0.7
+ * @package      Taxonomy Images
+ * @author       Michael Fields <michael@mfields.org>
+ * @copyright    Copyright (c) 2011, Michael Fields
+ * @license      http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since        0.7
  */
 
 
