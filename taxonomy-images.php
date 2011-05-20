@@ -462,18 +462,18 @@ function taxonomy_image_plugin_check_permissions( $tt_id ) {
  * @access    private
  */
 function taxonomy_image_plugin_create_association() {
-	if ( ! isset( $_POST['term_taxonomy_id'] ) ) {
+	if ( ! isset( $_POST['tt_id'] ) ) {
 		taxonomy_image_plugin_json_response( array(
 			'status' => 'bad',
-			'why'    => __( 'term_taxonomy_id not sent', 'taxonomy-images' ),
+			'why'    => __( 'tt_id not sent', 'taxonomy-images' ),
 		) );
 	}
 
-	$tt_id = absint( $_POST['term_taxonomy_id'] );
+	$tt_id = absint( $_POST['tt_id'] );
 	if ( empty( $tt_id ) ) {
 		taxonomy_image_plugin_json_response( array(
 			'status' => 'bad',
-			'why'    => __( 'term_taxonomy_id is empty', 'taxonomy-images' ),
+			'why'    => __( 'tt_id is empty', 'taxonomy-images' ),
 		) );
 	}
 
@@ -544,18 +544,18 @@ add_action( 'wp_ajax_taxonomy_image_create_association', 'taxonomy_image_plugin_
  * @access    private
  */
 function taxonomy_image_plugin_remove_association() {
-	if ( ! isset( $_POST['term_taxonomy_id'] ) ) {
+	if ( ! isset( $_POST['tt_id'] ) ) {
 		taxonomy_image_plugin_json_response( array(
 			'status' => 'bad',
-			'why'    => __( 'term_taxonomy_id not sent', 'taxonomy-images' ),
+			'why'    => __( 'tt_id not sent', 'taxonomy-images' ),
 		) );
 	}
 
-	$tt_id = absint( $_POST['term_taxonomy_id'] );
+	$tt_id = absint( $_POST['tt_id'] );
 	if ( empty( $tt_id ) ) {
 		taxonomy_image_plugin_json_response( array(
 			'status' => 'bad',
-			'why'    => __( 'term_taxonomy_id is empty', 'taxonomy-images' ),
+			'why'    => __( 'tt_id is empty', 'taxonomy-images' ),
 		) );
 	}
 

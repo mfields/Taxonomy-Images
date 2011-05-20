@@ -51,9 +51,9 @@ jQuery( document ).ready( function( $ ) {
 			type: "POST",
 			dataType: 'json',
 			data: {
-				'action'           : 'taxonomy_image_plugin_remove_association',
-				'wp_nonce'         : $( this ).parent().find( '.taxonomy-image-button-nonce-remove' ).val(),
-				'term_taxonomy_id' : ID
+				'action'   : 'taxonomy_image_plugin_remove_association',
+				'wp_nonce' : $( this ).parent().find( '.taxonomy-image-button-nonce-remove' ).val(),
+				'tt_id'    : ID
 				},
 			cache: false,
 			success: function ( response ) {
@@ -93,10 +93,10 @@ jQuery( document ).ready( function( $ ) {
 			type     : "POST",
 			dataType : 'json',
 			data: {
-				'action'           : 'taxonomy_image_create_association',
-				'wp_nonce'         : $( this ).parent().find( '.taxonomy-image-button-nonce-create' ).val(),
-				'attachment_id'    : $( this ).parent().find( '.taxonomy-image-button-image-id' ).val(),
-				'term_taxonomy_id' : parseInt( ID )
+				'action'        : 'taxonomy_image_create_association',
+				'wp_nonce'      : $( this ).parent().find( '.taxonomy-image-button-nonce-create' ).val(),
+				'attachment_id' : $( this ).parent().find( '.taxonomy-image-button-image-id' ).val(),
+				'tt_id'         : parseInt( ID )
 				},
 			success: function ( response ) {
 				if ( 'good' === response.status ) {

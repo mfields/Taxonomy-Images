@@ -13,9 +13,9 @@ jQuery( document ).ready( function( $ ) {
 			type: "POST",
 			dataType: 'json',
 			data: {
-				'action' : 'taxonomy_image_plugin_remove_association',
+				'action'   : 'taxonomy_image_plugin_remove_association',
 				'wp_nonce' : taxonomyImagesPlugin.nonce,
-				'term_taxonomy_id' : term_taxonomy_id
+				'tt_id'    : term_taxonomy_id
 				},
 			cache: false,
 			success: function ( response ) {
