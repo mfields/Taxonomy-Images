@@ -7,7 +7,7 @@ jQuery( document ).ready( function( $ ) {
 	} );
 
 	$( '.taxonomy-images-modal .remove' ).live( 'click', function () {
-		var term_taxonomy_id = parseInt( $( this ).attr( 'rel' ) );
+		var tt_id = parseInt( $( this ).attr( 'rel' ) );
 		$.ajax( {
 			url: ajaxurl,
 			type: "POST",
@@ -15,13 +15,13 @@ jQuery( document ).ready( function( $ ) {
 			data: {
 				'action'   : 'taxonomy_image_plugin_remove_association',
 				'wp_nonce' : taxonomyImagesPlugin.nonce,
-				'tt_id'    : term_taxonomy_id
+				'tt_id'    : tt_id
 				},
 			cache: false,
 			success: function ( response ) {
 				if ( 'good' === response.status ) {
-					$( '#remove-' + term_taxonomy_id ).addClass( 'hide' );
-					$( '#taxonomy_image_plugin_' + term_taxonomy_id ).attr( 'src', taxonomyImagesPlugin.img_src );
+					$( '#remove-' + tt_id ).addClass( 'hide' );
+					$( '#taxonomy_image_plugin_' + tt_id ).attr( 'src', taxonomyImagesPlugin.img_src );
 				}
 				else if ( 'bad' === response.status ) {
 					alert( response.why );
