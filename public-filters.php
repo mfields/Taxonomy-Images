@@ -13,9 +13,9 @@
  * @since     0.7
  */
 
+
 add_filter( 'taxonomy-images-list', 'taxonomy_images_plugin_image_list' );
 add_filter( 'taxonomy-images-queried-term-image', 'taxonomy_images_plugin_get_queried_term_image' );
-add_shortcode( 'taxonomy-image-list', 'taxonomy_images_plugin_image_list' );
 
 
 /**
