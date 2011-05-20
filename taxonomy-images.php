@@ -442,31 +442,44 @@ function taxonomy_image_plugin_ajax_gateway( $nonce_slug ) {
 
 
 /**
- * Remove an association from the 'taxonomy_image_plugin' setting.
+ * Create an association.
  *
  * Callback for the wp_ajax_{$_GET['action']} hook.
  *
  * @access    private
  */
 function taxonomy_image_plugin_create_association() {
-	$term_taxonomy_id = taxonomy_image_plugin_ajax_gateway( 'taxonomy-image-plugin-create-association' );
+	$tt_id = taxonomy_image_plugin_ajax_gateway( 'taxonomy-image-plugin-create-association' );
+	$assoc = taxonomy_image_plugin_get_associations();
 
-	/* Query for $attachment_id */
-	$attachment_id = 0;
-	if ( isset( $_POST['attachment_id'] ) ) {
-		$attachment_id = (int) $_POST['attachment_id'];
+	if ( ! isset( $_POST['attachment_id'] ) ) {
+		taxonomy_image_plugin_json_response( array(
+			'status' => 'bad',
+			'why'    => __( 'Image id not sent', 'taxonomy-images' )
+		) );
 	}
-	
-	/* Update the database. */
-	$associations = taxonomy_image_plugin_sanitize_associations( get_option( 'taxonomy_image_plugin' ) );
-	$associations[$term_taxonomy_id] = $attachment_id;
-	update_option( 'taxonomy_image_plugin', $associations );
-	
-	/* Send response which terminates the script. */
-	taxonomy_image_plugin_json_response( array( 
-		'status' => 'good',
-		'attachment_thumb_src' => taxonomy_image_plugin_get_image_src( $attachment_id )
-	) );
+
+	$image_id = absint( $_POST['attachment_id'] );
+	if ( empty( $image_id ) ) {
+		taxonomy_image_plugin_json_response( array(
+			'status' => 'bad',
+			'why'    => __( 'Image id is not a positive integer', 'taxonomy-images' )
+		) );
+	}
+
+	$assoc[$tt_id] = $image_id;
+	if ( update_option( 'taxonomy_image_plugin', taxonomy_image_plugin_sanitize_associations( $assoc ) ) ) {
+		taxonomy_image_plugin_json_response( array(
+			'status' => 'good',
+			'attachment_thumb_src' => taxonomy_image_plugin_get_image_src( $image_id )
+		) );
+	}
+	else {
+		taxonomy_image_plugin_json_response( array(
+			'status' => 'bad',
+			'why'    => __( 'Association could not be created', 'taxonomy-images' )
+		) );
+	}
 }
 add_action( 'wp_ajax_taxonomy_image_create_association', 'taxonomy_image_plugin_create_association' );
 
