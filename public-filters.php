@@ -14,107 +14,91 @@
  */
 
 
-add_filter( 'taxonomy-images-list', 'taxonomy_images_plugin_image_list' );
+add_filter( 'taxonomy-images-get-terms', 'taxonomy_images_plugin_get_terms' );
 add_filter( 'taxonomy-images-queried-term-image', 'taxonomy_images_plugin_get_queried_term_image' );
 
 
 /**
- * List Taxonomy Images.
+ * Get Terms.
  *
- * Generate a list of all terms of a given taxonomy with associated images.
+ * This function adds a custom property (image_id) to each
+ * object returned by WordPress core function get_terms().
+ * This property will be set for all term objects. In cases
+ * where a term has an associated image, "image_id" will
+ * contain the value of the image object's ID property. If
+ * no image has been associated, this property will contain
+ * integer with the value of zero.
  *
- * This is basically a wrapper for get_terms() and get_the_terms(). The distiction
- * can be made by via the 'context' argument. If this argument is not set
- * (or has an empty value) this function will use get_the_terms(). However,
- * if the 'context' argument is set to 'all', this function will use get_terms().
+ * Recognized Arguments:
  *
- * When get_the_terms() is triggered, terms of the given taxonomy, associated
- * with the current global post object will be targeted. In cases where terms
- * associated with a specific post need to be targeted, users should set the
- * 'post_id' argument with the ID of the desired post.
+ * cache_images (bool) A non-empty value will trigger
+ * this function to query for and cache all associated
+ * images. An empty value disables caching. Defaults to
+ * boolean true.
  *
- * When get_terms() is triggered, all terms of the given taxonomy that have
- * images will be targeted. Triggering get_terms() will allow this function
- * to recognize additional arguments which can be used to modify the output.
- * The follow additional parameters are recognized:
+ * having_images (bool) A non-empty value will trigger
+ * this function to only return terms that have associated
+ * images. If an empty value is passed all terms of the 
+ * taxonomy will be returned.
  *
- * exclude - A comma- or space-delimited string of term ids to exclude from
- * the results. This argument will be ignored if 'include' is not empty. An
- * array may NOT be used as the value.
+ * taxonomy (string) Name of a registered taxonomy to
+ * return terms from. Defaults to "category".
  *
- * include - A comma- or space-delimited string of term ids to include in the
- * results. An array may NOT be used as the value.
+ * term_args (array) Arguments to pass as the second
+ * parameter of get_terms(). Defaults to an empty array.
  *
- * This function should never be called directly in any file however it may
- * be access in any template file via the 'taxonomy-images-list' filter.
- *
- * @param     array     Arguments to pass as the second parameter of get_terms().
- * @return    string    HTML markup displaying taxonomy images. HTML comment upon error.
+ * @param     array     Named arguments. Please see above for explantion.
  *
  * @access    private
- * @since     2010-12-04
+ * @since     0.7
  */
-function taxonomy_images_plugin_image_list( $args ) {
+function taxonomy_images_plugin_get_terms( $args ) {
 	$args = wp_parse_args( $args, array(
-		'context'   => '',
-		'size'      => 'detail',
-		'taxonomy'  => 'category',
-		'post_id'   => 0,
-		'item'      => '<li><a href="%1$s">%2$s</a></li>',
-		'container' => '<ul>%1$s</ul>',
-
-		'include'  => null,
-		'exclude'  => null,
-
+		'cache_images'  => true,
+		'having_images' => true,
+		'taxonomy'      => 'category',
+		'term_args'     => array(),
 		) );
 
-	$o = '';
-	$terms = array();
-
-	/* No taxonomy defined return an html comment. */
 	if ( ! taxonomy_exists( $args['taxonomy'] ) ) {
-		$tax = strip_tags( trim( $args['taxonomy'] ) );
-		return '<!-- taxonomy_image_plugin: ' . sprintf( __( '"%1$s" does not exist on your WordPress installation.', 'taxonomy-images' ), esc_html( $args['taxonomy'] ) ) . ' -->';
+		return array();
 	}
 
 	/* Get all image/term associations. */
-	$associations = taxonomy_image_plugin_get_associations();
+	$assoc = taxonomy_image_plugin_get_associations();
 
 	/* Get all terms in the given taxonomy. */
-	if ( 'all' === $args['context'] ) {
-		$tax_args = array();
-		if ( isset( $args['exclude'] ) ) {
-			$tax_args['exclude'] = $args['exclude'];
-		}
-		if ( isset( $args['include'] ) ) {
-			$tax_args['include'] = $args['include'];
-		}
-		$terms = get_terms( $args['taxonomy'], $tax_args );
-	}
-	else {
-		$terms = get_the_terms( $args['post_id'], $args['taxonomy'] );
-	}
+	$terms = get_terms( $args['taxonomy'], $args['term_args'] );
 
 	if ( is_wp_error( $terms ) ) {
-		return '<!-- taxonomy_image_plugin: ' . __( 'Error retrieving terms.', 'taxonomy-images' ) . ' -->';
+		return array();
 	}
 
-	foreach ( (array) $terms as $term ) {
-		$image = '';
-		if ( array_key_exists( $term->term_taxonomy_id, $associations ) ) {
-			$image = wp_get_attachment_image( $associations[$term->term_taxonomy_id], $args['size'] );
+	$image_ids = array();
+	$terms_with_images = array();
+	foreach ( (array) $terms as $key => $term ) {
+		$terms[$key]->image_id = 0;
+		if ( array_key_exists( $term->term_taxonomy_id, $assoc ) ) {
+			$terms[$key]->image_id = $assoc[$term->term_taxonomy_id];
+			$image_ids[] = $assoc[$term->term_taxonomy_id];
+			if ( ! empty( $args['having_images'] ) ) {
+				$terms_with_images[] = $terms[$key];
+			}
 		}
-		if ( empty( $image ) ) {
-			continue;
+	}
+	$image_ids = array_unique( $image_ids );
+
+	if ( ! empty( $args['cache_images'] ) ) {
+		$images = array();
+		if ( ! empty( $image_ids ) ) {
+			$images = get_children( array( 'include' => implode( ',', $image_ids ) ) );
 		}
-		$o.= sprintf( $args['item'], esc_url( get_term_link( $term, $term->taxonomy ) ), $image );
 	}
 
-	if ( ! empty( $o ) ) {
-		return sprintf( $args['container'], $o );
+	if ( ! empty( $terms_with_images ) ) {
+		return $terms_with_images;
 	}
-
-	return '<!-- taxonomy_image_plugin: ' . __( 'There are no terms with images.', 'taxonomy-images' ) . ' -->';
+	return $terms;
 }
 
 
