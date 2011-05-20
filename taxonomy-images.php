@@ -785,7 +785,9 @@ function taxonomy_image_plugin_media_upload_popup_js() {
 		'termBefore'  => __( '&#8220;', 'taxonomy-images' ),
 		'termAfter'   => __( '&#8221;', 'taxonomy-images' ),
 		'associating' => __( 'Associating &#8230;', 'taxonomy-images' ),
-		'success'     => __( 'Successfully Associated!', 'taxonomy-images' )
+		'success'     => __( 'Successfully Associated', 'taxonomy-images' ),
+		'removing'    => __( 'Removing &#8230;', 'taxonomy-images' ),
+		'removed'     => __( 'Successfully Removed', 'taxonomy-images' )
 		) );
 }
 add_action( 'admin_print_scripts-media-upload-popup', 'taxonomy_image_plugin_media_upload_popup_js' );

@@ -47,7 +47,7 @@ jQuery( document ).ready( function( $ ) {
 
 		var button = $( this );
 		originalText = button.html();
-		button.html( 'Removing ...' );
+		button.html( TaxonomyImagesModal.removing );
 
 		$.ajax( {
 			url: ajaxurl,
@@ -61,7 +61,7 @@ jQuery( document ).ready( function( $ ) {
 			cache: false,
 			success: function ( response ) {
 				if ( 'good' === response.status ) {
-					button.html( 'Removed' ).fadeOut( 200, function() {
+					button.html( TaxonomyImagesModal.removed ).fadeOut( 200, function() {
 						$( this ).hide();
 						var selector = parent.document.getElementById( 'taxonomy_image_plugin_' + ID );
 						$( selector ).attr( 'src', below.taxonomyImagesPlugin.img_src );
