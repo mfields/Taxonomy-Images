@@ -77,10 +77,6 @@ jQuery( document ).ready( function( $ ) {
 		return false;
 	} );
 
-	$( '.taxonomy-images-close-modal' ).live( 'click', function() {
-		below.tb_remove();
-	} );
-
 	$( '.taxonomy-images-modal .create-association' ).live( 'click', function () {
 
 		var button, selector, originalText;

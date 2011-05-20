@@ -1,9 +1,3 @@
-.taxonomy-images-close-modal {
-	display:none;
-	font-weight:bold;
-	color:#c00;
-	cursor:pointer;
-}
 .taxonomy-images-modal .create-association .term-name {
 	font-style:italic;
 }

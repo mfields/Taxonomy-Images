@@ -94,8 +94,6 @@ function taxonomy_image_plugin_modal_button( $fields, $post ) {
 
 		$o.= '<span class="remove-association">' . sprintf( __( 'Remove association with %1$s', 'taxonomy-images' ), '<span class="term-name">' . esc_html__( 'this term', 'taxonomy-images' ) . '</span>' ) . '</span>';
 
-		$o.= '<span class="taxonomy-images-close-modal"> ' . esc_html__( 'Close window', 'taxonomy-images' ) . '</span>';
-
 		$o.= '<input class="taxonomy-image-button-image-id" name="' . esc_attr( 'taxonomy-image-button-image-id-' . $image_id ) . '" type="hidden" value="' . esc_attr( $image_id ) . '" />';
 
 		$o.= '<input class="taxonomy-image-button-nonce-create" name="' . esc_attr( 'taxonomy-image-button-nonce-create-' . $image_id ) . '" type="hidden" value="' . wp_create_nonce( 'taxonomy-image-plugin-create-association' ) . '" />';
