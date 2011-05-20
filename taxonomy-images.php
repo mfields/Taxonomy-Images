@@ -835,7 +835,6 @@ function taxonomy_image_plugin_css_admin() {
 }
 add_action( 'admin_print_styles-edit-tags.php', 'taxonomy_image_plugin_css_admin' );
 add_action( 'admin_print_styles-media-upload-popup', 'taxonomy_image_plugin_css_admin' );
-add_action( 'admin_print_styles-settings_page_taxonomy_image_plugin_settings', 'taxonomy_image_plugin_css_admin' );
 
 
 /**
