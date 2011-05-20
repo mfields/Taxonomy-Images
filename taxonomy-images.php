@@ -82,7 +82,7 @@ add_action( 'init', 'taxonomy_image_plugin_add_image_size' );
  *
  * @access    private
  * @since     2010-10-28
- * @alter     2011-03-03
+ * @alter     0.7
  */
 function taxonomy_image_plugin_modal_button( $fields, $post ) {
 	if ( isset( $fields['image-size'] ) && isset( $post->ID ) ) {
@@ -112,7 +112,7 @@ add_filter( 'attachment_fields_to_edit', 'taxonomy_image_plugin_modal_button', 2
 /**
  * Get Image Source.
  *
- * Return a raw uri to a custom image size.
+ * Return a uri to a custom image size.
  *
  * If size doesn't exist, attempt to create a resized version.
  * The output of this function should be escaped before printing to the browser.
@@ -225,7 +225,6 @@ function taxonomy_image_plugin_sanitize_associations( $associations ) {
 /**
  * Sanitize Settings.
  *
- * A callback for the WordPress Settings API.
  * This function is responsible for ensuring that
  * all values within the 'taxonomy_image_plugin_settings'
  * options are of the appropriate type.
@@ -234,7 +233,7 @@ function taxonomy_image_plugin_sanitize_associations( $associations ) {
  * @return    array     Multi-dimensional array of sanitized settings.
  *
  * @access    private
- * @since     2011-05-15
+ * @since     0.7
  */
 function taxonomy_image_plugin_settings_sanitize( $dirty ) {
 	$clean = array();
@@ -310,7 +309,7 @@ add_action( 'admin_init', 'taxonomy_image_plugin_register_settings' );
  * Create the admin menu link for the settings page.
  *
  * @access    private
- * @since     2011-05-15
+ * @since     0.7
  */
 function taxonomy_images_settings_menu() {
 	add_options_page(
@@ -335,7 +334,7 @@ add_action( 'admin_menu', 'taxonomy_images_settings_menu' );
  * taxonomy_image_plugin_control_taxonomies()
  *
  * @access    private
- * @since     2011-05-15
+ * @since     0.7
  */
 function taxonomy_image_plugin_settings_page() {
 	print "\n" . '<div class="wrap">';
@@ -352,6 +351,11 @@ function taxonomy_image_plugin_settings_page() {
 }
 
 
+/**
+ * Taxonomy Checklist.
+ *
+ * @access    private
+ */
 function taxonomy_image_plugin_control_taxonomies() {
 	$settings = get_option( 'taxonomy_image_plugin_settings' );
 	$taxonomies = get_taxonomies( array(), 'objects' );
@@ -680,8 +684,8 @@ function taxonomy_image_plugin_taxonomy_columns( $original_columns ) {
  * @param     int       Term ID.
  * @return    string    @see taxonomy_image_plugin_control_image()
  *
- * @access private
- * @since 2010-11-08
+ * @access    private
+ * @since     2010-11-08
  */
 function taxonomy_image_plugin_taxonomy_rows( $row, $column_name, $term_id ) {
 	if ( 'taxonomy_image_plugin' === $column_name ) {
@@ -723,7 +727,13 @@ function taxonomy_image_plugin_edit_tag_form( $term, $taxonomy ) {
 }
 
 /**
+ * Image Control.
+ *
+ * Creates all image controls on edit-tags.php.
+ *
  * @todo      Remove rel tag from link... will need to adjust js to accomodate.
+ * @since     0.7
+ * @access    private
  */
 function taxonomy_image_plugin_control_image( $term_id, $taxonomy ) {
 
@@ -814,7 +824,7 @@ add_action( 'admin_print_scripts-edit-tags.php', 'taxonomy_image_plugin_edit_tag
 /**
  * Custom styles.
  *
- * @since     2011-05-12
+ * @since     0.7
  * @access    private
  */
 function taxonomy_image_plugin_css_admin() {
@@ -831,7 +841,7 @@ add_action( 'admin_print_styles-settings_page_taxonomy_image_plugin_settings', '
 /**
  * Thickbox styles.
  *
- * @since     2011-05-12
+ * @since     0.7
  * @access    private
  */
 function taxonomy_image_plugin_css_thickbox() {
@@ -1003,10 +1013,10 @@ function taxonomy_images_plugin_image_list( $args ) {
  * 'taxonomy-images-queried-term-image' filter.
  *
  * @param     array     Named array of arguments.
- * @return    mixed     Plese see 'return' section for description.
+ * @return    mixed     Plese see 'return' section above for description.
  *
  * @access    private
- * @since     2010-05-17
+ * @since     0.7
  */
 function taxonomy_images_plugin_get_queried_term_image( $args ) {
 	$args = wp_parse_args( $args, array(
@@ -1073,7 +1083,7 @@ function taxonomy_images_plugin_get_queried_term_image( $args ) {
  * @return    bool
  *
  * @access    private
- * @since     2011-05-16
+ * @since     0.7
  */
 function taxonomy_image_plugin_is_screen_active() {
 	$screen = get_current_screen();
