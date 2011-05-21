@@ -18,7 +18,7 @@
  */
 
 
-add_filter( 'taxonomy-images-get-terms', 'taxonomy_images_plugin_get_terms' );
+add_filter( 'taxonomy-images-get-terms', 'taxonomy_images_plugin_get_terms', 10, 2 );
 add_filter( 'taxonomy-images-queried-term-image', 'taxonomy_images_plugin_get_queried_term_image' );
 
 
@@ -56,7 +56,7 @@ add_filter( 'taxonomy-images-queried-term-image', 'taxonomy_images_plugin_get_qu
  * @access    private
  * @since     0.7
  */
-function taxonomy_images_plugin_get_terms( $args ) {
+function taxonomy_images_plugin_get_terms( $default, $args ) {
 	$args = wp_parse_args( $args, array(
 		'cache_images'  => true,
 		'having_images' => true,
