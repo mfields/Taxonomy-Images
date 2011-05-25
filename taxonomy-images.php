@@ -878,3 +878,132 @@ function taxonomy_image_plugin_is_screen_active() {
 	}
 	return false;
 }
+
+
+function afdwersdf() {
+	register_taxonomy_for_object_type( 'category', 'page' );
+	register_taxonomy_for_object_type( 'post_tag', 'page' );
+}
+add_action( 'init', 'afdwersdf', 3 );
+
+
+/**
+ * Cache Images
+ *
+ * Sets the WordPress object cache for all term images
+ * associated to the posts in the provided array. This
+ * function has been created to minimize queries when
+ * using this plugins get_the_terms() style function.
+ *
+ * @param     array          Post objects.
+ *
+ * @access    private
+ * @since     1.1
+ */
+function taxonomy_image_plugin_cache_images( $posts ) {
+	$assoc = taxonomy_image_plugin_get_associations();
+	if ( empty( $assoc ) ) {
+		return;
+	}
+
+	$tt_ids = array();
+	foreach ( (array) $posts as $post ) {
+		if ( ! isset( $post->ID ) || ! isset( $post->post_type ) ) {
+			continue;
+		}
+
+		$taxonomies = get_object_taxonomies( $post->post_type );
+		if ( empty( $taxonomies ) ) {
+			continue;
+		}
+
+		foreach ( $taxonomies as $taxonomy ) {
+			$the_terms = get_the_terms( $post->ID, $taxonomy );
+			foreach ( (array) $the_terms as $term ) {
+				if ( ! isset( $term->term_taxonomy_id ) ) {
+					continue;
+				}
+				$tt_ids[] = $term->term_taxonomy_id;
+			}
+		}
+	}
+	$tt_ids = array_filter( array_unique( $tt_ids ) );
+
+	$image_ids = array();
+	foreach ( $tt_ids as $tt_id ) {
+		if ( ! isset( $assoc[$tt_id] ) ) {
+			continue;
+		}
+		if ( in_array( $assoc[$tt_id], $image_ids ) ) {
+			continue;
+		}
+		$image_ids[] = $assoc[$tt_id];
+	}
+
+	if ( empty( $image_ids ) ) {
+		return;
+	}
+
+	get_posts( array(
+		'include'   => $image_ids,
+		'post_type' => 'attachment'
+		) );
+}
+
+
+/**
+ * Cache Images
+ *
+ * Cache all term images associated with posts in
+ * the main WordPress query.
+ *
+ * @param     array          Post objects.
+ *
+ * @access    private
+ * @since     0.7
+ */
+function taxonomy_image_plugin_cache_queried_images() {
+	global $posts;
+	taxonomy_image_plugin_cache_images( $posts );
+}
+add_action( 'template_redirect', 'taxonomy_image_plugin_cache_queried_images' );
+
+
+/**
+ * API Notice
+ *
+ * Alerts the current user that something is not
+ * working as expected. Users will need to have the
+ * appropriate capability to edit themes to see the
+ * message.
+ *
+ * @param     string          Message.
+ * @return    string          Notice.
+ *
+ * @access    private
+ * @since     0.7
+ */
+function taxonomy_image_plugin_notice_api( $message ) {
+	if ( current_user_can( 'edit_themes' ) ) {
+		return "\n\n" . '<div class="dialog notice">' . $message . '</div>';
+	}
+	return '';
+}
+
+function taxonomy_image_plugin_is_registered_taxonomy( $taxonomy, $filter ) {
+	if ( taxonomy_exists( $taxonomy ) ) {
+		return 'yes';
+	}
+
+	$message = '<p>The <strong>taxonomy</strong> argument for ' . esc_html( $filter ) . ' is set to <strong>' . esc_html( $taxonomy ) . '</strong> which is not a registered taxonomy. Please check the spelling and update the argument.</p>';
+
+	$registered_taxonomies = get_taxonomies();
+	if ( !empty( $registered_taxonomies ) ) {
+		$message .= '<p>Here is a list of all registered taxonomies on your installation:</p><ul>';
+		foreach ( $registered_taxonomies as $taxonomy ) {
+			$message .= '<li>' . esc_html( $taxonomy ) . '</li>';
+		}
+		$message .= '</ul>';
+	}
+	return taxonomy_image_plugin_notice_api( $message );
+}

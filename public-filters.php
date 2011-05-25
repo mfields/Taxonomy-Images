@@ -19,6 +19,8 @@
 
 
 add_filter( 'taxonomy-images-get-terms', 'taxonomy_images_plugin_get_terms', 10, 2 );
+add_filter( 'taxonomy-images-get-the-terms', 'taxonomy_images_plugin_get_the_terms', 10, 2 );
+add_filter( 'taxonomy-images-list-the-terms', 'taxonomy_images_plugin_list_the_terms', 10, 2 );
 add_filter( 'taxonomy-images-queried-term-image', 'taxonomy_images_plugin_get_queried_term_image' );
 
 
@@ -51,29 +53,44 @@ add_filter( 'taxonomy-images-queried-term-image', 'taxonomy_images_plugin_get_qu
  * term_args (array) Arguments to pass as the second
  * parameter of get_terms(). Defaults to an empty array.
  *
+ * @param     mixed     Default value for apply_filters() to return. Unused.
  * @param     array     Named arguments. Please see above for explantion.
+ * @return    array     List of term objects.
  *
- * @access    private
+ * @access    private   Use the 'taxonomy-images-get-terms' filter.
  * @since     0.7
  */
-function taxonomy_images_plugin_get_terms( $default, $args ) {
+function taxonomy_images_plugin_get_terms( $default, $args = array() ) {
+	$filter = 'taxonomy-images-get-terms';
+	$function = __FUNCTION__ . '()';
+
+	if ( $filter !== current_filter() ) {
+		return taxonomy_image_plugin_notice_api( '<p><code>' . $function . '</code> has been called directly. Please use the "' . $filter . '" filter instead.</p>' );
+	}
+
 	$args = wp_parse_args( $args, array(
 		'cache_images'  => true,
 		'having_images' => true,
-		'taxonomy'      => 'category',
+		'taxonomy'      => 'Xcategory',
 		'term_args'     => array(),
 		) );
 
-	if ( ! taxonomy_exists( $args['taxonomy'] ) ) {
+	/*
+	 * Is taxonomy registered?
+	 * If not, users will be presented a notice and
+	 * we will return early.
+	 */
+	$is_registered_taxonomy = taxonomy_image_plugin_is_registered_taxonomy( $args['taxonomy'], $filter );
+	if ( 'yes' !== $is_registered_taxonomy ) {
+		return $is_registered_taxonomy;
+	}
+
+	$assoc = taxonomy_image_plugin_get_associations();
+	if ( empty( $assoc ) ) {
 		return array();
 	}
 
-	/* Get all image/term associations. */
-	$assoc = taxonomy_image_plugin_get_associations();
-
-	/* Get all terms in the given taxonomy. */
 	$terms = get_terms( $args['taxonomy'], $args['term_args'] );
-
 	if ( is_wp_error( $terms ) ) {
 		return array();
 	}
@@ -103,6 +120,170 @@ function taxonomy_images_plugin_get_terms( $default, $args ) {
 		return $terms_with_images;
 	}
 	return $terms;
+}
+
+
+/**
+ * Get the Terms.
+ *
+ * This function adds a custom property (image_id) to each
+ * object returned by WordPress core function get_the_terms().
+ * This property will be set for all term objects. In cases
+ * where a term has an associated image, "image_id" will
+ * contain the value of the image object's ID property. If
+ * no image has been associated, this property will contain
+ * integer with the value of zero.
+ *
+ * Recognized Arguments:
+ *
+ * having_images (bool) A non-empty value will trigger
+ * this function to only return terms that have associated
+ * images. If an empty value is passed all terms of the
+ * taxonomy will be returned. Optional.
+ *
+ * post_id (int) The post to retrieve terms from. Defaults
+ * to the ID property of the global $post object. Optional.
+ *
+ * taxonomy (string) Name of a registered taxonomy to
+ * return terms from. Defaults to "category". Optional.
+ *
+ * @param     mixed     Default value for apply_filters() to return. Unused.
+ * @param     array     Named arguments. Please see above for explantion.
+ * @return    array     List of term objects. Empty array if none were found.
+ *
+ * @access    private   Use the 'taxonomy-images-get-the-terms' filter.
+ * @since     0.7
+ */
+function taxonomy_images_plugin_get_the_terms( $default, $args ) {
+	$filter   = 'taxonomy-images-get-the-terms';
+	$function = __FUNCTION__ . '()';
+
+	if ( $filter !== current_filter() ) {
+		return taxonomy_image_plugin_notice_api( '<p><code>' . $function . '</code> has been called directly. Please use the <strong>' . $filter . '</strong> filter instead.</p>' );
+	}
+
+	$args = wp_parse_args( $args, array(
+		'having_images' => true,
+		'post_id'       => 0,
+		'taxonomy'      => 'category',
+		) );
+
+	/*
+	 * Is taxonomy registered?
+	 * If not, users will be presented a notice and
+	 * we will return early.
+	 */
+	$is_registered_taxonomy = taxonomy_image_plugin_is_registered_taxonomy( $args['taxonomy'], $filter );
+	if ( 'yes' !== $is_registered_taxonomy ) {
+		return $is_registered_taxonomy;
+	}
+
+	$assoc = taxonomy_image_plugin_get_associations();
+
+	if ( empty( $args['post_id'] ) ) {
+		$args['post_id'] = get_the_ID();
+	}
+
+	$terms = get_the_terms( $args['post_id'], $args['taxonomy'] );
+
+	if ( empty( $terms ) ) {
+		return array();
+	}
+
+	$terms_with_images = array();
+	foreach ( (array) $terms as $key => $term ) {
+		$terms[$key]->image_id = 0;
+		if ( array_key_exists( $term->term_taxonomy_id, $assoc ) ) {
+			$terms[$key]->image_id = $assoc[$term->term_taxonomy_id];
+			if ( ! empty( $args['having_images'] ) ) {
+				$terms_with_images[] = $terms[$key];
+			}
+		}
+	}
+	if ( ! empty( $terms_with_images ) ) {
+		return $terms_with_images;
+	}
+	return $terms;
+}
+
+
+/**
+ * List the Terms.
+ *
+ * Lists all terms associated with a given post that
+ * have associated images. Terms without images will
+ * not be included.
+ *
+ * Recognized Arguments:
+ *
+ * after (string) Text to append to the output. Optional.
+ * Defaults to an empty string.
+ *
+ * before (string) Text to preppend to the output. Optional.
+ * Defaults to an empty string.
+ *
+ * image_size (string) Any registered image size. Values will
+ * vary from installation to installation. Image sizes defined
+ * in core include: "thumbnail", "medium" and "large". "Fullsize"
+ * may also be used to get the un modified image that was uploaded.
+ * Optional. Defaults to "thumbnail".
+ *
+ * post_id (int) The post to retrieve terms from. Defaults
+ * to the ID property of the global $post object. Optional.
+ *
+ * taxonomy (string) Name of a registered taxonomy to
+ * return terms from. Defaults to "category". Optional.
+ *
+ * @param     mixed     Default value for apply_filters() to return. Unused.
+ * @param     array     Named arguments. Please see above for explantion.
+ * @return    string    HTML markup.
+ *
+ * @access    private   Use the 'taxonomy-images-list-the-terms' filter.
+ * @since     0.7
+ */
+function taxonomy_images_plugin_list_the_terms( $default, $args ) {
+	$filter   = 'taxonomy-images-list-the-terms';
+	$function = __FUNCTION__ . '()';
+
+	if ( $filter !== current_filter() ) {
+		return taxonomy_image_plugin_notice_api( '<p><strong>' . $function . '</strong> has been called directly. Please use the <strong>' . $filter . '</strong> filter instead.</p>' );
+	}
+
+	$args = wp_parse_args( $args, array(
+		'after'      => '',
+		'before'     => '',
+		'image_size' => 'thumbnail',
+		'post_id'    => 0,
+		'taxonomy'   => 'category',
+		) );
+
+	$args['having_images'] = true;
+
+	/*
+	 * Is taxonomy registered?
+	 * If not, users will be presented a notice and
+	 * we will return early.
+	 */
+	$is_registered_taxonomy = taxonomy_image_plugin_is_registered_taxonomy( $args['taxonomy'], $filter );
+	if ( 'yes' !== $is_registered_taxonomy ) {
+		return $is_registered_taxonomy;
+	}
+
+	$terms = apply_filters( 'taxonomy-images-get-the-terms', '', $args );
+
+	if ( empty( $terms ) ) {
+		return '';
+	}
+
+	$output = '';
+	foreach( $terms as $term ) {
+		if ( ! isset( $term->image_id ) ) {
+			continue;
+		}
+		$output .= wp_get_attachment_image( $term->image_id, $args['image_size'] );
+	}
+
+	return $args['before'] . $output . $args['after'];
 }
 
 
@@ -151,13 +332,25 @@ function taxonomy_images_plugin_get_terms( $default, $args ) {
  * however it may be access in any template file via the
  * 'taxonomy-images-queried-term-image' filter.
  *
+ * @param     mixed     Default value for apply_filters() to return. Unused.
  * @param     array     Named array of arguments.
  * @return    mixed     Plese see 'return' section above for description.
  *
- * @access    private
+ * @access    private   Use the 'taxonomy-images-queried-term-image' filter.
  * @since     0.7
  */
 function taxonomy_images_plugin_get_queried_term_image( $args ) {
+	$filter   = 'taxonomy-images-get-queried-term-image';
+	$function = __FUNCTION__ . '()';
+
+	if ( $filter !== current_filter() ) {
+		return taxonomy_image_plugin_notice_api( '<p><strong>' . $function . '</strong> has been called directly. Please use the <strong>' . $filter . '</strong> filter instead.</p>' );
+	}
+
+	if ( ! is_category() && ! is_tag() && ! is_taxonomy() ) {
+		return taxonomy_image_plugin_notice_api( '<p>The <strong>' . $filter . '</strong> has been used in an unsupported template file. This function can only be used in taxonomy archives. Please move to category.php, tag.php, taxonomy.php or a more specific taxonomy template. Please read up on <a href="http://codex.wordpress.org/Template_Hierarchy">Template Hierarchy</a> in the Codex for specific templates.</p>' );
+	}
+
 	$args = wp_parse_args( $args, array(
 		'return' => 'html',
 		'size'   => 'thumbnail',
