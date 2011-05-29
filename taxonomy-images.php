@@ -985,7 +985,7 @@ add_action( 'template_redirect', 'taxonomy_image_plugin_cache_queried_images' );
  */
 function taxonomy_image_plugin_notice_api( $message ) {
 	if ( current_user_can( 'edit_themes' ) ) {
-		return "\n\n" . '<div class="dialog notice">' . $message . '</div>';
+		return "\n\n" . '<div class="">' . $message . '</div>';
 	}
 	return '';
 }
