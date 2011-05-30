@@ -303,17 +303,17 @@ function taxonomy_images_plugin_list_the_terms( $default, $args ) {
  * @since     0.7
  */
 function taxonomy_images_plugin_get_queried_term_image( $default, $args = array() ) {
+	$filter = 'taxonomy-images-queried-term-image';
+	if ( $filter !== current_filter() ) {
+		taxonomy_image_plugin_please_use_filter( __FUNCTION__, $filter );
+	}
+
 	$args = wp_parse_args( $args, array(
 		'after'      => '',
 		'attr'       => array(),
 		'before'     => '',
 		'image_size' => 'thumbnail',
 		) );
-
-	$filter = 'taxonomy-images-queried-term-image';
-	if ( $filter !== current_filter() ) {
-		taxonomy_image_plugin_please_use_filter( __FUNCTION__, $filter );
-	}
 
 	$ID = apply_filters( 'taxonomy-images-queried-term-image-id', 0 );
 
@@ -353,8 +353,12 @@ function taxonomy_images_plugin_get_queried_term_image( $default, $args = array(
  * @since     0.7
  */
 function taxonomy_images_plugin_get_queried_term_image_id( $default ) {
-	$obj = get_queried_object();
 	$filter = 'taxonomy-images-queried-term-image-id';
+	if ( $filter !== current_filter() ) {
+		taxonomy_image_plugin_please_use_filter( __FUNCTION__, $filter );
+	}
+
+	$obj = get_queried_object();
 
 	/* Return early is we are not in a term archive. */
 	if ( ! isset( $obj->term_taxonomy_id ) ) {
@@ -372,10 +376,6 @@ function taxonomy_images_plugin_get_queried_term_image_id( $default ) {
 	$ID = 0;
 	if ( array_key_exists( $tt_id, $associations ) ) {
 		$ID = absint( $associations[$tt_id] );
-	}
-
-	if ( $filter !== current_filter() ) {
-		taxonomy_image_plugin_please_use_filter( __FUNCTION__, $filter );
 	}
 
 	return $ID;
@@ -444,14 +444,14 @@ function taxonomy_images_plugin_get_queried_term_image_object( $default ) {
  * @since     0.7
  */
 function taxonomy_images_plugin_get_queried_term_image_url( $default, $args = array() ) {
-	$args = wp_parse_args( $args, array(
-		'image_size' => 'thumbnail',
-		) );
-
 	$filter = 'taxonomy-images-queried-term-image-url';
 	if ( $filter !== current_filter() ) {
 		taxonomy_image_plugin_please_use_filter( __FUNCTION__, $filter );
 	}
+
+	$args = wp_parse_args( $args, array(
+		'image_size' => 'thumbnail',
+		) );
 
 	$data = apply_filters( 'taxonomy-images-queried-term-image-data', array(), $args );
 
@@ -489,14 +489,14 @@ function taxonomy_images_plugin_get_queried_term_image_url( $default, $args = ar
  * @since     0.7
  */
 function taxonomy_images_plugin_get_queried_term_image_data( $default, $args = array() ) {
-	$args = wp_parse_args( $args, array(
-		'image_size' => 'thumbnail',
-		) );
-
 	$filter = 'taxonomy-images-queried-term-image-data';
 	if ( $filter !== current_filter() ) {
 		taxonomy_image_plugin_please_use_filter( __FUNCTION__, $filter );
 	}
+
+	$args = wp_parse_args( $args, array(
+		'image_size' => 'thumbnail',
+		) );
 
 	$ID = apply_filters( 'taxonomy-images-queried-term-image-id', 0 );
 
