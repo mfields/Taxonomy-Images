@@ -239,7 +239,7 @@ function taxonomy_images_plugin_list_the_terms( $default, $args ) {
 	$args = wp_parse_args( $args, array(
 		'after'        => '</ul>',
 		'after_image'  => '</li>',
-		'before'       => '<ul class="taxonomy-image-list">',
+		'before'       => '<ul class="taxonomy-images-the-terms">',
 		'before_image' => '<li>',
 		'image_size'   => 'thumbnail',
 		'post_id'      => 0,
