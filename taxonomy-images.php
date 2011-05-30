@@ -880,13 +880,6 @@ function taxonomy_image_plugin_is_screen_active() {
 }
 
 
-function afdwersdf() {
-	register_taxonomy_for_object_type( 'category', 'page' );
-	register_taxonomy_for_object_type( 'post_tag', 'page' );
-}
-add_action( 'init', 'afdwersdf', 3 );
-
-
 /**
  * Cache Images
  *
