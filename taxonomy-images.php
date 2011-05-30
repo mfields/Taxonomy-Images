@@ -136,7 +136,7 @@ add_filter( 'attachment_fields_to_edit', 'taxonomy_image_plugin_modal_button', 2
  * If size doesn't exist, attempt to create a resized version.
  * The output of this function should be escaped before printing to the browser.
  *
- * @param     int       The database id of an image attachment.
+ * @param     int       Image ID.
  * @return    string    URI of custom image on success; emtpy string otherwise.
  *
  * @access    private.
@@ -198,13 +198,13 @@ function taxonomy_image_plugin_get_image_src( $id ) {
 	 * - Return uri to default.png.
 	 */
 	if ( is_admin() ) {
-		$associations = taxonomy_image_plugin_sanitize_associations( get_option( 'taxonomy_image_plugin' ) );
-		foreach ( $associations as $term => $img ) {
+		$assoc = taxonomy_image_plugin_get_associations();
+		foreach ( $assoc as $term => $img ) {
 			if ( $img === $id ) {
-				unset( $associations[$term] );
+				unset( $assoc[$term] );
 			}
 		}
-		update_option( 'taxonomy_image_plugin', $associations );
+		update_option( 'taxonomy_image_plugin', $assoc );
 		return taxonomy_image_plugin_url( 'default.png' );
 	}
 
