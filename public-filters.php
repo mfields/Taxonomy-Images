@@ -78,15 +78,7 @@ function taxonomy_images_plugin_get_terms( $default, $args = array() ) {
 		'term_args'     => array(),
 		) );
 
-	/*
-	 * Is taxonomy registered?
-	 * If not, users will be presented a notice and
-	 * we will return early.
-	 */
-	$is_registered_taxonomy = taxonomy_image_plugin_is_registered_taxonomy( $args['taxonomy'], $filter );
-	if ( 'yes' !== $is_registered_taxonomy ) {
-		return $is_registered_taxonomy;
-	}
+	taxonomy_image_plugin_check_taxonomy( $args['taxonomy'], $filter );
 
 	$assoc = taxonomy_image_plugin_get_associations();
 	if ( empty( $assoc ) ) {
@@ -169,15 +161,7 @@ function taxonomy_images_plugin_get_the_terms( $default, $args ) {
 		'taxonomy'      => 'category',
 		) );
 
-	/*
-	 * Is taxonomy registered?
-	 * If not, users will be presented a notice and
-	 * we will return early.
-	 */
-	$is_registered_taxonomy = taxonomy_image_plugin_is_registered_taxonomy( $args['taxonomy'], $filter );
-	if ( 'yes' !== $is_registered_taxonomy ) {
-		return $is_registered_taxonomy;
-	}
+	taxonomy_image_plugin_check_taxonomy( $args['taxonomy'], $filter );
 
 	$assoc = taxonomy_image_plugin_get_associations();
 
@@ -260,15 +244,7 @@ function taxonomy_images_plugin_list_the_terms( $default, $args ) {
 
 	$args['having_images'] = true;
 
-	/*
-	 * Is taxonomy registered?
-	 * If not, users will be presented a notice and
-	 * we will return early.
-	 */
-	$is_registered_taxonomy = taxonomy_image_plugin_is_registered_taxonomy( $args['taxonomy'], $filter );
-	if ( 'yes' !== $is_registered_taxonomy ) {
-		return $is_registered_taxonomy;
-	}
+	taxonomy_image_plugin_check_taxonomy( $args['taxonomy'], $filter );
 
 	$terms = apply_filters( 'taxonomy-images-get-the-terms', '', $args );
 

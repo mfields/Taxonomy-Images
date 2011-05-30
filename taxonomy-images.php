@@ -963,40 +963,25 @@ add_action( 'template_redirect', 'taxonomy_image_plugin_cache_queried_images' );
 
 
 /**
- * API Notice
+ * Check Taxonmy
  *
- * Alerts the current user that something is not
- * working as expected. Users will need to have the
- * appropriate capability to edit themes to see the
- * message.
+ * Wrapper for WordPress core functions taxonomy_exists().
+ * In the event that an unregistered taxonomy is passed a
+ * E_USER_NOTICE will be generated.
  *
- * @param     string          Message.
- * @return    string          Notice.
+ * @param     string         Taxonomy name as registered with WordPress.
+ * @param     string         Name of the current function or filter.
+ * @return    bool           True if taxonomy exists, False if not.
  *
  * @access    private
  * @since     0.7
  */
-function taxonomy_image_plugin_notice_api( $message ) {
-	if ( current_user_can( 'edit_themes' ) ) {
-		return "\n\n" . '<div class="">' . $message . '</div>';
-	}
-	return '';
-}
-
-function taxonomy_image_plugin_is_registered_taxonomy( $taxonomy, $filter ) {
+function taxonomy_image_plugin_check_taxonomy( $taxonomy, $filter ) {
 	if ( taxonomy_exists( $taxonomy ) ) {
-		return 'yes';
+		return true;
 	}
 
-	$message = '<p>The <strong>taxonomy</strong> argument for ' . esc_html( $filter ) . ' is set to <strong>' . esc_html( $taxonomy ) . '</strong> which is not a registered taxonomy. Please check the spelling and update the argument.</p>';
+	trigger_error( 'The <strong>taxonomy</strong> argument for ' . esc_html( $filter ) . ' is set to <strong>' . esc_html( $taxonomy ) . '</strong> which is not a registered taxonomy. Please check the spelling and update the argument.' );
 
-	$registered_taxonomies = get_taxonomies();
-	if ( !empty( $registered_taxonomies ) ) {
-		$message .= '<p>Here is a list of all registered taxonomies on your installation:</p><ul>';
-		foreach ( $registered_taxonomies as $taxonomy ) {
-			$message .= '<li>' . esc_html( $taxonomy ) . '</li>';
-		}
-		$message .= '</ul>';
-	}
-	return taxonomy_image_plugin_notice_api( $message );
+	return false;
 }
