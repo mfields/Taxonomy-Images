@@ -7,11 +7,11 @@ Requires at least:    2.9.2
 Tested up to:         3.0.1
 Stable tag:           trunk
 
-Easily associate images from your media library to categories, tags and custom taxonomies.
+Associate images from your media library to categories, tags and custom taxonomies.
 
 ==Description==
 
-The Taxonomy Images plugin allows you to associate images from your Media Library to categories, tags and custom taxonomies. For usage instructions please view the [screencast](http://screenr.com/zMx).
+For usage instructions please view the [screencast](http://screenr.com/zMx).
 
 = Displaying Images in a Page or Post =
 
