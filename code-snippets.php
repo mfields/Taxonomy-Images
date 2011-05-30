@@ -7,6 +7,20 @@
 exit;
 
 
+
+/*
+ * Append the term images to content + excerpt.
+ */
+function mytheme_append_the_term_images( $content ) {
+	return $content . apply_filters( 'taxonomy-images-list-the-terms', '', array(
+		'image_size' => 'detail',
+		) );
+}
+add_filter( 'the_content', 'mytheme_append_the_term_images' );
+add_filter( 'the_excerpt', 'mytheme_append_the_term_images' );
+
+
+
 /*
  * Queried Term Image.
  *
