@@ -171,6 +171,10 @@ function taxonomy_images_plugin_get_the_terms( $default, $args ) {
 
 	$terms = get_the_terms( $args['post_id'], $args['taxonomy'] );
 
+	if ( is_wp_error( $terms ) ) {
+		return array();
+	}
+
 	if ( empty( $terms ) ) {
 		return array();
 	}
