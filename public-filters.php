@@ -78,7 +78,9 @@ function taxonomy_images_plugin_get_terms( $default, $args = array() ) {
 		'term_args'     => array(),
 		) );
 
-	taxonomy_image_plugin_check_taxonomy( $args['taxonomy'], $filter );
+	if ( ! taxonomy_image_plugin_check_taxonomy( $args['taxonomy'], $filter ) ) {
+		return array();
+	}
 
 	$assoc = taxonomy_image_plugin_get_associations();
 	if ( empty( $assoc ) ) {
@@ -161,7 +163,9 @@ function taxonomy_images_plugin_get_the_terms( $default, $args ) {
 		'taxonomy'      => 'category',
 		) );
 
-	taxonomy_image_plugin_check_taxonomy( $args['taxonomy'], $filter );
+	if ( ! taxonomy_image_plugin_check_taxonomy( $args['taxonomy'], $filter ) ) {
+		return array();
+	}
 
 	$assoc = taxonomy_image_plugin_get_associations();
 
@@ -248,7 +252,9 @@ function taxonomy_images_plugin_list_the_terms( $default, $args ) {
 
 	$args['having_images'] = true;
 
-	taxonomy_image_plugin_check_taxonomy( $args['taxonomy'], $filter );
+	if ( ! taxonomy_image_plugin_check_taxonomy( $args['taxonomy'], $filter ) ) {
+		return '';
+	}
 
 	$terms = apply_filters( 'taxonomy-images-get-the-terms', '', $args );
 
@@ -367,6 +373,10 @@ function taxonomy_images_plugin_get_queried_term_image_id( $default ) {
 			'<code>' . esc_html( $filter ) . '</code>',
 			'<a href="http://codex.wordpress.org/Template_Hierarchy">' . esc_html( 'template hierarchy', 'taxonomy-images' ) . '</a>'
 			) );
+		return 0;
+	}
+
+	if ( ! taxonomy_image_plugin_check_taxonomy( $obj->taxonomy, $filter ) ) {
 		return 0;
 	}
 

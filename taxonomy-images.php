@@ -1055,17 +1055,35 @@ add_action( 'template_redirect', 'taxonomy_image_plugin_cache_queried_images' );
  * @since     0.7
  */
 function taxonomy_image_plugin_check_taxonomy( $taxonomy, $filter ) {
-	if ( taxonomy_exists( $taxonomy ) ) {
-		return true;
-	}
-
-	trigger_error( sprintf( esc_html__( 'The %1$s argument for %2$s is set to %3$s which is not a registered taxonomy. Please check the spelling and update the argument.', 'taxonomy-images' ),
+	if ( ! taxonomy_exists( $taxonomy ) ) {
+		trigger_error( sprintf( esc_html__( 'The %1$s argument for %2$s is set to %3$s which is not a registered taxonomy. Please check the spelling and update the argument.', 'taxonomy-images' ),
 		'<var>' . esc_html__( 'taxonomy', 'taxonomy-images' ) . '</var>',
 		'<code>' . esc_html( $filter ) . '</code>',
 		'<strong>' . esc_html( $taxonomy ) . '</strong>'
 		) );
+		return false;
+	}
 
-	return false;
+	$settings = get_option( 'taxonomy_image_plugin_settings' );
+
+	if ( ! isset( $settings['taxonomies'] ) ) {
+		$link = '';
+		if ( current_user_can( 'manage_options' ) ) {
+			$link = '<a href="' . esc_url(  ) . '">' . esc_html__( 'Manage settings.', 'taxonomy-images' ) . '</a>';
+		}
+		trigger_error( sprintf( esc_html__( 'No taxonomies have image support. %1$s', 'taxonomy-images' ), taxonomy_images_plugin_settings_page_link() ) );
+		return false;
+	}
+
+	if ( ! in_array( $taxonomy, (array) $settings['taxonomies'] ) ) {
+		trigger_error( sprintf( esc_html__( 'The %1$s taxonomy does not have image support. %2$s', 'taxonomy-images' ),
+		'<strong>' . esc_html( $taxonomy ) . '</strong>',
+		taxonomy_images_plugin_settings_page_link()
+		) );
+		return false;
+	}
+
+	return true;
 }
 
 
@@ -1091,7 +1109,7 @@ function taxonomy_image_plugin_please_use_filter( $function, $filter ) {
 
 
 /**
- * Settings Link.
+ * Actions Link.
  *
  * Add a link to this plugin's setting page when it
  * displays in the table on wp-admin/plugins.php.
@@ -1103,17 +1121,42 @@ function taxonomy_image_plugin_please_use_filter( $function, $filter ) {
  * @access    private
  * @since     0.7
  */
-function myplugin_plugin_action_links( $links, $file ) {
+function taxonomy_images_plugin_row_meta( $links, $file ) {
 	static $plugin_name = '';
 
 	if ( empty( $plugin_name ) ) {
 		$plugin_name = plugin_basename( __FILE__ );
 	}
 
-	if ( $plugin_name == $file ) {
-		$links[] = '<a href="' . esc_url( add_query_arg( array( 'page' => 'taxonomy_image_plugin_settings' ), admin_url( 'options-general.php' ) ) ) . '">' . esc_html( 'Settings', 'taxonomy-images' ) . '</a>';
+	if ( $plugin_name != $file ) {
+		return $links;
+	}
+
+	$link = taxonomy_images_plugin_settings_page_link();
+
+	if ( ! empty( $link ) ) {
+		$links[] = $link;
 	}
 
 	return $links;
 }
-add_filter( 'plugin_action_links', 'myplugin_plugin_action_links', 10, 2 );
+add_filter( 'plugin_row_meta', 'taxonomy_images_plugin_row_meta', 10, 2 );
+
+
+/**
+ * Settings Page Link.
+ *
+ * @param     array     Localized link text.
+ * @return    string    HTML link to settings page.
+ *
+ * @access    private
+ * @since     0.7
+ */
+function taxonomy_images_plugin_settings_page_link() {
+	$link = '';
+	if ( current_user_can( 'manage_options' ) ) {
+		$link = '<a href="' . esc_url( add_query_arg( array( 'page' => 'taxonomy_image_plugin_settings' ), admin_url( 'options-general.php' ) ) ) . '">' . esc_html__( 'Manage Settings', 'taxonomy-images' ) . '</a>';
+	}
+
+	return $link;
+}
