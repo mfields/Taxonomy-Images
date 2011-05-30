@@ -249,11 +249,13 @@ function taxonomy_images_plugin_list_the_terms( $default, $args ) {
 	}
 
 	$args = wp_parse_args( $args, array(
-		'after'      => '',
-		'before'     => '',
-		'image_size' => 'thumbnail',
-		'post_id'    => 0,
-		'taxonomy'   => 'category',
+		'after'        => '</ul>',
+		'after_image'  => '</li>',
+		'before'       => '<ul class="taxonomy-image-list">',
+		'before_image' => '<li>',
+		'image_size'   => 'thumbnail',
+		'post_id'      => 0,
+		'taxonomy'     => 'category',
 		) );
 
 	$args['having_images'] = true;
@@ -279,10 +281,16 @@ function taxonomy_images_plugin_list_the_terms( $default, $args ) {
 		if ( ! isset( $term->image_id ) ) {
 			continue;
 		}
-		$output .= wp_get_attachment_image( $term->image_id, $args['image_size'] );
+		$image = wp_get_attachment_image( $term->image_id, $args['image_size'] );
+		if ( ! empty( $image ) ) {
+			$output .= $args['before_image'] . '<a href="' . esc_url( get_term_link( $term, $term->taxonomy ) ) . '">' . $image .'</a>' . $args['after_image'];
+		}
 	}
 
-	return $args['before'] . $output . $args['after'];
+	if ( ! empty( $output ) ) {
+		return $args['before'] . $output . $args['after'];
+	}
+	return '';
 }
 
 
