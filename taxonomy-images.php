@@ -1029,7 +1029,11 @@ function taxonomy_image_plugin_check_taxonomy( $taxonomy, $filter ) {
 		return true;
 	}
 
-	trigger_error( 'The <strong>taxonomy</strong> argument for ' . esc_html( $filter ) . ' is set to <strong>' . esc_html( $taxonomy ) . '</strong> which is not a registered taxonomy. Please check the spelling and update the argument.' );
+	trigger_error( sprintf( esc_html__( 'The %1$s argument for %2$s is set to %3$s which is not a registered taxonomy. Please check the spelling and update the argument.', 'taxonomy-images' ),
+		'<var>' . esc_html__( 'taxonomy', 'taxonomy-images' ) . '</var>',
+		'<code>' . esc_html( $filter ) . '</code>',
+		'<strong>' . esc_html( $taxonomy ) . '</strong>'
+		) );
 
 	return false;
 }
