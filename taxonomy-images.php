@@ -25,10 +25,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 define( 'TAXONOMY_IMAGE_PLUGIN_URL',        plugin_dir_url( __FILE__ ) );
-define( 'TAXONOMY_IMAGE_PLUGIN_DIR',        trailingslashit( dirname( __FILE__ ) ) );
 
-require_once( TAXONOMY_IMAGE_PLUGIN_DIR . 'deprecated.php' );
-require_once( TAXONOMY_IMAGE_PLUGIN_DIR . 'public-filters.php' );
+require_once( trailingslashit( dirname( __FILE__ ) ) . 'deprecated.php' );
+require_once( trailingslashit( dirname( __FILE__ ) ) . 'public-filters.php' );
 
 
 $taxonomy_image_plugin_image = array(
