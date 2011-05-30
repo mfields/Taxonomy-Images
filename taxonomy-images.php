@@ -1033,3 +1033,32 @@ function taxonomy_image_plugin_check_taxonomy( $taxonomy, $filter ) {
 
 	return false;
 }
+
+
+/**
+ * Settings Link.
+ *
+ * Add a link to this plugin's setting page when it
+ * displays in the table on wp-admin/plugins.php.
+ *
+ * @param     array          List of links.
+ * @param     string         Current plugin being displayed in plugins.php.
+ * @return    array          Potentially modified list of links.
+ *
+ * @access    private
+ * @since     0.7
+ */
+function myplugin_plugin_action_links( $links, $file ) {
+	static $plugin_name = '';
+
+	if ( empty( $plugin_name ) ) {
+		$plugin_name = plugin_basename( __FILE__ );
+	}
+
+	if ( $plugin_name == $file ) {
+		$links[] = '<a href="' . esc_url( add_query_arg( array( 'page' => 'taxonomy_image_plugin_settings' ), admin_url( 'options-general.php' ) ) ) . '">' . esc_html( 'Settings', 'taxonomy-images' ) . '</a>';
+	}
+
+	return $links;
+}
+add_filter( 'plugin_action_links', 'myplugin_plugin_action_links', 10, 2 );
