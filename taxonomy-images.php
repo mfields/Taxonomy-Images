@@ -29,12 +29,6 @@ require_once( trailingslashit( dirname( __FILE__ ) ) . 'deprecated.php' );
 require_once( trailingslashit( dirname( __FILE__ ) ) . 'public-filters.php' );
 
 
-$taxonomy_image_plugin_image = array(
-	'name' => 'detail',
-	'size' => array( 75, 75, true )
-	);
-
-
 /**
  * Version Number.
  *
@@ -64,18 +58,33 @@ function taxonomy_image_plugin_url( $file = '' ) {
 
 
 /**
+ * Detail Image Size.
+ *
+ * @return    array     Configuration for the "detail" image size.
+ * @access    private
+ * @since     0.7
+ */
+function taxonomy_image_plugin_detail_image_size() {
+	return array(
+		'name' => 'detail',
+		'size' => array( 75, 75, true )
+		);
+}
+
+
+/**
  * Register custom image size with WordPress.
  *
  * @access    private
  * @since     2010-10-28
  */
 function taxonomy_image_plugin_add_image_size() {
-	global $taxonomy_image_plugin_image;
+	$detail = taxonomy_image_plugin_detail_image_size();
 	add_image_size(
-		$taxonomy_image_plugin_image['name'],
-		$taxonomy_image_plugin_image['size'][0],
-		$taxonomy_image_plugin_image['size'][1],
-		$taxonomy_image_plugin_image['size'][2]
+		$detail['name'],
+		$detail['size'][0],
+		$detail['size'][1],
+		$detail['size'][2]
 		);
 }
 add_action( 'init', 'taxonomy_image_plugin_add_image_size' );
@@ -130,15 +139,14 @@ add_filter( 'attachment_fields_to_edit', 'taxonomy_image_plugin_modal_button', 2
  * @param     int       The database id of an image attachment.
  * @return    string    URI of custom image on success; emtpy string otherwise.
  *
- * @global    array     $taxonomy_image_plugin_image.
  * @access    private.
  * @since     2010-10-28
  */
 function taxonomy_image_plugin_get_image_src( $id ) {
-	global $taxonomy_image_plugin_image;
+	$detail = taxonomy_image_plugin_detail_image_size();
 
 	/* Return url to custom intermediate size if it exists. */
-	$img = image_get_intermediate_size( $id, $taxonomy_image_plugin_image['name'] );
+	$img = image_get_intermediate_size( $id, $detail['name'] );
 	if ( isset( $img['url'] ) ) {
 		return $img['url'];
 	}
@@ -153,16 +161,16 @@ function taxonomy_image_plugin_get_image_src( $id ) {
 
 			/* Attempt to create a new downsized version of the original image. */
 			$new = image_resize( $path,
-				$taxonomy_image_plugin_image['size'][0],
-				$taxonomy_image_plugin_image['size'][1],
-				$taxonomy_image_plugin_image['size'][2]
+				$detail['size'][0],
+				$detail['size'][1],
+				$detail['size'][2]
 				);
 
 			/* Image creation successful. Generate and cache image metadata. Return url. */
 			if ( ! is_wp_error( $new ) ) {
 				$meta = wp_generate_attachment_metadata( $id, $path );
 				wp_update_attachment_metadata( $id, $meta );
-				$img = image_get_intermediate_size( $id, $taxonomy_image_plugin_image['name'] );
+				$img = image_get_intermediate_size( $id, $detail['name'] );
 				if ( isset( $img['url'] ) ) {
 					return $img['url'];
 				}
