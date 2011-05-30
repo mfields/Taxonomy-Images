@@ -68,7 +68,7 @@ add_filter( 'taxonomy-images-queried-term-image-url',    'taxonomy_images_plugin
 function taxonomy_images_plugin_get_terms( $default, $args = array() ) {
 	$filter = 'taxonomy-images-get-terms';
 	if ( $filter !== current_filter() ) {
-		trigger_error( 'The <code>' . __FUNCTION__ . '()</code> has been called directly. Please use the <code>' . $filter . '</code> filter instead.' );
+		taxonomy_image_plugin_please_use_filter( __FUNCTION__, $filter );
 	}
 
 	$args = wp_parse_args( $args, array(
@@ -152,7 +152,7 @@ function taxonomy_images_plugin_get_terms( $default, $args = array() ) {
 function taxonomy_images_plugin_get_the_terms( $default, $args ) {
 	$filter = 'taxonomy-images-get-the-terms';
 	if ( $filter !== current_filter() ) {
-		trigger_error( 'The <code>' . __FUNCTION__ . '()</code> has been called directly. Please use the <code>' . $filter . '</code> filter instead.' );
+		taxonomy_image_plugin_please_use_filter( __FUNCTION__, $filter );
 	}
 
 	$args = wp_parse_args( $args, array(
@@ -233,7 +233,7 @@ function taxonomy_images_plugin_get_the_terms( $default, $args ) {
 function taxonomy_images_plugin_list_the_terms( $default, $args ) {
 	$filter = 'taxonomy-images-list-the-terms';
 	if ( $filter !== current_filter() ) {
-		trigger_error( 'The <code>' . __FUNCTION__ . '()</code> has been called directly. Please use the <code>' . $filter . '</code> filter instead.' );
+		taxonomy_image_plugin_please_use_filter( __FUNCTION__, $filter );
 	}
 
 	$args = wp_parse_args( $args, array(
@@ -312,7 +312,7 @@ function taxonomy_images_plugin_get_queried_term_image( $default, $args = array(
 
 	$filter = 'taxonomy-images-queried-term-image';
 	if ( $filter !== current_filter() ) {
-		trigger_error( 'The <code>' . __FUNCTION__ . '()</code> has been called directly. Please use the <code>' . $filter . '</code> filter instead.' );
+		taxonomy_image_plugin_please_use_filter( __FUNCTION__, $filter );
 	}
 
 	$ID = apply_filters( 'taxonomy-images-queried-term-image-id', 0 );
@@ -375,7 +375,7 @@ function taxonomy_images_plugin_get_queried_term_image_id( $default ) {
 	}
 
 	if ( $filter !== current_filter() ) {
-		trigger_error( 'The <code>' . __FUNCTION__ . '()</code> has been called directly. Please use the <code>' . $filter . '</code> filter instead.' );
+		taxonomy_image_plugin_please_use_filter( __FUNCTION__, $filter );
 	}
 
 	return $ID;
@@ -406,7 +406,7 @@ function taxonomy_images_plugin_get_queried_term_image_id( $default ) {
 function taxonomy_images_plugin_get_queried_term_image_object( $default ) {
 	$filter = 'taxonomy-images-queried-term-image-object';
 	if ( $filter !== current_filter() ) {
-		trigger_error( 'The <code>' . __FUNCTION__ . '()</code> has been called directly. Please use the <code>' . $filter . '</code> filter instead.' );
+		taxonomy_image_plugin_please_use_filter( __FUNCTION__, $filter );
 	}
 
 	$ID = apply_filters( 'taxonomy-images-queried-term-image-id', 0 );
@@ -450,7 +450,7 @@ function taxonomy_images_plugin_get_queried_term_image_url( $default, $args = ar
 
 	$filter = 'taxonomy-images-queried-term-image-url';
 	if ( $filter !== current_filter() ) {
-		trigger_error( 'The <code>' . __FUNCTION__ . '()</code> has been called directly. Please use the <code>' . $filter . '</code> filter instead.' );
+		taxonomy_image_plugin_please_use_filter( __FUNCTION__, $filter );
 	}
 
 	$data = apply_filters( 'taxonomy-images-queried-term-image-data', array(), $args );
@@ -495,7 +495,7 @@ function taxonomy_images_plugin_get_queried_term_image_data( $default, $args = a
 
 	$filter = 'taxonomy-images-queried-term-image-data';
 	if ( $filter !== current_filter() ) {
-		trigger_error( 'The <code>' . __FUNCTION__ . '()</code> has been called directly. Please use the <code>' . $filter . '</code> filter instead.' );
+		taxonomy_image_plugin_please_use_filter( __FUNCTION__, $filter );
 	}
 
 	$ID = apply_filters( 'taxonomy-images-queried-term-image-id', 0 );
