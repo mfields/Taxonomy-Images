@@ -1109,7 +1109,7 @@ function taxonomy_image_plugin_please_use_filter( $function, $filter ) {
 
 
 /**
- * Actions Link.
+ * Plugin Meta Links.
  *
  * Add a link to this plugin's setting page when it
  * displays in the table on wp-admin/plugins.php.
@@ -1132,11 +1132,12 @@ function taxonomy_images_plugin_row_meta( $links, $file ) {
 		return $links;
 	}
 
-	$link = taxonomy_images_plugin_settings_page_link();
-
+	$link = taxonomy_images_plugin_settings_page_link( __( 'Settings', 'taxonomy-images' ) );
 	if ( ! empty( $link ) ) {
 		$links[] = $link;
 	}
+
+	$links[] = '<a href="http://wordpress.mfields.org/donate/">' . __( 'Donate', 'taxonomy-images' ) . '</a>';
 
 	return $links;
 }
@@ -1152,10 +1153,14 @@ add_filter( 'plugin_row_meta', 'taxonomy_images_plugin_row_meta', 10, 2 );
  * @access    private
  * @since     0.7
  */
-function taxonomy_images_plugin_settings_page_link() {
+function taxonomy_images_plugin_settings_page_link( $link_text = '' ) {
+	if ( empty( $link_text ) ) {
+		$link_text = esc_html__( 'Manage Settings', 'taxonomy-images' );
+	}
+
 	$link = '';
 	if ( current_user_can( 'manage_options' ) ) {
-		$link = '<a href="' . esc_url( add_query_arg( array( 'page' => 'taxonomy_image_plugin_settings' ), admin_url( 'options-general.php' ) ) ) . '">' . esc_html__( 'Manage Settings', 'taxonomy-images' ) . '</a>';
+		$link = '<a href="' . esc_url( add_query_arg( array( 'page' => 'taxonomy_image_plugin_settings' ), admin_url( 'options-general.php' ) ) ) . '">' . $link_text . '</a>';
 	}
 
 	return $link;
