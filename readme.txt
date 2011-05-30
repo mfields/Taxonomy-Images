@@ -78,7 +78,7 @@ I've released a handfull of plugins dealing with taxonomies. Please see my [plug
 1. Unzip the package and upload to your /wp-content/plugins/ directory.
 1. Log into WordPress and navigate to the "Plugins" panel.
 1. Activate the plugin.
-1. Click the "Taxonomy Images" link under the Settings section in the admin menu. There you can select the taxonomys that you would like to add image support for.
+1. Click the "Taxonomy Images" link under the Settings section in the admin menu. There you can select the taxonomies that you would like to add image support for.
 
 ==Changelog==
 
