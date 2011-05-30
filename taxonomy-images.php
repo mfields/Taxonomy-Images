@@ -1011,7 +1011,7 @@ add_action( 'template_redirect', 'taxonomy_image_plugin_cache_queried_images' );
 
 
 /**
- * Check Taxonmy
+ * Check Taxonomy
  *
  * Wrapper for WordPress core functions taxonomy_exists().
  * In the event that an unregistered taxonomy is passed a
