@@ -312,7 +312,7 @@ function taxonomy_image_plugin_register_settings() {
 		);
 	add_settings_field(
 		'taxonomy-images',
-		__( 'Exclude Taxonomies', 'taxonomy-images' ),
+		__( 'Taxonomies', 'taxonomy-images' ),
 		'taxonomy_image_plugin_control_taxonomies',
 		'taxonomy_image_plugin_settings',
 		'taxonomy_image_plugin_settings'
@@ -651,16 +651,20 @@ add_action( 'init', 'taxonomy_image_plugin_get_associations' );
 /**
  * Dynamically create hooks for each taxonomy.
  *
+ * Adds hooks for each taxonomy that the user has given
+ * an image interface to via settings page. These hooks
+ * enable the image interface on wp-admin/edit-tags.php.
+ *
  * @access    private
  * @since     0.4.3
+ * @alter     0.7
  */
 function taxonomy_image_plugin_add_dynamic_hooks() {
 	$settings = get_option( 'taxonomy_image_plugin_settings' );
-	$taxonomies = get_taxonomies();
-	foreach ( $taxonomies as $taxonomy ) {
-		if ( isset( $settings['taxonomies'] ) && in_array( $taxonomy, $settings['taxonomies'] ) ) {
-			continue;
-		}
+	if ( ! isset( $settings['taxonomies'] ) ) {
+		return;
+	}
+	foreach ( $settings['taxonomies'] as $taxonomy ) {
 		add_filter( 'manage_' . $taxonomy . '_custom_column', 'taxonomy_image_plugin_taxonomy_rows', 15, 3 );
 		add_filter( 'manage_edit-' . $taxonomy . '_columns',  'taxonomy_image_plugin_taxonomy_columns' );
 		add_action( $taxonomy . '_edit_form_fields',          'taxonomy_image_plugin_edit_tag_form', 10, 2 );
@@ -943,13 +947,11 @@ function taxonomy_image_plugin_is_screen_active() {
 	}
 
 	$settings = get_option( 'taxonomy_image_plugin_settings' );
-
-	$taxonomies = array();
-	if ( isset( $settings['taxonomies'] ) ) {
-		$taxonomies = (array) $settings['taxonomies'];
+	if ( ! isset( $settings['taxonomies'] ) ) {
+		return false;
 	}
 
-	if ( ! in_array( $screen->taxonomy, $taxonomies ) ) {
+	if ( in_array( $screen->taxonomy, $settings['taxonomies'] ) ) {
 		return true;
 	}
 	return false;
