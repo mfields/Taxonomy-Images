@@ -919,14 +919,34 @@ add_action( 'wp_print_styles', 'taxonomy_image_plugin_css_public' );
 
 
 /**
- * Create associations setting in the options table on plugin activation.
+ * Activation.
+ *
+ * Two entries in the options table will created when this
+ * plugin is activated in the event that they do not exist.
+ *
+ * 'taxonomy_image_plugin' (array) A flat list of all assocaitions
+ * made by this plugin. Keys are integers representing the
+ * term_taxonomy_id of terms. Values are integers representing the
+ * ID property of an image attachment.
+ *
+ * 'taxonomy_image_plugin_settings' (array) A multi-dimensional array
+ * of user-defined settings. As of version 0.7, only one key is used:
+ * 'taxonomies' which is a whitelist of registered taxonomies having ui
+ * that support the custom image ui provided by this plugin.
  *
  * @access    private
+ * @alter     0.7
  */
 function taxonomy_image_plugin_activate() {
 	$associations = get_option( 'taxonomy_image_plugin' );
 	if ( false === $associations ) {
 		add_option( 'taxonomy_image_plugin', array() );
+	}
+	$settings = get_option( 'taxonomy_image_plugin_settings' );
+	if ( false === $settings ) {
+		add_option( 'taxonomy_image_plugin_settings', array(
+			'taxonomies' => array()
+			) );
 	}
 }
 register_activation_hook( __FILE__, 'taxonomy_image_plugin_activate' );
