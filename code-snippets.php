@@ -78,7 +78,6 @@ print '<pre>' . htmlentities( $img ) . '</pre>';
 
 
 
-
 /*
  * Queried Term Image ID.
  *
