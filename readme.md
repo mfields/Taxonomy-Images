@@ -208,6 +208,7 @@ Changelog
 ---------
 
 __0.7__
+
 * No longer breaks display of the [Better Plugin Compatibility Control](http://wordpress.org/extend/plugins/better-plugin-compatibility-control/) plugin.
 * Created a custom filter interface for plugin and theme integration.
 * Lots of inline documentation added.
@@ -225,10 +226,12 @@ __0.7__
 * All global variables and constants have been removed or deprecated.
 
 __0.6__
+
 * Never released.
 * Completely recoded.
 
 __0.5__
+
 * __UPDATE:__ Direct link to upload new files from edit-tag.php has been introduced.
 * __UPDATE:__ Ability to create an image/term association immediately after upload has been introduced.
 * __UPDATE:__ Users can now delete image/term associations.
@@ -238,26 +241,32 @@ __0.5__
 * __UPDATE:__ Removed all debug functions.
 
 __0.4.4__
+
 * __BUGFIX:__ get_image_html() Now populates the image's alt attribute with appropriate data. Props to [jaygoldman](http://wordpress.org/support/profile/jaygoldman).
 
 __0.4.3__
+
 * __UPDATE:__ Support for WordPress 3.0 has been added. Support for all beta versions of 3.0 has been dropped.
 * __COMPAT:__ Removed use of deprecated function is_taxonomy() - props to [anointed](http://profiles.wordpress.org/users/anointed).
 * __COMPAT:__ Included a definition for taxonomy_exists() function for backwards compatibility with 2.9 branch. This function is new in WordPress version 3.0.
 
 __0.4.2__
+
 * __UPDATE:__ Changed button name from "Category" to "Taxonomy".
 * __UPDATE:__ Support for 2.9 branch has been added again.
 
 __0.4.1__
+
 * __UPDATE:__ Added support for dynamic taxonomy hooks for _tag_row()
 * __BROKEN:__ Support for 2.9 branch has been temporarily removed.
 
 __0.4__
+
 * __BUGFIX:__ get_thumb() now returns the fullsize url if there is no appropriate intermediate image.
 * __UPDATE:__ Added "taxonomy_images_shortcode".
 
 __0.3__
+
 * __COMPAT:__ Changed the firing order of every hook untilizing the 'category_rows' method to 15. This allows this plugin to be compatible with [Reveal IDs for WP Admin](http://wordpress.org/extend/plugins/reveal-ids-for-wp-admin-25/). Thanks to [Peter Kahoun](http://profiles.wordpress.org/kahi/)
 * __COMPAT:__ Added Version check for PHP5.
 * __UPDATE:__ `$settings` and `$locale` are now public properties.
@@ -266,4 +275,5 @@ __0.3__
 * __BUGFIX:__ Deleted the register_deactivation_hook() function -> sorry to all 8 who downloaded this plugin so far :)
 
 __0.2__
+
 * Original Release - Works With: wp 2.9.1.
