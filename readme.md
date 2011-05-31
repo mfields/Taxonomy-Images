@@ -1,27 +1,21 @@
-===Taxonomy Images===
+Taxonomy Images
+===============
 
-Contributors:         mfields
-Donate link:          http://wordpress.mfields.org/donate/
-Tags:                 taxonomy, tag, category, image, upload, media
-Requires at least:    3.1
-Tested up to:         3.2-beta2-18055
-Stable tag:           trunk
+A WordPress plugin that enables you to associate images from your media library to categories, tags and custom taxonomies. For usage instructions please view the [screencast](http://screenr.com/zMx).
 
-Associate images from your media library to categories, tags and custom taxonomies.
 
-==Description==
-
-For usage instructions please view the [screencast](http://screenr.com/zMx).
-
-= Displaying Your Images in Your Theme =
+Displaying Your Images in Your Theme
+------------------------------------
 
 There are a few filters that you can use in your theme to display the image associations created by this plugin. Please read below for detailed information.
 
-= Display a single image representing the term archive =
+
+Display a single image representing the term archive
+----------------------------------------------------
 
 The following filter will display the image associated with the term asked for in the query string of the url. This filter only works in views that naturally use templates like category.php, tag.php taxonomy.php and all of their derivatives. Please read about [template hierarchy](http://codex.wordpress.org/Template_Hierarchy) for more information about these templates. The simplest use of this filter looks like:
 
-`print apply_filters( 'taxonomy-images-queried-term-image', '' );`
+    print apply_filters( 'taxonomy-images-queried-term-image', '' );
 
 This code will generate and print an image tag. It's output can be modifed by passig an optional third parameter to apply filters. This parameter is an array and the following keys may be set:
 
@@ -35,58 +29,58 @@ This code will generate and print an image tag. It's output can be modifed by pa
 
 Here's an example of what a fully customized version of this filter might look like:
 
-`print apply_filters( 'taxonomy-images-queried-term-image', '', array(
-	'after' => '</div>'
-	'attr' => array(
-		'alt'   => 'Custom alternative text',
-		'class' => 'my-class-list bunnies turtles',
-		'src'   => 'this-is-where-the-image-lives.png',
-		'title' => 'Custom Title',
-		),
-	'before' => '<div id="my-custom-div">',
-	'image_size' => 'medium',
-	) );
-`
+    print apply_filters( 'taxonomy-images-queried-term-image', '', array(
+        'after' => '</div>'
+    'attr' => array(
+        'alt'   => 'Custom alternative text',
+        'class' => 'my-class-list bunnies turtles',
+        'src'   => 'this-is-where-the-image-lives.png',
+        'title' => 'Custom Title',
+        ),
+    'before' => '<div id="my-custom-div">',
+    'image_size' => 'medium',
+    ) );
 
-= Similar functionality =
+
+Similar functionality
+---------------------
 
 If you just need to get the database ID for the image, you may want to use:
 
-`$image_id = apply_filters( 'taxonomy-images-queried-term-image-id', 0 );`
+    $image_id = apply_filters( 'taxonomy-images-queried-term-image-id', 0 );
 
 If you need to get the full object of the image, you may want to use:
 
-`$image = apply_filters( 'taxonomy-images-queried-term-image-object', '' );`
+    $image = apply_filters( 'taxonomy-images-queried-term-image-object', '' );
 
 If you need to get the url to the image, you may want to use the following:
 
-`$image_url = apply_filters( 'taxonomy-images-queried-term-image-url', '' );`
+    $image_url = apply_filters( 'taxonomy-images-queried-term-image-url', '' );
 
 You can specify the size of the image in an option third parameter:
 
-`
-$image_url = apply_filters( 'taxonomy-images-queried-term-image-url', '', array(
-	'image_size' => 'medium'
-	) );
-`
+    $image_url = apply_filters( 'taxonomy-images-queried-term-image-url', '', array(
+        'image_size' => 'medium'
+        ) );
+
 
 If you need data about the image, you may want to use:
 
-`$image_data = apply_filters( 'taxonomy-images-queried-term-image-data', '' );`
+    $image_data = apply_filters( 'taxonomy-images-queried-term-image-data', '' );
 
 You can specify the size of the image in an option third parameter:
 
-`
-$image_data = apply_filters( 'taxonomy-images-queried-term-image-data', '', array(
-	'image_size' => 'medium'
-	) );
-`
 
-= List term images associated with a post object =
+    $image_data = apply_filters( 'taxonomy-images-queried-term-image-data', '', array(
+        'image_size' => 'medium'
+        ) );
+
+List term images associated with a post object
+----------------------------------------------
 
 When a post is being displayed you may want to display all of the images associated with all of the terms that are associated with the post (a mouthful? Yes indeed!). The `taxonomy-images-list-the-terms` filter does this. Here's what it looks like in its simplest form:
 
-`print apply_filters( 'taxonomy-images-list-the-terms', '' );`
+    print apply_filters( 'taxonomy-images-list-the-terms', '' );
 
 This filter accepts an optional third parameter that you can use to customize its output. It is an array which recognizes the following keys:
 
@@ -106,29 +100,27 @@ This filter accepts an optional third parameter that you can use to customize it
 
 Here's an example of what a fully customized version of this filter might look like:
 
-`
-print apply_filters( 'taxonomy-images-list-the-terms', '', array(
-	'after'        => '</div>',
-	'after_image'  => '</span>',
-	'before'       => '<div class="my-custom-class-name">',
-	'before_image' => '<span>',
-	'image_size'   => 'detail',
-	'post_id'      => 1234,
-	'taxonomy'     => 'post_tag',
-	) );
-`
+    print apply_filters( 'taxonomy-images-list-the-terms', '', array(
+        'after'        => '</div>',
+        'after_image'  => '</span>',
+        'before'       => '<div class="my-custom-class-name">',
+        'before_image' => '<span>',
+        'image_size'   => 'detail',
+        'post_id'      => 1234,
+        'taxonomy'     => 'post_tag',
+        ) );
 
-= Working with all terms of a given taxonomy =
+Working with all terms of a given taxonomy
+------------------------------------------
 
 You will want to use the 'taxonomy-images-get-terms' filter. This filter is basically a wrapper for WordPress core function [get_terms()](http://codex.wordpress.org/Function_Reference/get_terms). It will return an array of enhanced term objects: each term object will have a custom property named image_id which is an integer representing the database ID of the image associated with the term. This filter can be used to create custom lists of terms. Here's what it's default useage looks like:
 
-`$terms = apply_filters( 'taxonomy-images-get-terms', '' );`
+    $terms = apply_filters( 'taxonomy-images-get-terms', '' );
 
 Here is what php's print_r() function may return:
 
-`
-Array
-(
+    Array
+    (
     [0] => stdClass Object
         (
             [term_id] => 8
@@ -143,7 +135,6 @@ Array
             [image_id] => 44
         )
 )
-`
 
 As you can see, all of the goodness of get_terms() is there with an added bonus: the image_id parameter!
 
@@ -159,26 +150,30 @@ This filter recognizes an optional third parameter which is an array of argument
 
 Here's and example of a simple custom loop that you can make to display all term images:
 
-`
-$terms = apply_filters( 'taxonomy-images-get-terms', '' );
-if ( ! empty( $terms ) ) {
-	print '<ul>';
-	foreach( (array) $terms as $term ) {
-		print '<li><a href="' . esc_url( get_term_link( $term, $term->taxonomy ) ) . '">' . wp_get_attachment_image( $term->image_id, 'detail' ) . '</li>';
-	}
-	print '</ul>';
-}
-`
+    $terms = apply_filters( 'taxonomy-images-get-terms', '' );
+    if ( ! empty( $terms ) ) {
+        print '<ul>';
+        foreach( (array) $terms as $term ) {
+            print '<li><a href="' . esc_url( get_term_link( $term, $term->taxonomy ) ) . '">' . wp_get_attachment_image( $term->image_id, 'detail' ) . '</li>';
+        }
+        print '</ul>';
+    }
 
-= Support =
+
+Support
+-------
 
 If you have questions about integrating this plugin into your site, please [add a new thread to the WordPress Support Forum](http://wordpress.org/tags/taxonomy-images?forum_id=10#postform). I try to answer these, but I may not always be able to. In the event that I cannot there may be someone else who can help.
 
-= Bugs, Suggestions =
+
+Bugs, Suggestions
+-----------------
 
 Development of this plugin is hosted in a public repository on [Github](https://github.com/mfields/Taxonomy-Images). If you find a bug in this plugin or have a suggestion to make it better, please [create a new issue](https://github.com/mfields/Taxonomy-Images/issues/new)
 
-= Hook it up yo! =
+
+Hook it up yo!
+--------------
 
 If you have fallen in love with this plugin and would not be able to sleep without helping out in some way, please see the following list of ways that you can _hook it up!_:
 
@@ -192,10 +187,15 @@ If you have fallen in love with this plugin and would not be able to sleep witho
 
 * __Are you Super-Wicked-Awesome?__ If so, you can always [make a donation](http://wordpress.mfields.org/donate/).
 
-= Need More Taxonomy Plugins? =
+
+Need More Taxonomy Plugins?
+---------------------------
+
 I've released a handfull of plugins dealing with taxonomies. Please see my [plugin page](http://wordpress.org/extend/plugins/profile/mfields) for more info.
 
-==Installation==
+
+Installation
+------------
 
 1. Download
 1. Unzip the package and upload to your /wp-content/plugins/ directory.
@@ -203,14 +203,11 @@ I've released a handfull of plugins dealing with taxonomies. Please see my [plug
 1. Activate the plugin.
 1. Click the "Taxonomy Images" link under the Settings section in the admin menu. There you can select the taxonomies that you would like to add image support for.
 
-== Upgrade Notice ==
 
-= 0.7 =
-Complete rewrite. Better everything. Many bug fixes. 
+Changelog
+---------
 
-==Changelog==
-
-= 0.7 =
+__0.7__
 * No longer breaks display of the [Better Plugin Compatibility Control](http://wordpress.org/extend/plugins/better-plugin-compatibility-control/) plugin.
 * Created a custom filter interface for plugin and theme integration.
 * Lots of inline documentation added.
@@ -227,11 +224,11 @@ Complete rewrite. Better everything. Many bug fixes.
 * Shortcode deprecated.
 * All global variables and constants have been removed or deprecated.
 
-= 0.6 =
+__0.6__
 * Never released.
 * Completely recoded.
 
-= 0.5 =
+__0.5__
 * __UPDATE:__ Direct link to upload new files from edit-tag.php has been introduced.
 * __UPDATE:__ Ability to create an image/term association immediately after upload has been introduced.
 * __UPDATE:__ Users can now delete image/term associations.
@@ -240,27 +237,27 @@ Complete rewrite. Better everything. Many bug fixes.
 * __UPDATE:__ Localization for strings - still need to "fine-tooth-comb" this.
 * __UPDATE:__ Removed all debug functions.
 
-= 0.4.4 =
+__0.4.4__
 * __BUGFIX:__ get_image_html() Now populates the image's alt attribute with appropriate data. Props to [jaygoldman](http://wordpress.org/support/profile/jaygoldman).
 
-= 0.4.3 =
+__0.4.3__
 * __UPDATE:__ Support for WordPress 3.0 has been added. Support for all beta versions of 3.0 has been dropped.
 * __COMPAT:__ Removed use of deprecated function is_taxonomy() - props to [anointed](http://profiles.wordpress.org/users/anointed).
 * __COMPAT:__ Included a definition for taxonomy_exists() function for backwards compatibility with 2.9 branch. This function is new in WordPress version 3.0.
 
-= 0.4.2 =
+__0.4.2__
 * __UPDATE:__ Changed button name from "Category" to "Taxonomy".
 * __UPDATE:__ Support for 2.9 branch has been added again.
 
-= 0.4.1 =
+__0.4.1__
 * __UPDATE:__ Added support for dynamic taxonomy hooks for _tag_row()
 * __BROKEN:__ Support for 2.9 branch has been temporarily removed.
 
-= 0.4 =
+__0.4__
 * __BUGFIX:__ get_thumb() now returns the fullsize url if there is no appropriate intermediate image.
 * __UPDATE:__ Added "taxonomy_images_shortcode".
 
-= 0.3 =
+__0.3__
 * __COMPAT:__ Changed the firing order of every hook untilizing the 'category_rows' method to 15. This allows this plugin to be compatible with [Reveal IDs for WP Admin](http://wordpress.org/extend/plugins/reveal-ids-for-wp-admin-25/). Thanks to [Peter Kahoun](http://profiles.wordpress.org/kahi/)
 * __COMPAT:__ Added Version check for PHP5.
 * __UPDATE:__ `$settings` and `$locale` are now public properties.
@@ -268,5 +265,5 @@ Complete rewrite. Better everything. Many bug fixes.
 * __UPDATE:__ Added argument $term_tax_id to both print_image_html() and get_image_html().
 * __BUGFIX:__ Deleted the register_deactivation_hook() function -> sorry to all 8 who downloaded this plugin so far :)
 
-= 0.2 =
+__0.2__
 * Original Release - Works With: wp 2.9.1.
