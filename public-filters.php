@@ -78,8 +78,13 @@ function taxonomy_images_plugin_get_terms( $default, $args = array() ) {
 		'term_args'     => array(),
 		) );
 
-	if ( ! taxonomy_image_plugin_check_taxonomy( $args['taxonomy'], $filter ) ) {
-		return array();
+	$args['taxonomy'] = explode( ',', $args['taxonomy'] );
+	$args['taxonomy'] = array_map( 'trim', $args['taxonomy'] );
+
+	foreach ( $args['taxonomy'] as $taxonomy ) {
+		if ( ! taxonomy_image_plugin_check_taxonomy( $taxonomy, $filter ) ) {
+			return array();
+		}
 	}
 
 	$assoc = taxonomy_image_plugin_get_associations();
