@@ -434,7 +434,7 @@ function taxonomy_image_plugin_get_term_info( $tt_id ) {
 		return $cache[$tt_id];
 	}
 	global $wpdb;
-	$data = $wpdb->get_results( $wpdb->prepare( "SELECT term_id, taxonomy FROM $wpdb->term_taxonomy WHERE term_taxonomy_id = %s LIMIT 1", $tt_id ) );
+	$data = $wpdb->get_results( $wpdb->prepare( "SELECT term_id, taxonomy FROM $wpdb->term_taxonomy WHERE term_taxonomy_id = %d LIMIT 1", $tt_id ) );
 	if ( isset( $data[0]->term_id ) ) {
 		$cache[$tt_id]['term_id'] = absint( $data[0]->term_id );
 	}
