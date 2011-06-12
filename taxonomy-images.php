@@ -1087,10 +1087,6 @@ function taxonomy_image_plugin_check_taxonomy( $taxonomy, $filter ) {
 	$settings = get_option( 'taxonomy_image_plugin_settings' );
 
 	if ( ! isset( $settings['taxonomies'] ) ) {
-		$link = '';
-		if ( current_user_can( 'manage_options' ) ) {
-			$link = '<a href="' . esc_url(  ) . '">' . esc_html__( 'Manage settings.', 'taxonomy-images' ) . '</a>';
-		}
 		trigger_error( sprintf( esc_html__( 'No taxonomies have image support. %1$s', 'taxonomy-images' ), taxonomy_images_plugin_settings_page_link() ) );
 		return false;
 	}
