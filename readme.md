@@ -207,6 +207,10 @@ Installation
 Changelog
 ---------
 
+__0.7.1__
+
+* Remove unused link code which is throwing an error when no taxonomies support images.
+
 __0.7__
 
 * No longer breaks display of the [Better Plugin Compatibility Control](http://wordpress.org/extend/plugins/better-plugin-compatibility-control/) plugin.

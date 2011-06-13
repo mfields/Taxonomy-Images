@@ -210,6 +210,9 @@ Complete rewrite. Better everything. Many bug fixes.
 
 ==Changelog==
 
+= 0.7.1 =
+* Remove unused link code which is throwing an error when no taxonomies support images.
+
 = 0.7 =
 * No longer breaks display of the [Better Plugin Compatibility Control](http://wordpress.org/extend/plugins/better-plugin-compatibility-control/) plugin.
 * Created a custom filter interface for plugin and theme integration.
