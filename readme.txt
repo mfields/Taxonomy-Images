@@ -210,6 +210,11 @@ Complete rewrite. Better everything. Many bug fixes.
 
 ==Changelog==
 
+= 0.7.3 =
+* Fixed the delete image button on edit-terms.php.
+* Better escaping.
+* Introduced pot file and languages directory.
+
 = 0.7.2 =
 * Return data for fulsize images in archive views. [See this thread](http://wordpress.org/support/topic/image-size-full).
 

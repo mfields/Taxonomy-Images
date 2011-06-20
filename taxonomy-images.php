@@ -3,7 +3,7 @@
 Plugin Name:          Taxonomy Images
 Plugin URI:           http://wordpress.mfields.org/plugins/taxonomy-images/
 Description:          Associate images from your media library to categories, tags and custom taxonomies.
-Version:              0.7.2
+Version:              0.7.3
 Author:               Michael Fields
 Author URI:           http://wordpress.mfields.org/
 License:              GPLv2
@@ -35,10 +35,10 @@ require_once( trailingslashit( dirname( __FILE__ ) ) . 'public-filters.php' );
  * @return    string    The plugin's version number.
  * @access    private
  * @since     0.7
- * @alter     0.7.2
+ * @alter     0.7.3
  */
 function taxonomy_image_plugin_version() {
-	return '0.7.2';
+	return '0.7.3';
 }
 
 

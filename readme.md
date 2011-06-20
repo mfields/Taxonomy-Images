@@ -207,6 +207,12 @@ Installation
 Changelog
 ---------
 
+__0.7.3__
+
+* Fixed the delete image button on edit-terms.php.
+* Better escaping.
+* Introduced pot file and languages directory.
+
 __0.7.2__
 
 * Return data for fulsize images in archive views. [See this thread](http://wordpress.org/support/topic/image-size-full).
