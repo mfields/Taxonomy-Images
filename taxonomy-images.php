@@ -92,6 +92,18 @@ add_action( 'init', 'taxonomy_image_plugin_add_image_size' );
 
 
 /**
+ * Load Plugin Text Domain.
+ *
+ * @access    private
+ * @since     0.7.3
+ */
+function taxonomy_image_plugin_text_domain() {
+	load_plugin_textdomain( 'taxonomy-images', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+}
+add_action( 'init', 'taxonomy_image_plugin_text_domain' );
+
+
+/**
  * Modal Button.
  *
  * Create a button in the modal media window to associate the current image to the term.
