@@ -277,9 +277,11 @@ function taxonomy_image_plugin_settings_sanitize( $dirty ) {
 		}
 	}
 
-	$message = __( 'Taxonomies have been updated', 'taxonomy-images' );
+	/* translators: Notice displayed on the custom administration page. */
+	$message = __( 'Image support for taxonomies successfully updated', 'taxonomy-images' );
 	if ( empty( $clean ) ) {
-		$message = __( 'All taxonomies have been removed', 'taxonomy-images' );
+		/* translators: Notice displayed on the custom administration page. */
+		$message = __( 'Image support has been disabled for all taxonomies.', 'taxonomy-images' );
 	}
 
 	add_settings_error( 'taxonomy_image_plugin_settings', 'taxonomies_updated', esc_html( $message ), 'updated' );
@@ -370,6 +372,8 @@ add_action( 'admin_menu', 'taxonomy_images_settings_menu' );
 function taxonomy_image_plugin_settings_page() {
 	print "\n" . '<div class="wrap">';
 	screen_icon();
+
+	/* translators: Heading of the custom administration page. */
 	print "\n" . '<h2>' . esc_html__( 'Taxonomy Images Plugin Settings', 'taxonomy-images' ) . '</h2>';
 	print "\n" . '<div id="taxonomy-images">';
 	print "\n" . '<form action="options.php" method="post">';
@@ -377,7 +381,8 @@ function taxonomy_image_plugin_settings_page() {
 	settings_fields( 'taxonomy_image_plugin_settings' );
 	do_settings_sections( 'taxonomy_image_plugin_settings' );
 
-	print "\n" . '<div class="button-holder"><input name="Submit" type="submit" value="' . esc_attr__( 'Save Changes', 'taxonomy-images' ) . '" /></div>';
+	/* translators: Button on the custom administration page. */
+	print "\n" . '<div class="button-holder"><input name="submit" type="submit" value="' . esc_attr__( 'Save Changes', 'taxonomy-images' ) . '" /></div>';
 	print "\n" . '</div></form></div>';
 }
 
@@ -421,6 +426,7 @@ function taxonomy_image_plugin_control_taxonomies() {
  * @access    private
  */
 function taxonomy_image_plugin_json_response( $args ) {
+	/* translators: An ajax request has failed for an unknown reason. */
 	$response = wp_parse_args( $args, array(
 		'status' => 'bad',
 		'why'    => esc_html__( 'Unknown error encountered', 'taxonomy-images' )
