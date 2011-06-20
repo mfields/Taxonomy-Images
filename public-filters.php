@@ -498,7 +498,7 @@ function taxonomy_images_plugin_get_queried_term_image_url( $default, $args = ar
  *
  * @param     mixed          Default value for apply_filters() to return. Unused.
  * @param     array          Named Arguments.
- * @return    array          Image data. See WordPress core image_get_intermediate_size().
+ * @return    array          Image data: url, width and height.
  *
  * @access    private        Use the 'taxonomy-images-queried-term-image-data' filter.
  * @since     0.7
@@ -519,8 +519,26 @@ function taxonomy_images_plugin_get_queried_term_image_data( $default, $args = a
 		return array();
 	}
 
-	$data = image_get_intermediate_size( $ID, $args['image_size'] );
-	if ( is_array( $data ) ) {
+	$data = array();
+
+	if ( in_array( $args['image_size'], array( 'full', 'fullsize' ) ) ) {
+		$src = wp_get_attachment_image_src( $ID, 'full' );
+
+		if ( isset( $src[0] ) ) {
+			$data['url'] = $src[0];
+		}
+		if ( isset( $src[1] ) ) {
+			$data['width'] = $src[1];
+		}
+		if ( isset( $src[2] ) ) {
+			$data['height'] = $src[2];
+		}
+	}
+	else {
+		$data = image_get_intermediate_size( $ID, $args['image_size'] );
+	}
+
+	if ( ! empty( $data ) ) {
 		return $data;
 	}
 
