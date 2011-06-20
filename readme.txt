@@ -210,6 +210,9 @@ Complete rewrite. Better everything. Many bug fixes.
 
 ==Changelog==
 
+= 0.7.2 =
+* Return data for fulsize images in archive views. [See this thread](http://wordpress.org/support/topic/image-size-full).
+
 = 0.7.1 =
 * Remove unused link code which is throwing an error when no taxonomies support images.
 

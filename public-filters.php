@@ -502,6 +502,7 @@ function taxonomy_images_plugin_get_queried_term_image_url( $default, $args = ar
  *
  * @access    private        Use the 'taxonomy-images-queried-term-image-data' filter.
  * @since     0.7
+ * @alter     0.7.2
  */
 function taxonomy_images_plugin_get_queried_term_image_data( $default, $args = array() ) {
 	$filter = 'taxonomy-images-queried-term-image-data';

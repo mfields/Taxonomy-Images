@@ -207,6 +207,10 @@ Installation
 Changelog
 ---------
 
+__0.7.2__
+
+* Return data for fulsize images in archive views. [See this thread](http://wordpress.org/support/topic/image-size-full).
+
 __0.7.1__
 
 * Remove unused link code which is throwing an error when no taxonomies support images.
