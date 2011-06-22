@@ -7,8 +7,8 @@
  * WordPress extension including plugins and themes. Direct
  * use of functions defined herein constitutes unsupported use
  * and is strongly discouraged. This file contains custom filters
- * have been added which enable extension authors to interact with
- * this plugin in a responsible manner.
+ * which enable extension authors to interact with this plugin in
+ * a responsible manner.
  *
  * @package      Taxonomy Images
  * @author       Michael Fields <michael@mfields.org>
@@ -40,23 +40,24 @@ add_filter( 'taxonomy-images-queried-term-image-url',    'taxonomy_images_plugin
  * no image has been associated, this property will contain
  * integer with the value of zero.
  *
+ * @see http://codex.wordpress.org/Function_Reference/get_terms
+ *
  * Recognized Arguments:
  *
- * cache_images (bool) A non-empty value will trigger
- * this function to query for and cache all associated
- * images. An empty value disables caching. Defaults to
- * boolean true.
+ * cache_images (bool) If true, all images will be added to
+ * WordPress object cache. If false, not caching will occur.
+ * Defaults to true. Optional.
  *
- * having_images (bool) A non-empty value will trigger
- * this function to only return terms that have associated
- * images. If an empty value is passed all terms of the 
- * taxonomy will be returned.
+ * having_images (bool) If true, the returned array will contain
+ * only terms that have associated images. If false, all terms
+ * of the taxonomy will be returned. Defaults to true. Optional.
  *
  * taxonomy (string) Name of a registered taxonomy to
- * return terms from. Defaults to "category".
+ * return terms from. Defaults to "category". Optional.
  *
  * term_args (array) Arguments to pass as the second
  * parameter of get_terms(). Defaults to an empty array.
+ * Optional.
  *
  * @param     mixed     Default value for apply_filters() to return. Unused.
  * @param     array     Named arguments. Please see above for explantion.
@@ -136,12 +137,13 @@ function taxonomy_images_plugin_get_terms( $default, $args = array() ) {
  * no image has been associated, this property will contain
  * integer with the value of zero.
  *
+ * @see http://codex.wordpress.org/Function_Reference/get_the_terms
+ *
  * Recognized Arguments:
  *
- * having_images (bool) A non-empty value will trigger
- * this function to only return terms that have associated
- * images. If an empty value is passed all terms of the
- * taxonomy will be returned. Optional.
+ * having_images (bool) If true, the returned array will contain
+ * only terms that have associated images. If false, all terms
+ * of the taxonomy will be returned. Defaults to true. Optional.
  *
  * post_id (int) The post to retrieve terms from. Defaults
  * to the ID property of the global $post object. Optional.
@@ -214,16 +216,23 @@ function taxonomy_images_plugin_get_the_terms( $default, $args ) {
  *
  * Recognized Arguments:
  *
- * after (string) Text to append to the output. Optional.
- * Defaults to an empty string.
+ * after (string) Text to append to the output.
+ * Defaults to: '</ul>'. Optional.
  *
- * before (string) Text to preppend to the output. Optional.
- * Defaults to an empty string.
+ * after_image (string) Text to append to each image in the
+ * list. Defaults to: '</li>'. Optional.
+ *
+ * before (string) Text to preppend to the output.
+ * Defaults to: '<ul class="taxonomy-images-the-terms">'.
+ * Optional.
+ *
+ * before_image (string) Text to prepend to each image in the
+ * list. Defaults to: '<li>'. Optional.
  *
  * image_size (string) Any registered image size. Values will
  * vary from installation to installation. Image sizes defined
- * in core include: "thumbnail", "medium" and "large". "Fullsize"
- * may also be used to get the un modified image that was uploaded.
+ * in core include: "thumbnail", "medium" and "large". "fullsize"
+ * may also be used to get the unmodified image that was uploaded.
  * Optional. Defaults to "thumbnail".
  *
  * post_id (int) The post to retrieve terms from. Defaults
@@ -288,7 +297,7 @@ function taxonomy_images_plugin_list_the_terms( $default, $args ) {
 /**
  * Queried Term Image.
  *
- * Prints html marking up the images associated with
+ * Prints html markup for th image associated with
  * the current queried term.
  *
  * Recognized Arguments:
