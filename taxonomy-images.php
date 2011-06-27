@@ -382,7 +382,7 @@ function taxonomy_image_plugin_settings_page() {
 	do_settings_sections( 'taxonomy_image_plugin_settings' );
 
 	/* translators: Button on the custom administration page. */
-	print "\n" . '<div class="button-holder"><input name="submit" type="submit" value="' . esc_attr__( 'Save Changes', 'taxonomy-images' ) . '" /></div>';
+	print "\n" . '<div class="button-holder"><input class="button-primary" name="submit" type="submit" value="' . esc_attr__( 'Save Changes', 'taxonomy-images' ) . '" /></div>';
 	print "\n" . '</div></form></div>';
 }
 

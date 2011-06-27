@@ -45,7 +45,7 @@ add_filter( 'taxonomy-images-queried-term-image-url',    'taxonomy_images_plugin
  * Recognized Arguments:
  *
  * cache_images (bool) If true, all images will be added to
- * WordPress object cache. If false, not caching will occur.
+ * WordPress object cache. If false, caching will not occur.
  * Defaults to true. Optional.
  *
  * having_images (bool) If true, the returned array will contain
