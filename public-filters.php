@@ -158,7 +158,7 @@ function taxonomy_images_plugin_get_terms( $default, $args = array() ) {
  * @access    private   Use the 'taxonomy-images-get-the-terms' filter.
  * @since     0.7
  */
-function taxonomy_images_plugin_get_the_terms( $default, $args ) {
+function taxonomy_images_plugin_get_the_terms( $default, $args = array() ) {
 	$filter = 'taxonomy-images-get-the-terms';
 	if ( $filter !== current_filter() ) {
 		taxonomy_image_plugin_please_use_filter( __FUNCTION__, $filter );
@@ -248,7 +248,7 @@ function taxonomy_images_plugin_get_the_terms( $default, $args ) {
  * @access    private   Use the 'taxonomy-images-list-the-terms' filter.
  * @since     0.7
  */
-function taxonomy_images_plugin_list_the_terms( $default, $args ) {
+function taxonomy_images_plugin_list_the_terms( $default, $args = array() ) {
 	$filter = 'taxonomy-images-list-the-terms';
 	if ( $filter !== current_filter() ) {
 		taxonomy_image_plugin_please_use_filter( __FUNCTION__, $filter );
