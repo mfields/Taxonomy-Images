@@ -1253,12 +1253,10 @@ function taxonomy_images_plugin_extend_get_terms( $terms, $taxonomies, $args ) {
 		}
 	}
 
-	$image_ids = array_unique( $image_ids );
-
 	if ( ! empty( $params['cache_images'] ) ) {
-		$images = array();
+		$image_ids = array_unique( $image_ids );
 		if ( ! empty( $image_ids ) ) {
-			$images = get_children( array( 'include' => implode( ',', $image_ids ) ) );
+			get_children( array( 'include' => implode( ',', $image_ids ) ) );
 		}
 	}
 
