@@ -3,7 +3,7 @@
 Plugin Name:          Taxonomy Images
 Plugin URI:           http://wordpress.mfields.org/plugins/taxonomy-images/
 Description:          Associate images from your media library to categories, tags and custom taxonomies.
-Version:              0.7.3
+Version:              0.7.4
 Author:               Michael Fields
 Author URI:           http://wordpress.mfields.org/
 License:              GPLv2
@@ -35,10 +35,10 @@ require_once( trailingslashit( dirname( __FILE__ ) ) . 'public-filters.php' );
  * @return    string    The plugin's version number.
  * @access    private
  * @since     0.7
- * @alter     0.7.3
+ * @alter     0.7.4
  */
 function taxonomy_image_plugin_version() {
-	return '0.7.3';
+	return '0.7.4';
 }
 
 
@@ -1200,3 +1200,72 @@ function taxonomy_images_plugin_settings_page_link( $link_text = '' ) {
 
 	return $link;
 }
+
+
+/**
+ * Extend Get Terms.
+ *
+ * @param     array|WP_Error     Output of WordPress core function get_terms().
+ * @param     string|array       Taxonomies passed to get_terms().
+ * @param     array              Modifiers for get_terms().
+ *
+ * @return    array|WP_Error     List of term objects or WP_Error class.
+ *
+ * @access    private   Do not call this function.
+ * @since     0.7.4
+ */
+function taxonomy_images_plugin_extend_get_terms( $terms, $taxonomies, $args ) {
+	if ( is_wp_error( $terms ) ) {
+		return $terms;
+	}
+
+	$params = array(
+		'cache_images'  => true,
+		'having_images' => true,
+	);
+
+	if ( isset( $args['taxonomy_images'] ) ) {
+		$params = wp_parse_args( $args['taxonomy_images'], $params );
+	}
+
+	$assoc = taxonomy_image_plugin_get_associations();
+
+	$image_ids = array();
+	$terms_with_images = array();
+	foreach ( (array) $terms as $key => $term ) {
+		$image_id = 0;
+		if ( isset( $terms[$key]->image_id ) ) {
+			$image_id = $terms[$key]->image_id;
+		}
+		else if ( array_key_exists( $term->term_taxonomy_id, $assoc ) ) {
+			$image_id = $assoc[$term->term_taxonomy_id];
+		}
+
+		$terms[$key]->image_id = $image_id;
+		$image_ids[] = $image_id;
+
+		if ( empty( $params['having_images'] ) ) {
+			continue;
+		}
+
+		if ( ! empty( $image_id ) ) {
+			$terms_with_images[] = $terms[$key];
+		}
+	}
+
+	$image_ids = array_unique( $image_ids );
+
+	if ( ! empty( $params['cache_images'] ) ) {
+		$images = array();
+		if ( ! empty( $image_ids ) ) {
+			$images = get_children( array( 'include' => implode( ',', $image_ids ) ) );
+		}
+	}
+
+	if ( ! empty( $terms_with_images ) ) {
+		return $terms_with_images;
+	}
+
+	return $terms;
+}
+add_filter( 'get_terms', 'taxonomy_images_plugin_extend_get_terms', 10, 3 );
