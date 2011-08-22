@@ -79,14 +79,50 @@ function taxonomy_images_plugin_get_terms( $default, $args = array() ) {
 		'term_args'     => array(),
 		) );
 
-	$term_args = $args['term_args'];
+	$args['taxonomy'] = explode( ',', $args['taxonomy'] );
+	$args['taxonomy'] = array_map( 'trim', $args['taxonomy'] );
 
-	$term_args['taxonomy_images'] = array(
-		'cache_images'  => $args['cache_images'],
-		'having_images' => $args['having_images'],
-	);
+	foreach ( $args['taxonomy'] as $taxonomy ) {
+		if ( ! taxonomy_image_plugin_check_taxonomy( $taxonomy, $filter ) ) {
+			return array();
+		}
+	}
 
-	return get_terms( $args['taxonomy'], $term_args );
+	$assoc = taxonomy_image_plugin_get_associations();
+	if ( empty( $assoc ) ) {
+		return array();
+	}
+
+	$terms = get_terms( $args['taxonomy'], $args['term_args'] );
+	if ( is_wp_error( $terms ) ) {
+		return array();
+	}
+
+	$image_ids = array();
+	$terms_with_images = array();
+	foreach ( (array) $terms as $key => $term ) {
+		$terms[$key]->image_id = 0;
+		if ( array_key_exists( $term->term_taxonomy_id, $assoc ) ) {
+			$terms[$key]->image_id = $assoc[$term->term_taxonomy_id];
+			$image_ids[] = $assoc[$term->term_taxonomy_id];
+			if ( ! empty( $args['having_images'] ) ) {
+				$terms_with_images[] = $terms[$key];
+			}
+		}
+	}
+	$image_ids = array_unique( $image_ids );
+
+	if ( ! empty( $args['cache_images'] ) ) {
+		$images = array();
+		if ( ! empty( $image_ids ) ) {
+			$images = get_children( array( 'include' => implode( ',', $image_ids ) ) );
+		}
+	}
+
+	if ( ! empty( $terms_with_images ) ) {
+		return $terms_with_images;
+	}
+	return $terms;
 }
 
 
