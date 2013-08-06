@@ -1,15 +1,15 @@
 .taxonomy-images-the-terms {
-	margin:10px 0;
-	padding:0;
-	zoom:1;
+	margin: 10px 0;
+	padding: 0;
+	zoom: 1;
 }
 .taxonomy-images-the-terms:before,
 .taxonomy-images-the-terms:after {
-	content:"\0020";
-	display:block;
-	height:0;
-	visibility:hidden;
-	clear:both;
+	clear: both;
+	content: "\0020";
+	display: block;
+	height: 0;
+	visibility: hidden;
 }
 .taxonomy-images-the-terms li,
 .taxonomy-images-the-terms a,

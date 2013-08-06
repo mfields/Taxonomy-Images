@@ -4,7 +4,7 @@ Contributors:         mfields, jamiemchale
 Donate link:          http://wordpress.mfields.org/donate/
 Tags:                 taxonomy, tag, category, image, upload, media
 Requires at least:    3.1
-Tested up to:         3.2-beta2-18055
+Tested up to:         3.6
 Stable tag:           trunk
 
 Associate images from your media library to categories, tags and custom taxonomies.
@@ -205,10 +205,26 @@ I've released a handfull of plugins dealing with taxonomies. Please see my [plug
 
 == Upgrade Notice ==
 
+= 0.8 =
+Major and minor bug fixes tested with WordPres 3.6
+
 = 0.7 =
 Complete rewrite. Better everything. Many bug fixes.
 
 ==Changelog==
+
+= 0.8.0 =
+* Pass an empty array as default second parameter of `taxonomy_images_plugin_get_the_terms()` and `taxonomy_images_plugin_list_the_terms()`.
+* Use jQuery.on() instead of jQuery.live(). Props [jamiemchale](http://profiles.wordpress.org/jamiemchale).
+* Give the button on the custom admin screen a class of `button-primary`.
+* Store the return value of `get_posts()` in a variable called `$images`. Not sure why, but this should not harm anything.
+* Change license to GPLv2 or later for maximum flexibility and compatibility.
+* Add jamiemchale as a contributor.
+* Random whitespace fixes.
+* Update Documentation.
+* CSS coding standards.
+* Bump version number.
+* Update Readmes.
 
 = 0.7.3 =
 * Fixed the delete image button on edit-terms.php.

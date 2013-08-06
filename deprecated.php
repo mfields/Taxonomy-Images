@@ -24,19 +24,19 @@ function taxonomy_images_plugin_shortcode_deprecated( $atts = array() ) { // DEP
 
 	$terms = get_terms( $taxonomy );
 	$associations = taxonomy_image_plugin_get_associations( $refresh = false );
-	
+
 	if ( ! is_wp_error( $terms ) ) {
 		foreach( (array) $terms as $term ) {
 			$url         = get_term_link( $term, $term->taxonomy );
 			$title       = apply_filters( 'the_title', $term->name );
 			$title_attr  = esc_attr( $term->name . ' (' . $term->count . ')' );
 			$description = apply_filters( 'the_content', $term->description );
-			
+
 			$img = '';
 			if ( array_key_exists( $term->term_taxonomy_id, $associations ) ) {
 				$img = wp_get_attachment_image( $associations[$term->term_taxonomy_id], 'detail', false );
 			}
-			
+
 			if( $template === 'grid' ) {
 				$o.= "\n\t" . '<div class="taxonomy_image_plugin-' . $template . '">';
 				$o.= "\n\t\t" . '<a style="float:left;" title="' . $title_attr . '" href="' . $url . '">' . $img . '</a>';

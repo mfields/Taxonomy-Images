@@ -67,7 +67,7 @@ add_filter( 'taxonomy-images-queried-term-image-url',    'taxonomy_images_plugin
  * @since     0.7
  */
 function taxonomy_images_plugin_get_terms( $default, $args = array() ) {
-		$filter = 'taxonomy-images-get-terms';
+	$filter = 'taxonomy-images-get-terms';
 	if ( $filter !== current_filter() ) {
 		taxonomy_image_plugin_please_use_filter( __FUNCTION__, $filter );
 	}
@@ -297,7 +297,7 @@ function taxonomy_images_plugin_list_the_terms( $default, $args = array() ) {
 /**
  * Queried Term Image.
  *
- * Prints html markup for th image associated with
+ * Prints html markup for the image associated with
  * the current queried term.
  *
  * Recognized Arguments:
