@@ -39,7 +39,7 @@ jQuery( document ).ready( function( $ ) {
 		}
 	}
 
-	$( '.taxonomy-images-modal .remove-association' ).live( 'click', function () {
+	$( '.taxonomy-images-modal' ).on( 'click', '.remove-association', function () {
 		var button = $( this );
 		originalText = button.html();
 		button.html( TaxonomyImagesModal.removing );
@@ -72,7 +72,7 @@ jQuery( document ).ready( function( $ ) {
 		return false;
 	} );
 
-	$( '.taxonomy-images-modal .create-association' ).live( 'click', function () {
+	$( '.taxonomy-images-modal' ).on( 'click', '.create-association', function () {
 		var button, selector, originalText;
 		if ( 0 == ID ) {
 			return;
