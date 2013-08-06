@@ -1,6 +1,6 @@
 ===Taxonomy Images===
 
-Contributors:         mfields
+Contributors:         mfields, jamiemchale
 Donate link:          http://wordpress.mfields.org/donate/
 Tags:                 taxonomy, tag, category, image, upload, media
 Requires at least:    3.1
@@ -99,9 +99,9 @@ This filter accepts an optional third parameter that you can use to customize it
 * __before_image__ (string) - Text to prepend to each image. Default value is an open list-item element.
 
 * __image_size__ (string) - Any registered image size. Values will vary from installation to installation. Image sizes defined in core include: "thumbnail", "medium" and "large". "Fullsize" may also be used to get the unmodified image that was uploaded. Defaults to "thumbnail".
- 
+
 * __post_id__ (int) - The post to retrieve terms from. Defaults to the ID property of the global $post object.
- 
+
 * __taxonomy__ (string) - Name of a registered taxonomy to return terms from. Defaults to "category".
 
 Here's an example of what a fully customized version of this filter might look like:
@@ -206,7 +206,7 @@ I've released a handfull of plugins dealing with taxonomies. Please see my [plug
 == Upgrade Notice ==
 
 = 0.7 =
-Complete rewrite. Better everything. Many bug fixes. 
+Complete rewrite. Better everything. Many bug fixes.
 
 ==Changelog==
 
